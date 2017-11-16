@@ -30,9 +30,9 @@ And the two measurements of Ley and Steel (2007)
 
 \eqn{\mathcal{j}^*=\frac{P(i \cap j)}{P(i\cup j)-P(i\cap j)}}
 
-If \code{covariates} is a two dimensional vector, \code{Jointness} return a
-list of two elements. The first one of them is a data frame containing the
-measurements above but just for the given pair of covariates. The second
+If \code{covariates} is a vector of length 2, \code{Jointness} return a
+list of four elements. The first three of them is a list of three values containing the
+measurements above but just for the given pair of covariates. The fourth
 element is the \code{covariates} vector.
 
 If method \code{print.jointness} is used a message with the meaning of the
