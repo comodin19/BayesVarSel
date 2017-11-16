@@ -26,3 +26,6 @@ Suggest:
 License: GPL-2
 NeedsCompilation: yes
 RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
