@@ -104,7 +104,10 @@ Jointness <- function(x, covariates = "All") {
     }
 
 
-    jointness <- list(joint, joint_LS1, joint_LS2)
+    jointness <-
+      list("prob_joint" = joint,
+           "joint_LS1" = joint_LS1,
+           "joint_LS2" = joint_LS2)
     class(jointness) <- "jointness"
 
     return(jointness)
@@ -143,7 +146,7 @@ Jointness <- function(x, covariates = "All") {
       ), covariates)
 
 
-    names(jointness) <- "value"
+    names(jointness) <- c("value","names")
     class(jointness) <- "jointness"
     jointness
   }
