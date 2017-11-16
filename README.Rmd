@@ -1,10 +1,17 @@
 ---
 output: md_document
 ---
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-"
+)
+```
 
 [![](http://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)[![](http://cranlogs.r-pkg.org/badges/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html) [![](http://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html)
 
-# [BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/carlosvergara/BayesVarSel)
+# [BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/comodin19/BayesVarSel)
 
 Hypothesis testing, model selection and model averaging are important statistical problems that have in common the explicit consideration of the uncertainty about which is the true model. The formal Bayesian tool to solve such problems is the Bayes factor (Kass and Raftery, 1995) that reports the evidence in the data favoring each of the entertained hypotheses/models and can be easily translated to posterior probabilities.
 
@@ -21,13 +28,13 @@ install.packages("BayesVarSel")
 ```
 
 ### Development release
-You can track, download the latest version or contribute to the development of `BayesVarSel` at [https://github.com/carlosvergara/BayesVarSel](https://github.com/carlosvergara/BayesVarSel). To install the most recent version of the package (`r sub("Version: ", "", readLines('DESCRIPTION')[grepl('Version', readLines('DESCRIPTION'))])`) you should:
+You can track, download the latest version or contribute to the development of `BayesVarSel` at [https://github.com/carlosvergara/BayesVarSel](https://github.com/comodin19/BayesVarSel). To install the most recent version of the package (`r sub("Version: ", "", readLines('DESCRIPTION')[grepl('Version', readLines('DESCRIPTION'))])`) you should:
 
 1. Install devtools from CRAN with `install.packages("devtools")`.
-2. Install the development version of `BayesVarSel` from [GitHub](https://github.com/carlosvergara/BayesVarSel):
+2. Install the development version of `BayesVarSel` from [GitHub](https://github.com/comodin19/BayesVarSel):
 
 ```{r ins_github, eval=FALSE}
-devtools::install_github("carlosvergara/BayesVarSel")
+devtools::install_github("comodin19/BayesVarSel")
 ```
 
 # Features
@@ -47,7 +54,8 @@ summary(hald_Bvs)
 colMeans(predictBvs(hald_Bvs, Hald[1:2,]))
 
 # Simulate coefficients
-sim_coef <- BMAcoeff(hald_Bvs)
+sim_coef <- BMAcoeff(hald_Bvs);
+
 colMeans(sim_coef)
 ```
 
