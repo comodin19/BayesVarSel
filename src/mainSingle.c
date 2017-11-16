@@ -5,7 +5,7 @@
 #include <gsl/gsl_linalg.h>
 #include <R_ext/Utils.h>
 #include<time.h>
-#include <gsl/gsl_rng.h>
+#include <gsl/gsl_rng.h> 
 #include <gsl/gsl_randist.h>
 
 #include "allBF.h"
@@ -15,7 +15,7 @@ void gBF (int *pn, int *pk2, int *pk0, double *pQ, double *B21)
 {
 	void R_CheckUserInterrupt(void);
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int k2=*pk2;
@@ -29,7 +29,7 @@ void flsBF (int *pp, int *pn, int *pk2, int *pk0, double *pQ, double *B21)
 {
     void R_CheckUserInterrupt(void);
     gsl_set_error_handler_off();
-
+    
     //PARAMETERS: (R version)
     int n=*pn;
     int k2=*pk2;
@@ -37,7 +37,7 @@ void flsBF (int *pp, int *pn, int *pk2, int *pk0, double *pQ, double *B21)
     int p=*pp;
     double Q=*pQ;
     *B21=flsBF21fun(p, n, k2, k0, Q);
-
+    
 }
 
 
@@ -45,11 +45,11 @@ void RobustBF (int *pn, int *pk2, int *pk0, double *pQ, double *B21)
 {
 	void R_CheckUserInterrupt(void);
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int k2=*pk2;
-	int k0=*pk0;
+	int k0=*pk0;	
 	double Q=*pQ;
 	*B21=RobustBF21fun(n, k2, k0, Q);
 
@@ -60,11 +60,11 @@ void LiangBF (int *pn, int *pk2, int *pk0, double *pQ, double *B21)
 {
 	void R_CheckUserInterrupt(void);
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int k2=*pk2;
-	int k0=*pk0;
+	int k0=*pk0;		
 	double Q=*pQ;
 	*B21=LiangBF21fun(n, k2, k0, Q);
 
@@ -75,11 +75,11 @@ void ZSBF (int *pn, int *pk2, int *pk0, double *pQ, double *B21)
 {
 	void R_CheckUserInterrupt(void);
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int k2=*pk2;
-	int k0=*pk0;
+	int k0=*pk0;			
 	double Q=*pQ;
 	*B21=ZSBF21fun(n, k2, k0, Q);
 

@@ -73,58 +73,76 @@
 #' #the probability of including one of them alone
 #'
 #' }
-Jointness <- function(x,covariates="All"){
+Jointness <- function(x, covariates = "All") {
   if (!inherits(x, "Bvs"))
     warning("calling Jointness(<fake-Bvs-object>) ...")
-  
-  
-  if(length(covariates)==1 && covariates=="All"){
-    joint<-x$jointinclprob
+
+
+  if (length(covariates) == 1 && covariates == "All") {
+    joint <- x$jointinclprob
     joint_LS1 <- x$jointinclprob
     joint_LS2 <- x$jointinclprob
-    for(i in 1:dim(x$jointinclprob)[1]){
-      for(j in i:dim(x$jointinclprob)[1]){
-        joint_LS1[i,j] <- x$jointinclprob[i,j]/(x$jointinclprob[i,i]+x$jointinclprob[j,j]-x$jointinclprob[i,j])
-        
-        joint_LS1[j,i] <- x$jointinclprob[i,j]/(x$jointinclprob[i,i]+x$jointinclprob[j,j]-x$jointinclprob[i,j])
-        
-        joint_LS2[i,j] <- x$jointinclprob[i,j]/(x$jointinclprob[i,i]+x$jointinclprob[j,j]-2*x$jointinclprob[i,j])
-        
-        joint_LS2[j,i] <- x$jointinclprob[i,j]/(x$jointinclprob[i,i]+x$jointinclprob[j,j]-2*x$jointinclprob[i,j])
+    for (i in 1:dim(x$jointinclprob)[1]) {
+      for (j in i:dim(x$jointinclprob)[1]) {
+        joint_LS1[i, j] <-
+          x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
+                                     x$jointinclprob[i, j])
+
+        joint_LS1[j, i] <-
+          x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
+                                     x$jointinclprob[i, j])
+
+        joint_LS2[i, j] <-
+          x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
+                                     2 * x$jointinclprob[i, j])
+
+        joint_LS2[j, i] <-
+          x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
+                                     2 * x$jointinclprob[i, j])
       }
-      joint_LS2[i,i] <- NA
+      joint_LS2[i, i] <- NA
     }
-    
-    
+
+
     jointness <- list(joint, joint_LS1, joint_LS2)
     class(jointness) <- "jointness"
-    
+
     return(jointness)
   }
-  if(length(covariates)>1){
-    
-    
-    if(length(covariates)>2){stop("The number of covariates to obtain jointness measurements should be 2\n")}
-    if(length(covariates)<2){stop("The number of covariates to obtain jointness measurements should be 2\n")}
-    i<-0
-    j<-0
-    
-    i <- which(names(x$jointinclprob)==covariates[1])
-    j <- which(names(x$jointinclprob)==covariates[2])
-    
-    if(i==0 || j==0){
+  if (length(covariates) > 1) {
+    if (length(covariates) > 2) {
+      stop("The number of covariates to obtain jointness measurements should be 2\n")
+    }
+    if (length(covariates) < 2) {
+      stop("The number of covariates to obtain jointness measurements should be 2\n")
+    }
+    i <- 0
+    j <- 0
+
+    i <- which(names(x$jointinclprob) == covariates[1])
+    j <- which(names(x$jointinclprob) == covariates[2])
+
+    if (i == 0 || j == 0) {
       stop("At least one of the covariates is not part of the analysis")
     }
-    
-    prob_joint <- x$jointinclprob[i,j]
-    
-    joint_LS1 <- x$jointinclprob[i,j]/(x$jointinclprob[i,i]+x$jointinclprob[j,j]-x$jointinclprob[i,j])
-    
-    joint_LS2 <- x$jointinclprob[i,j]/(x$jointinclprob[i,i]+x$jointinclprob[j,j]-2*x$jointinclprob[i,j])
-    
-    jointness<-list(as.data.frame(c(prob_joint,joint_LS1,joint_LS2),row.names =c("prob_joint","joint_LS1","joint_LS2")), covariates)
-    
-    
+
+    prob_joint <- x$jointinclprob[i, j]
+
+    joint_LS1 <-
+      x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
+                                 x$jointinclprob[i, j])
+
+    joint_LS2 <-
+      x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
+                                 2 * x$jointinclprob[i, j])
+
+    jointness <-
+      list(as.data.frame(
+        c(prob_joint, joint_LS1, joint_LS2),
+        row.names = c("prob_joint", "joint_LS1", "joint_LS2")
+      ), covariates)
+
+
     names(jointness) <- "value"
     class(jointness) <- "jointness"
     jointness
@@ -133,24 +151,62 @@ Jointness <- function(x,covariates="All"){
 
 
 
-print.jointness <- function(x, ...){
-  if(length(x)==2){
+print.jointness <- function(x, ...) {
+  if (length(x) == 2) {
     cat("---------\n")
-    cat(paste("The joint inclusion probability for", x[[2]][1], "and", x[[2]][2], "is: ",round(x[[1]][1,1],2),"\n", sep =" "))
+    cat(
+      paste(
+        "The joint inclusion probability for",
+        x[[2]][1],
+        "and",
+        x[[2]][2],
+        "is: ",
+        round(x[[1]][1, 1], 2),
+        "\n",
+        sep = " "
+      )
+    )
     cat("---------\n")
-    cat(paste("The ratio between the probability of including both covariates and the probability of including at least one of then is: ",round(x[[1]][2,1],2),"\n", sep=""))
+    cat(
+      paste(
+        "The ratio between the probability of including both covariates and the probability of including at least one of then is: ",
+        round(x[[1]][2, 1], 2),
+        "\n",
+        sep = ""
+      )
+    )
     cat("---------\n")
-    cat(paste("The probability of including both covariates together is",round(x[[1]][3,1],2), "times the probability of including one of them alone \n",sep=" "))
+    cat(
+      paste(
+        "The probability of including both covariates together is",
+        round(x[[1]][3, 1], 2),
+        "times the probability of including one of them alone \n",
+        sep = " "
+      )
+    )
   }
-  if(length(x)==3){
+  if (length(x) == 3) {
     cat("---------\n")
-    cat(paste("The joint inclusion probability for All covariates are \n", sep =" "))
+    cat(paste(
+      "The joint inclusion probability for All covariates are \n",
+      sep = " "
+    ))
     print(x[[1]])
     cat("---------\n")
-    cat(paste("The ratio between the probability of including two covariates together and the probability of including at least one of them is: \n", sep=""))
+    cat(
+      paste(
+        "The ratio between the probability of including two covariates together and the probability of including at least one of them is: \n",
+        sep = ""
+      )
+    )
     print(x[[2]])
     cat("---------\n")
-    cat(paste("The ratio between the probability of including two covariates together and the probability of including one of them alone is: \n",sep=" "))
+    cat(
+      paste(
+        "The ratio between the probability of including two covariates together and the probability of including one of them alone is: \n",
+        sep = " "
+      )
+    )
     print(x[[3]])
 
   }

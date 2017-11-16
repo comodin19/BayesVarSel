@@ -10,8 +10,8 @@
 //#include <gsl/gsl_heapsort.h>
 //#include <gsl/gsl_sort.h>
 //#include <gsl/gsl_sort_vector.h>
-#include <time.h>
-#include <gsl/gsl_rng.h>
+#include<time.h>
+#include <gsl/gsl_rng.h> 
 #include <gsl/gsl_randist.h>
 
 
@@ -23,21 +23,19 @@
 //#include "allBF.c"
 #include "priorprob.h"
 //#include "priorprob.c"
-
-
 void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -51,73 +49,73 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -129,22 +127,22 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -160,20 +158,20 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -185,7 +183,7 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
         //the bayes factor in favor of Mi and against M0
         k2e=k2+knull;
         oldPBF= gBF21fun(n,k2e,knull,Q)*Constpriorprob(p,k2);
-
+        
     }
     else{
         Q=1.0;
@@ -193,10 +191,10 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*Constpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -226,7 +224,7 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -261,14 +259,14 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -280,66 +278,66 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2));
+		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2)); 
         //Rprintf("BayesFactor is %d \n", oldPBF);
         //Rprintf("Q is %d \n", Q);
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -347,20 +345,20 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -370,13 +368,13 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -390,73 +388,73 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -468,22 +466,22 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -499,20 +497,20 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -531,10 +529,10 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*SBpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -564,7 +562,7 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -599,14 +597,14 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -618,65 +616,65 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -684,20 +682,20 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -707,13 +705,13 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -727,73 +725,73 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -805,22 +803,22 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -836,20 +834,20 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -868,10 +866,10 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*gsl_vector_get(priorvector,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -901,7 +899,7 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -936,14 +934,14 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -955,65 +953,65 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -1021,20 +1019,20 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -1044,13 +1042,13 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -1064,73 +1062,73 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -1142,22 +1140,22 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -1173,20 +1171,20 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -1205,11 +1203,11 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*Constpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
     double BF=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -1239,7 +1237,7 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -1276,14 +1274,14 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -1295,66 +1293,66 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2)); 
+      
 
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -1362,20 +1360,20 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -1385,13 +1383,13 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -1405,73 +1403,73 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -1483,22 +1481,22 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -1514,20 +1512,20 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -1546,12 +1544,12 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*SBpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
     double BF=0.0;
     double SB=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -1585,7 +1583,7 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -1620,14 +1618,14 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -1644,62 +1642,62 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
         //Rprintf("Q is %.10f \n", Q);
 
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -1707,20 +1705,20 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -1730,13 +1728,13 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -1750,73 +1748,73 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -1828,22 +1826,22 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -1859,20 +1857,20 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -1891,10 +1889,10 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*gsl_vector_get(priorvector,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -1924,7 +1922,7 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -1959,14 +1957,14 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -1978,65 +1976,65 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -2044,20 +2042,20 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -2067,13 +2065,13 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -2087,73 +2085,73 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -2165,22 +2163,22 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -2196,20 +2194,20 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -2228,10 +2226,10 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*Constpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -2261,7 +2259,7 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -2296,14 +2294,14 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -2315,65 +2313,65 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -2381,20 +2379,20 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -2404,13 +2402,13 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -2424,73 +2422,73 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -2502,22 +2500,22 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -2533,20 +2531,20 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -2565,10 +2563,10 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*SBpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -2598,7 +2596,7 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -2633,14 +2631,14 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -2652,65 +2650,65 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -2718,20 +2716,20 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -2741,13 +2739,13 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -2761,73 +2759,73 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -2839,22 +2837,22 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -2870,20 +2868,20 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -2902,10 +2900,10 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*gsl_vector_get(priorvector,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -2935,7 +2933,7 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -2970,14 +2968,14 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -2989,65 +2987,65 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -3055,20 +3053,20 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -3078,13 +3076,13 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -3098,73 +3096,73 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -3176,22 +3174,22 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -3207,20 +3205,20 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -3239,10 +3237,10 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*Constpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -3272,7 +3270,7 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -3307,14 +3305,14 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -3326,65 +3324,65 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -3392,20 +3390,20 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -3415,13 +3413,13 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -3435,73 +3433,73 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -3513,22 +3511,22 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -3544,20 +3542,20 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -3576,10 +3574,10 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*SBpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -3609,7 +3607,7 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -3644,14 +3642,14 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -3663,65 +3661,65 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -3729,20 +3727,20 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -3752,13 +3750,13 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -3772,73 +3770,73 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -3850,22 +3848,22 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -3881,20 +3879,20 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -3913,10 +3911,10 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*gsl_vector_get(priorvector,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -3946,7 +3944,7 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -3981,14 +3979,14 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -4000,65 +3998,65 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -4066,20 +4064,20 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -4089,13 +4087,13 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -4109,73 +4107,73 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -4187,22 +4185,22 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -4218,20 +4216,20 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -4250,10 +4248,10 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*Constpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -4283,7 +4281,7 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -4318,14 +4316,14 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -4337,65 +4335,65 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -4403,20 +4401,20 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -4426,13 +4424,13 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -4446,73 +4444,73 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -4524,22 +4522,22 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -4555,20 +4553,20 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -4587,10 +4585,10 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*SBpriorprob(p,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -4620,7 +4618,7 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -4655,14 +4653,14 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -4674,65 +4672,65 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -4740,20 +4738,20 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }
@@ -4763,13 +4761,13 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
-
+	
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
-
+	
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
@@ -4783,73 +4781,73 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
     gsl_rng * ran = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(ran, *pseed);
 	//double info=pow(2,p);
-
+	
 	//Rprintf("The problem has %d variables and %d observations\n", p, n);
 	//Rprintf("The whole problem would have %f different competing models\n", info);
-
+	
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The initial model:
 	char nfileR3[100] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
 	FILE * finitM = fopen(nfileR3, "r");
-
+		
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
 	//File that contain all visited models after burnin
 	char nfile10[100]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
-
+	
 	//File that contain all BF's of previuos models
 	char nfile11[100]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
 	FILE * fAllBF = fopen(strcat(nfile11,subindex), "w");
-
-
+	
+	
 	int cont=0; //cont is used for the thining
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
-
-
-
-	//Put the values in the response file into the vector y
+	
+	
+	
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
-
+	fclose(fDesign);	
+	
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the model with no covariates
 	//Q=SSE/SSEnull
@@ -4861,22 +4859,22 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
 	int k2e=0;
-
+	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
 	gsl_vector * dimension_prob=gsl_vector_calloc(p+1);
-
+	
 	//index is a vector of 0 and 1's with the binary expression saying which covariates are active
 	//(ie index is just the binary expression of model, an integer between 1 and N)
 	gsl_vector * index = gsl_vector_calloc(p);
-
+	
 	//We fill it with the initial model
 	gsl_vector_fscanf(finitM, index);
 	fclose(finitM);
@@ -4892,20 +4890,20 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector *priorvector = gsl_vector_calloc(p+1);
 	gsl_vector_fscanf(fPriorProb, priorvector);
 	fclose(fPriorProb);
-
+	
 	//The HPM of the models visited:
 	gsl_vector * HPM = gsl_vector_calloc(p);
 	gsl_vector_memcpy(HPM, index);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
-
+	
 	//In what follows we call, for a given model Mi, PBF=BF(Mi vs M0)*UPr(Mi)
 	//where UPr(Mi) is the unnormalized prior probability
 	//this is the calculation for the initial model:
@@ -4924,10 +4922,10 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
         gsl_vector_set_zero(hatbetap);
         oldPBF= 1.0*gsl_vector_get(priorvector,k2);
     }
-
+    
 	double HPMBF=oldPBF;
 	double ratio=0.0;
-
+	
 	//Burnin
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(*pBurnin+1); iter++){
@@ -4957,7 +4955,7 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 		}
 		R_CheckUserInterrupt();
 	}
-
+	
 	//main loop
 	//Interpret old as current and new as proposal
 	for (iter=1; iter<(SAVE+1); iter++){
@@ -4992,14 +4990,14 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 			cont++;
 			R_CheckUserInterrupt();
 		}
-
+		
 		//update the summaries
 		//inclusion probs:
-		gsl_blas_daxpy(1.0, index, incl_prob);
+		gsl_blas_daxpy(1.0, index, incl_prob);		
 		//joint inclusion probs:
-		gsl_blas_dger(1.0, index, index, joint_incl_prob);
+		gsl_blas_dger(1.0, index, index, joint_incl_prob);		
 		//mean of betahats
-		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);
+		gsl_blas_daxpy(1.0, hatbetap, meanhatbetap);		
 		//probability of dimensions:
 		gsl_vector_set(dimension_prob,k2,gsl_vector_get(dimension_prob,k2)+1.0);
 		//HPM
@@ -5011,65 +5009,65 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2));
-
+		fprintf(fAllBF, "%.20f\n", oldPBF/gsl_vector_get(priorvector,k2)); 
+		
 	}
-
+	
 	//normalize:
 	gsl_vector_scale(incl_prob, 1.0/SAVE);
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
-
-
+	
+		
 	//Write the results:
 	char nfile1[100]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
-
-
+	
+	
 	fclose(fLastModel);
-	fclose(fModels);
+	fclose(fModels);	
 	fclose(fInclusion);
 	fclose(fDim);
 	fclose(fJointInclusion);
@@ -5077,20 +5075,20 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	fclose(fAllModels);
 	fclose(fAllBF);
 
-
+	
 	gsl_vector_free (y);
-	gsl_matrix_free (X);
+	gsl_matrix_free (X);	
 	gsl_vector_free (index);
-
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
-
+		
 	gsl_rng_free (ran);
-
-	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
+		
+	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 
 }

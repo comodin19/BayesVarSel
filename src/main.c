@@ -10,7 +10,7 @@
 #include <gsl/gsl_heapsort.h>
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_sort_vector.h>
-#include <time.h>
+#include<time.h>
 #include <R_ext/Utils.h>
 
 
@@ -20,30 +20,28 @@
 //#include "allBF.c"
 #include "priorprob.h"
 //#include "priorprob.c"
-
-
 void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, char *homePath[], double *time, int *pknull)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -51,44 +49,44 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -107,10 +105,10 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -122,7 +120,7 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -143,14 +141,14 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*Constpriorprob(p,dimensionNull);
@@ -158,35 +156,35 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= gBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -201,24 +199,24 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= gBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -237,12 +235,12 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -250,83 +248,83 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -334,11 +332,11 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -348,8 +346,8 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -360,22 +358,22 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -383,44 +381,44 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -439,10 +437,10 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -454,7 +452,7 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -475,14 +473,14 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*SBpriorprob(p,dimensionNull);
@@ -490,35 +488,35 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= gBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -533,24 +531,24 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= gBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -569,12 +567,12 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -582,83 +580,83 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -666,11 +664,11 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -680,8 +678,8 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -692,22 +690,22 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -715,44 +713,44 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -771,10 +769,10 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -786,7 +784,7 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -807,14 +805,14 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*gsl_vector_get(priorvector,dimensionNull);
@@ -822,35 +820,35 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= gBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -865,24 +863,24 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= gBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -901,12 +899,12 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -914,83 +912,83 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -998,11 +996,11 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -1012,8 +1010,8 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -1024,22 +1022,22 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -1047,44 +1045,44 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -1103,10 +1101,10 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -1118,7 +1116,7 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -1139,14 +1137,14 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*Constpriorprob(p,dimensionNull);
@@ -1154,35 +1152,35 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= RobustBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -1197,24 +1195,24 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= RobustBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -1233,12 +1231,12 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -1246,83 +1244,83 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -1330,11 +1328,11 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -1344,8 +1342,8 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -1356,22 +1354,22 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -1379,44 +1377,44 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -1435,10 +1433,10 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -1450,7 +1448,7 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -1471,14 +1469,14 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*SBpriorprob(p,dimensionNull);
@@ -1486,35 +1484,35 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= RobustBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -1529,24 +1527,24 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= RobustBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -1565,12 +1563,12 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -1578,83 +1576,83 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -1662,11 +1660,11 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -1676,8 +1674,8 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -1688,22 +1686,22 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -1711,44 +1709,44 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -1767,10 +1765,10 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -1782,7 +1780,7 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -1803,14 +1801,14 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*gsl_vector_get(priorvector,dimensionNull);
@@ -1818,35 +1816,35 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= RobustBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -1861,24 +1859,24 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= RobustBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -1897,12 +1895,12 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -1910,83 +1908,83 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -1994,11 +1992,11 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -2008,8 +2006,8 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -2020,22 +2018,22 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -2043,44 +2041,44 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -2099,10 +2097,10 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -2114,7 +2112,7 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -2135,14 +2133,14 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*Constpriorprob(p,dimensionNull);
@@ -2150,35 +2148,35 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= LiangBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -2193,24 +2191,24 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= LiangBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -2229,12 +2227,12 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -2242,83 +2240,83 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -2326,11 +2324,11 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -2340,8 +2338,8 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -2352,22 +2350,22 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -2375,44 +2373,44 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -2431,10 +2429,10 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -2446,7 +2444,7 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -2467,14 +2465,14 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*SBpriorprob(p,dimensionNull);
@@ -2482,35 +2480,35 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= LiangBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -2525,24 +2523,24 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= LiangBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -2561,12 +2559,12 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -2574,83 +2572,83 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -2658,11 +2656,11 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -2672,8 +2670,8 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -2684,22 +2682,22 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -2707,44 +2705,44 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -2763,10 +2761,10 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -2778,7 +2776,7 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -2799,14 +2797,14 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*gsl_vector_get(priorvector,dimensionNull);
@@ -2814,35 +2812,35 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= LiangBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -2857,24 +2855,24 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= LiangBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -2893,12 +2891,12 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -2906,83 +2904,83 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -2990,11 +2988,11 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -3004,8 +3002,8 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -3016,22 +3014,22 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -3039,44 +3037,44 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -3095,10 +3093,10 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -3110,7 +3108,7 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -3131,14 +3129,14 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*Constpriorprob(p,dimensionNull);
@@ -3146,35 +3144,35 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= ZSBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -3189,24 +3187,24 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= ZSBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -3225,12 +3223,12 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -3238,83 +3236,83 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -3322,11 +3320,11 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -3336,8 +3334,8 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -3348,22 +3346,22 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -3371,44 +3369,44 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -3427,10 +3425,10 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -3442,7 +3440,7 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -3463,14 +3461,14 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*SBpriorprob(p,dimensionNull);
@@ -3478,35 +3476,35 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= ZSBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -3521,24 +3519,24 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= ZSBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -3557,12 +3555,12 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -3570,83 +3568,83 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -3654,11 +3652,11 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -3668,8 +3666,8 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -3680,22 +3678,22 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -3703,44 +3701,44 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -3759,10 +3757,10 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -3774,7 +3772,7 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -3795,14 +3793,14 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*gsl_vector_get(priorvector,dimensionNull);
@@ -3810,35 +3808,35 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= ZSBF21fun(n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -3853,24 +3851,24 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= ZSBF21fun(n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -3889,12 +3887,12 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -3902,83 +3900,83 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -3986,11 +3984,11 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -4000,8 +3998,8 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -4012,22 +4010,22 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -4035,44 +4033,44 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -4091,10 +4089,10 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -4106,7 +4104,7 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -4127,14 +4125,14 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*Constpriorprob(p,dimensionNull);
@@ -4142,35 +4140,35 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= flsBF21fun(p, n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -4185,24 +4183,24 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= flsBF21fun(p, n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Constmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Constmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -4221,12 +4219,12 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -4234,83 +4232,83 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -4318,11 +4316,11 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -4332,8 +4330,8 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -4344,22 +4342,22 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -4367,44 +4365,44 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -4423,10 +4421,10 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -4438,7 +4436,7 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -4459,14 +4457,14 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*SBpriorprob(p,dimensionNull);
@@ -4474,35 +4472,35 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= flsBF21fun(p, n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -4517,24 +4515,24 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= flsBF21fun(p, n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=SBmainalgebraics(BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=SBmainalgebraics(BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -4553,12 +4551,12 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -4566,83 +4564,83 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -4650,11 +4648,11 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -4664,8 +4662,8 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
@@ -4676,22 +4674,22 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
-
+	
 	void R_CheckUserInterrupt(void);
 
 	clock_t tiempo_ejec=clock();
-
+	
 	gsl_set_error_handler_off();
 
 	//PARAMETERS: (R version)
 	int n=*pn;
 	int p=*pp;
 	int knull=*pknull;
-
+		
 	int SAVE=*pSAVE;
 	int StartAt= *pinicio;
 	int FinishAt= *pfinal; //where to finish
-
+	
 	//The files have an index attached:
 	char subindex[100];
 	strcpy(subindex,*pI);
@@ -4699,44 +4697,44 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	char home[100];
 	strcpy(home,*homePath);
 	//-----------
-
+	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = "";
-
+	char strtmp[100] = ""; 
+	
 	char nfileR1[100] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
-
+	
 	char nfileR2[100] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
 	FILE * fDesign = fopen(nfileR2, "r");
 	//-----------
-
+	
 	//The prior probabilities:
 	char nfileR4[100] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
-	FILE * fPriorProb = fopen(nfileR4, "r");
-
-
+	FILE * fPriorProb = fopen(nfileR4, "r");	
+		
+	
 	//int i=1;
-
+	
 	gsl_vector * y=gsl_vector_calloc(n);
 	gsl_matrix * X=gsl_matrix_calloc(n,p);
 
-	//Put the values in the response file into the vector y
+	//Put the values in the response file into the vector y	
 	gsl_vector_fscanf(fResponse, y);
 	fclose(fResponse);
 	//and those of the design
 	gsl_matrix_fscanf(fDesign, X);
-	fclose(fDesign);
+	fclose(fDesign);	
 
 	//Get the Sum of squared errors for the null model:
 	//SSEnull is the sum of squared errors of the null model with no covariates
@@ -4755,10 +4753,10 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
-
+	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
-
+	
 	//the vector with the posterior probs of each dimension
 	//position 0 contains contains Pr(M|dim=knull+0,data)(=Pr(MNull|data)), position 1 contains Pr(M|dim=knull+1,data),
 	//...position p contains Pr(M|dim=knull+p,data)(=Pr(Mfull|data)).
@@ -4770,7 +4768,7 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	//binmodel is an auxiliary covariate
 	int model=0;
-
+	
 	//the prior probabilities are read once in a vector
 	//this vector is accesed to compute them
 	//this vector only used in the "User"-type routines (are in all for
@@ -4791,14 +4789,14 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	gsl_permutation_init(initperm);
 	//the vector with the posterior probs of the most probable models
 	gsl_vector * postprob=gsl_vector_calloc(SAVE);
-
+	
 	//hatbetap will store the mle of the k2-dimensional beta but, inserted
 	//in a p-dimensional vector (with corresponding positions)
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
-
-
+	
+	
 	//Complete the results for the null model:
 	int dimensionNull=0;
 	NormConstant=1.0*gsl_vector_get(priorvector,dimensionNull);
@@ -4806,35 +4804,35 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
+	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-
-
+    
+    
 	// //////////////////////////////////////////////
 	//LOOP I: First we fill the vectors with the first values of the Bayes factor
 	for (model=StartAt; model<(SAVE+StartAt-1); model++)
 			{
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
         /*Returns Q_i0, index (binary expression of the model), and k2(number of covariates in the model)*/
+                
 
-
-		//the bayes factor in favor of modeli and against M0
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= flsBF21fun(p, n, k2e, knull,Q);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 		//save the model visited and the BF's
 		gsl_vector_set(Who_Max_SAVE, (model-StartAt+1), model);
 		gsl_vector_set(Max_SAVE_BF, (model-StartAt+1), unnormPostProb);
-
+			
 		gsl_vector_set_zero(index);
 		}
-
+	
 		//Outside the LOOP I: order the values
 		gsl_sort_vector_index(initperm, Max_SAVE_BF);
 		gsl_permutation_reverse(initperm);
@@ -4849,24 +4847,24 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		//printf("%Ld\n", model);
 		//The progress of the calculations:
 		R_CheckUserInterrupt();
-		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n",
+		//if (model%1000000==0) Rprintf("Done(percentage): %- 3.5f\n", 
 		//	(model-SAVE-StartAt)*100.0/(FinishAt-SAVE-StartAt));
 
 		//Obtain Q=SSE/SSEnull and other calculations
 		//also: i)index, which is returned, contains
 		//the binary expression of the model;
 		Q=statistics(model, p, n, SSEnull, X, y, index, &k2, hatbetap);
-
-		//the bayes factor in favor of modeli and against M0
+				
+		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= flsBF21fun(p, n, k2e ,knull,Q);
 		//printf("The Bayes factor is: %.6f\n", BF21);
-
+				
 		//Now the main calculations:
-		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index,
-                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob,
+		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
+                               &NormConstant, &NormConstantPrior, incl_prob, dimension_prob, 
                                k2, hatbetap, meanhatbetap, joint_incl_prob);
-
+				
 
 
 		//Check if the set of most probable models have to be recomputed
@@ -4885,12 +4883,12 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	// //////////////////////////////////////////////
 	//III Reescale the results and write the files:
 
-	//reescale the inclusion probs: (divide incl_prob/NormConstant):
+	//reescale the inclusion probs: (divide incl_prob/NormConstant): 
 	//PrintVector(incl_prob, p);
 		gsl_vector_scale(incl_prob, 1.0/NormConstant);
-
+	
 		gsl_matrix_scale(joint_incl_prob, 1.0/NormConstant);
-
+	
 		//reescale the dimension probs:
 		gsl_vector_scale(dimension_prob, 1.0/NormConstant);
 		//reescale the posterior probs of the most probable models into the vector postprob:
@@ -4898,83 +4896,83 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_scale(postprob, 1.0/NormConstant);
 		//reescale the betahat:
 		gsl_vector_scale(meanhatbetap, 1.0/NormConstant);
-
+	
 
 		NormConstant=exp(log(NormConstant)-log(NormConstantPrior));
 
-
+	
 	//write the results to files (R version)
 	char nfile1[100]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
-
+	
 	char nfile2[100]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
-
+	
 	char nfile3[100]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
-
+	
 	char nfile4[100]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
-	strcpy(nfile4,strtmp);
+	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
-
+	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
-
-
+	
+	
 	char nfile6[100]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
-
+	
 	char nfile7[100]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
-
+	
 	char nfile8[100]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
-
+	
 	char nfile9[100]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
 	FILE * fbetahat = fopen(strcat(nfile9,subindex), "w");
 	//---------
-
+	
 		gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
-
+	
 
 		fprintf(fTotalBF, "%.20f", NormConstant);
 		fprintf(fNormCPrior, "%.20f", NormConstantPrior);
 		fprintf(fStEnd, "%d %d", StartAt, FinishAt);
-
+	
 
 		fclose(fProb);
-		fclose(fModels);
+		fclose(fModels);	
 		fclose(fInclusion);
 		fclose(fTotalBF);
 		fclose(fDim);
@@ -4982,11 +4980,11 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		fclose(fStEnd);
 		fclose(fNormCPrior);
 		fclose(fbetahat);
-
+	
 		gsl_vector_free (y);
-		gsl_matrix_free (X);
+		gsl_matrix_free (X);	
 		gsl_vector_free (index);
-
+	
 		gsl_vector_free(incl_prob);
 		gsl_matrix_free(joint_incl_prob);
 		gsl_vector_free(dimension_prob);
@@ -4996,8 +4994,9 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_free(postprob);
 		gsl_vector_free(hatbetap);
 		gsl_vector_free(meanhatbetap);
-
-
+		
+	
 //	Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);
 	*time=(double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC;
 }
+

@@ -134,97 +134,169 @@
 #' 	#prior.models = "User", priorprobs=list(basemodel=1, ProbTimemodel=1,
 #' 	#ProbPolmodel=4, #ProbSomodel=1, fullmodel=1))
 #' }
-Btest<- function(models, data, prior.betas="Robust", prior.models="Constant", priorprobs=NULL, relax.nest=FALSE){
-	#N is the number of models:
-	N<- length(models)
-	#n is the sample size
-	n<- dim(data)[1]
-	#SSE is a vector with SSE's for each model; Dim with the dimension (number of regressors in each)
-	SSE<- rep(0,N); Dim<- rep(0,N)
-	BFi0<- rep(0,N); PostProbi<- rep(0,N)
-	#prior for betas:
-	pfb<- substr(tolower(prior.betas),1,1)
-	#check if the selected option exists
-	if (pfb!="g" && pfb!="r" && pfb!="z" && pfb!="l" && pfb!="f") stop("I am very sorry: prior for betas no valid\n")
+Btest <-
+  function(models,
+           data,
+           prior.betas = "Robust",
+           prior.models = "Constant",
+           priorprobs = NULL,
+           relax.nest = FALSE) {
+    #N is the number of models:
+    N <- length(models)
+    #n is the sample size
+    n <- dim(data)[1]
+    #SSE is a vector with SSE's for each model; Dim with the dimension (number of regressors in each)
+    SSE <- rep(0, N)
+    Dim <- rep(0, N)
+    BFi0 <- rep(0, N)
+    PostProbi <- rep(0, N)
+    #prior for betas:
+    pfb <- substr(tolower(prior.betas), 1, 1)
+    #check if the selected option exists
+    if (pfb != "g" &&
+        pfb != "r" &&
+        pfb != "z" &&
+        pfb != "l" &&
+        pfb != "f")
+      stop("I am very sorry: prior for betas no valid\n")
 
-	#The .C to be used:
-	if (pfb=="g") method<- "gBF"
-	if (pfb=="r") method<- "RobustBF"
-	if (pfb=="z") method<- "ZSBF"
-	if (pfb=="l") method<- "LiangBF"
-	if (pfb=="f") method<- "flsBF"
 
 
-	#prior for model space:
-	pfms<- substr(tolower(prior.models),1,1)
-	if (pfms!="c" && pfms!="u") stop("I am very sorry: prior for models not supported\n")
-		if (pfms=="u" && is.null(priorprobs)){stop("A valid vector of prior probabilities must be provided\n")}
-		if (pfms=="u" && length(priorprobs)!=N){stop("Vector of prior probabilities with incorrect length\n")}
-		if (pfms=="u" && sum(priorprobs<0)>0){stop("Prior probabilities must be positive\n")}
 
-	#Prior probabilities of models:
-	PriorModels<- rep(0,N)
-	if (prior.models=="Constant"){PriorModels<- rep(1,N)}
-	if (prior.models=="User"){
-		#should coincide with the length of prior.models
-		for (i in 1:N){PriorModels[i]<- priorprobs[[names(models)[i]]]}
-	}
-
-	#list that contains the names of the covariates in each model
-	covar.list<- list()
-	for (i in 1:N){
-		temp<- lm(formula=as.formula(models[[i]]), data=data, y=TRUE, x=TRUE)
-		SSE[i]<- sum(temp$residuals^2)
-		Dim[i]<- length(temp$coefficients)
-		covar.list[[i]]<- dimnames(temp$x)[[2]]
-	}
-	ordered.SSE<- sort(SSE, index.return=TRUE, decreasing=TRUE)
-	#Which acts as null model:
-	nullmodel<- ordered.SSE$ix[1]
-
-	if (pfb!="f"){
-	 for (i in (1:N)[-nullmodel]){
-		#check if the "null" model is nested in all the others
-		if (!relax.nest & sum(covar.list[[nullmodel]]%in%covar.list[[i]])<Dim[nullmodel]){stop("Unable to determine a simpler model using names\n")}
-		Qi0<- SSE[i]/SSE[nullmodel]
-		BFi0[i]<- .C(method, as.integer(n), as.integer(Dim[i]), as.integer(Dim[nullmodel]), as.double(Qi0), as.double(0.0))[5][[1]]
-	 }
+    #prior for model space:
+    pfms <- substr(tolower(prior.models), 1, 1)
+    if (pfms != "c" &&
+        pfms != "u")
+      stop("I am very sorry: prior for models not supported\n")
+    if (pfms == "u" &&
+        is.null(priorprobs)) {
+      stop("A valid vector of prior probabilities must be provided\n")
+    }
+    if (pfms == "u" &&
+        length(priorprobs) != N) {
+      stop("Vector of prior probabilities with incorrect length\n")
+    }
+    if (pfms == "u" &&
+        sum(priorprobs < 0) > 0) {
+      stop("Prior probabilities must be positive\n")
     }
 
-	if (pfb=="f"){
-		p<- max(Dim)-min(Dim)
-	 for (i in (1:N)[-nullmodel]){
-		#check if the "null" model is nested in all the others
-		if (!relax.nest & sum(covar.list[[nullmodel]]%in%covar.list[[i]])<Dim[nullmodel]){stop("There is no a model nested in all the others\n")}
-		Qi0<- SSE[i]/SSE[nullmodel]
-		BFi0[i]<- .C(method, as.integer(p), as.integer(n), as.integer(Dim[i]), as.integer(Dim[nullmodel]), as.double(Qi0), as.double(0.0))[6][[1]]
-	 }
+    #Prior probabilities of models:
+    PriorModels <- rep(0, N)
+    if (prior.models == "Constant") {
+      PriorModels <- rep(1, N)
+    }
+    if (prior.models == "User") {
+      #should coincide with the length of prior.models
+      for (i in 1:N) {
+        PriorModels[i] <- priorprobs[[names(models)[i]]]
+      }
+    }
+
+    #list that contains the names of the covariates in each model
+    covar.list <- list()
+    for (i in 1:N) {
+      temp <-
+        lm(
+          formula = as.formula(models[[i]]),
+          data = data,
+          y = TRUE,
+          x = TRUE
+        )
+      SSE[i] <- sum(temp$residuals ^ 2)
+      Dim[i] <- length(temp$coefficients)
+      covar.list[[i]] <- dimnames(temp$x)[[2]]
+    }
+    ordered.SSE <- sort(SSE, index.return = TRUE, decreasing = TRUE)
+    #Which acts as null model:
+    nullmodel <- ordered.SSE$ix[1]
+
+    if (pfb != "f") {
+      for (i in (1:N)[-nullmodel]) {
+        #check if the "null" model is nested in all the others
+        if (!relax.nest &
+            sum(covar.list[[nullmodel]] %in% covar.list[[i]]) < Dim[nullmodel]) {
+          stop("Unable to determine a simpler model using names\n")
+        }
+        Qi0 <- SSE[i] / SSE[nullmodel]
+        #The .C to be used:
+        if (pfb == "g")
+          BFi0[i] <-
+          .C(
+            "gBF",
+            as.integer(n),
+            as.integer(Dim[i]),
+            as.integer(Dim[nullmodel]),
+            as.double(Qi0),
+            as.double(0.0)
+          )[5][[1]]
+        if (pfb == "r")
+          BFi0[i] <-
+          .C(
+            "RobustBF",
+            as.integer(n),
+            as.integer(Dim[i]),
+            as.integer(Dim[nullmodel]),
+            as.double(Qi0),
+            as.double(0.0)
+          )[5][[1]]
+        if (pfb == "z")
+          BFi0[i] <-
+          .C(
+            "ZSBF",
+            as.integer(n),
+            as.integer(Dim[i]),
+            as.integer(Dim[nullmodel]),
+            as.double(Qi0),
+            as.double(0.0)
+          )[5][[1]]
+        if (pfb == "l")
+          BFi0[i] <-
+          .C(
+            "LiangBF",
+            as.integer(n),
+            as.integer(Dim[i]),
+            as.integer(Dim[nullmodel]),
+            as.double(Qi0),
+            as.double(0.0)
+          )[5][[1]]
+
+      }
+    }
+
+    if (pfb == "f") {
+      p <- max(Dim) - min(Dim)
+      for (i in (1:N)[-nullmodel]) {
+        #check if the "null" model is nested in all the others
+        if (!relax.nest &
+            sum(covar.list[[nullmodel]] %in% covar.list[[i]]) < Dim[nullmodel]) {
+          stop("There is no a model nested in all the others\n")
+        }
+        Qi0 <- SSE[i] / SSE[nullmodel]
+        BFi0[i] <-
+          .C(
+            "flsBF",
+            as.integer(p),
+            as.integer(n),
+            as.integer(Dim[i]),
+            as.integer(Dim[nullmodel]),
+            as.double(Qi0),
+            as.double(0.0)
+          )[6][[1]]
+      }
     }
 
 
-	BFi0[nullmodel]<- 1
-	names(BFi0)<- paste(names(models),".to.",names(models)[nullmodel],sep="")
-	PostProbi<- BFi0*PriorModels/sum(BFi0*PriorModels)
-	names(PostProbi)<- names(models)
-	result<- list()
-	result$BFi0<- BFi0
-	result$PostProbi<- PostProbi
-	result$models<- models
-	result$nullmodel<- nullmodel
-	class(result)<- "Btest"
-	result
-}
-
-
-
-print.Btest <- function(x, ...){
-	cat("---------\n")
-	cat("Models:\n")
-	print(x$models)
-	cat("---------\n")
-	cat(paste("Bayes factors (expressed in relation to ",names(x$models)[x$nullmodel],")\n", sep=""))
-	print(x$BFi0)
-	cat("---------\n")
-	cat("Posterior probabilities:\n")
-	print(round(x$PostProbi,3))
+    BFi0[nullmodel] <- 1
+    names(BFi0) <-
+      paste(names(models), ".to.", names(models)[nullmodel], sep = "")
+    PostProbi <- BFi0 * PriorModels / sum(BFi0 * PriorModels)
+    names(PostProbi) <- names(models)
+    result <- list()
+    result$BFi0 <- BFi0
+    result$PostProbi <- PostProbi
+    result$models <- models
+    result$nullmodel <- nullmodel
+    class(result) <- "Btest"
+    result
   }
