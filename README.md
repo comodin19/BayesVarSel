@@ -1,8 +1,8 @@
 [![](http://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)[![](http://cranlogs.r-pkg.org/badges/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html)
 
-[BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/carlosvergara/BayesVarSel)
-================================================================================================================================
+[BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/comodin19/BayesVarSel)
+============================================================================================================================
 
 Hypothesis testing, model selection and model averaging are important
 statistical problems that have in common the explicit consideration of
@@ -36,16 +36,16 @@ can be installed using:
 
 You can track, download the latest version or contribute to the
 development of `BayesVarSel` at
-<https://github.com/carlosvergara/BayesVarSel>. To install the most
-recent version of the package (1.7.1) you should:
+[https://github.com/carlosvergara/BayesVarSel](https://github.com/comodin19/BayesVarSel).
+To install the most recent version of the package (1.7.1) you should:
 
 1.  Install devtools from CRAN with `install.packages("devtools")`.
 2.  Install the development version of `BayesVarSel` from
-    [GitHub](https://github.com/carlosvergara/BayesVarSel):
+    [GitHub](https://github.com/comodin19/BayesVarSel):
 
 <!-- -->
 
-    devtools::install_github("carlosvergara/BayesVarSel")
+    devtools::install_github("comodin19/BayesVarSel")
 
 Features
 ========
@@ -68,72 +68,57 @@ Variable selection
 ------------------
 
     library(BayesVarSel)
-
-    ## Loading required package: parallel
-
-    ## Loading required package: MASS
-
-    ## Loading required package: mvtnorm
-
-    ## #########
-
-    ## ## NOTE: Since v1.7.0 former function 'BayesFactor' has been renamed as 'Btest'
-
-    ## ## Copyright (C) 2013-2017 Anabel Forte and Gonzalo Garcia-Donato
-
-    ## #########
-
+    #> Loading required package: parallel
+    #> Loading required package: MASS
+    #> Loading required package: mvtnorm
+    #> #########
+    #> ## NOTE: Since v1.7.0 former function 'BayesFactor' has been renamed as 'Btest'
+    #> ## Copyright (C) 2013-2017 Anabel Forte and Gonzalo Garcia-Donato
+    #> #########
     set.seed(171) # For reproducibility of simulations.
 
     data(Hald)
     hald_Bvs <- Bvs(formula = "y ~ x1 + x2 + x3 + x4", data = Hald[-c(1:2),])
-
-    ## Info. . . .
-    ## Most complex model has 5 covariates
-    ## From those 1 is fixed and we should select from the remaining 4 
-    ## x1, x2, x3, x4
-    ## The problem has a total of 16 competing models
-    ## Of these, the  10 most probable (a posteriori) are kept
-    ## Working on the problem...please wait.
-
+    #> Info. . . .
+    #> Most complex model has 5 covariates
+    #> From those 1 is fixed and we should select from the remaining 4 
+    #> x1, x2, x3, x4
+    #> The problem has a total of 16 competing models
+    #> Of these, the  10 most probable (a posteriori) are kept
+    #> Working on the problem...please wait.
     summary(hald_Bvs)
-
-    ## 
-    ## Call:
-    ## Bvs(formula = "y ~ x1 + x2 + x3 + x4", data = Hald[-c(1:2), ])
-    ## 
-    ## Inclusion Probabilities:
-    ##    Incl.prob. HPM MPM
-    ## x1     0.9664   *   *
-    ## x2     0.6239   *   *
-    ## x3     0.2644        
-    ## x4     0.5466       *
-    ## ---
-    ## Code: HPM stands for Highest posterior Probability Model and
-    ##  MPM for Median Probability Model.
-    ## 
-
+    #> 
+    #> Call:
+    #> Bvs(formula = "y ~ x1 + x2 + x3 + x4", data = Hald[-c(1:2), ])
+    #> 
+    #> Inclusion Probabilities:
+    #>    Incl.prob. HPM MPM
+    #> x1     0.9664   *   *
+    #> x2     0.6239   *   *
+    #> x3     0.2644        
+    #> x4     0.5466       *
+    #> ---
+    #> Code: HPM stands for Highest posterior Probability Model and
+    #>  MPM for Median Probability Model.
+    #> 
     colMeans(predictBvs(hald_Bvs, Hald[1:2,]))
-
-    ## 
-    ## Simulations obtained using the best 10 models
-    ## that accumulate 1 of the total posterior probability
-
-    ## [1] 77.18841 71.94447
+    #> 
+    #> Simulations obtained using the best 10 models
+    #> that accumulate 1 of the total posterior probability
+    #> [1] 77.18841 71.94447
 
     # Simulate coefficients
-    sim_coef <- BMAcoeff(hald_Bvs)
+    sim_coef <- BMAcoeff(hald_Bvs);
+    #> 
+    #> Simulations obtained using the best 10 models
+    #> that accumulate 1 of the total posterior probability
 
-    ## 
-    ## Simulations obtained using the best 10 models
-    ## that accumulate 1 of the total posterior probability
+![](man/figures/README-unnamed-chunk-2-1.png)
 
-![](README_files/figure-markdown_strict/unnamed-chunk-1-1.png)
 
     colMeans(sim_coef)
-
-    ##   Intercept          x1          x2          x3          x4 
-    ## 78.45163252  1.44424004  0.33660183 -0.02656885 -0.33266539
+    #>   Intercept          x1          x2          x3          x4 
+    #> 78.45163252  1.44424004  0.33660183 -0.02656885 -0.33266539
 
 Model selection
 ---------------
@@ -145,26 +130,25 @@ Model selection
     reducedmodel <- as.formula("y ~ x1 + x2")
     nullmodel <- as.formula("y ~ 1")
     Btest(models = c(H0 = nullmodel, H1 = fullmodel, H2 = reducedmodel), data = Hald)
-
-    ## ---------
-    ## Models:
-    ## $H0
-    ## y ~ 1
-    ## 
-    ## $H1
-    ## y ~ x1 + x2 + x3 + x4
-    ## 
-    ## $H2
-    ## y ~ x1 + x2
-    ## 
-    ## ---------
-    ## Bayes factors (expressed in relation to H0)
-    ##  H0.to.H0  H1.to.H0  H2.to.H0 
-    ##       1.0   44300.8 3175456.4 
-    ## ---------
-    ## Posterior probabilities:
-    ##    H0    H1    H2 
-    ## 0.000 0.014 0.986
+    #> ---------
+    #> Models:
+    #> $H0
+    #> y ~ 1
+    #> 
+    #> $H1
+    #> y ~ x1 + x2 + x3 + x4
+    #> 
+    #> $H2
+    #> y ~ x1 + x2
+    #> 
+    #> ---------
+    #> Bayes factors (expressed in relation to H0)
+    #>  H0.to.H0  H1.to.H0  H2.to.H0 
+    #>       1.0   44300.8 3175456.4 
+    #> ---------
+    #> Posterior probabilities:
+    #>    H0    H1    H2 
+    #> 0.000 0.014 0.986
 
 References
 ----------

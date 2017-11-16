@@ -176,3 +176,91 @@ NULL
 #' data(Ozone35)
 #'
 "Ozone35"
+
+
+
+#' SDM data
+#'
+#'The following data set contains 67 variables potentially related with Growth. The name of this dataset is related to its authors since it was firstly used in Sala i Martin, Doppelhofer and Miller (2004).
+#'
+#'
+#' @name SDM
+#' @docType data
+#' @format A data frame with 88 observations on the following 68 variables
+#' \describe{ \item{\code{y}}{Growth of GDP per capita at purchasing power parities between 1960 and 1996.}
+#' \item{\code{ABSLATIT}}{Absolute latitude.}
+#' \item{\code{AIRDIST}}{Logarithm of minimal distance (in km) from New York, Rotterdam, or Tokyo.}
+#' \item{\code{AVELF}}{Average of five different indices of ethnolinguistic fractionalization which is the probability of two random people in a country not speaking the same language.}
+#' \item{\code{BRIT}}{Dummy for former British colony after 1776.}
+#' \item{\code{BUDDHA}}{Fraction of population Buddhist in 1960.}
+#' \item{\code{CATH00}}{Fraction of population Catholic in 1960.}
+#' \item{\code{CIV72}}{Index of civil liberties index in 1972.}
+#' \item{\code{COLONY}}{Dummy for former colony.}
+#' \item{\code{CONFUC}}{Fraction of population Confucian.}
+#' \item{\code{DENS60}}{Population per area in 1960.}
+#' \item{\code{DENS65C}}{Coastal (within 100 km of coastline) population per coastal area in 1965.}
+#' \item{\code{DENS65I}}{Interior (more than 100 km from coastline) population per interior area in 1965.}
+#' \item{\code{DPOP6090}}{Average growth rate of population between 1960 and 1990.}
+#' \item{\code{EAST}}{Dummy for East Asian countries.}
+#' \item{\code{ECORG}}{Degree Capitalism index.}
+#' \item{\code{ENGFRAC}}{Fraction of population speaking English.}
+#' \item{\code{EUROPE}}{Dummy for European economies.}
+#' \item{\code{FERTLDC1}}{Fertility in 1960's.}
+#' \item{\code{GDE1}}{Average share public expenditures on defense as fraction of GDP between 1960 and 1965.}
+#' \item{\code{GDPCH60L}}{Logarithm of GDP per capita in 1960.}
+#' \item{\code{GEEREC1}}{Average share public expenditures on education as fraction of GDP between 1960 and 1965.}
+#' \item{\code{GGCFD3}}{Average share of expenditures on public investment as fraction of GDP between 1960 and 1965.}
+#' \item{\code{GOVNOM1}}{Average share of nominal government spending to nominal GDP between 1960 and 1964.}
+#' \item{\code{GOVSH61}}{Average share government spending to GDP between 1960 and 1964.}
+#' \item{\code{GVR61}}{Share of expenditures on government consumption to GDP in 1961.}
+#' \item{\code{H60}}{Enrollment rates in higher education.}
+#' \item{\code{HERF00}}{Religion measure.}
+#' \item{\code{HINDU00}}{Fraction of the population Hindu in 1960.}
+#' \item{\code{IPRICE1}}{Average investment price level between 1960 and 1964 on purchasing power parity basis.}
+#' \item{\code{LAAM}}{Dummy for Latin American countries.}
+#' \item{\code{LANDAREA}}{Area in km.}
+#' \item{\code{LANDLOCK}}{Dummy for landlocked countries.}
+#' \item{\code{LHCPC}}{Log of hydrocarbon deposits in 1993.}
+#' \item{\code{LIFE060}}{Life expectancy in 1960.}
+#' \item{\code{LT100CR}}{Proportion of country's land area within 100 km of ocean or ocean-navigable river.}
+#' \item{\code{MALFAL66}}{Index of malaria prevalence in 1966.}
+#' \item{\code{MINING}}{Fraction of GDP in mining.}
+#' \item{\code{MUSLIM00}}{Fraction of population Muslim in 1960.}
+#' \item{\code{NEWSTATE}}{Timing of national independence measure: 0 if before 1914; 1 if between 1914 and 1945; 2 if between 1946 and 1989; and 3 if after 1989.}
+#' \item{\code{OIL}}{Dummy for oil-producing country.}
+#' \item{\code{OPENDEC1}}{Ratio of exports plus imports to GDP, averaged over 1965 to 1974.}
+#' \item{\code{ORTH00}}{Fraction of population Orthodox in 1960.}
+#' \item{\code{OTHFRAC}}{Fraction of population speaking foreign language.}
+#' \item{\code{P60}}{Enrollment rate in primary education in 1960.}
+#' \item{\code{PI6090}}{Average inflation rate between 1960 and 1990.}
+#' \item{\code{SQPI6090}}{Square of average inflation rate between 1960 and 1990.}
+#' \item{\code{PRIGHTS}}{Political rights index.}
+#' \item{\code{POP1560}}{Fraction of population younger than 15 years in 1960.}
+#' \item{\code{POP60}}{Population in 1960}
+#' \item{\code{POP6560}}{Fraction of population older than 65 years in 1960.}
+#' \item{\code{PRIEXP70}}{Fraction of primary exports in total exports in 1970.}
+#' \item{\code{PROT00}}{Fraction of population Protestant in 1960.}
+#' \item{\code{RERD}}{Real exchange rate distortions.}
+#' \item{\code{REVCOUP}}{Number of revolutions and military coups.}
+#' \item{\code{SAFRICA}}{Dummy for Sub-Saharan African countries.}
+#' \item{\code{SCOUT}}{Measure of outward orientation.}
+#' \item{\code{SIZE60}}{Logarithm of aggregate GDP in 1960.}
+#' \item{\code{SOCIALIST}}{Dummy for countries under Socialist rule for considerable time during 1950 to 1995.}
+#' \item{\code{SPAIN}}{Dummy variable for former Spanish colonies.}
+#' \item{\code{TOT1DEC1}}{Growth of terms of trade in the 1960's.}
+#' \item{\code{TOTIND}}{Terms of trade ranking}
+#' \item{\code{TROPICAR}}{Proportion of country's land area within geographical tropics.}
+#' \item{\code{TROPPOP}}{Proportion of country's population living in geographical tropics.}
+#' \item{\code{WARTIME}}{Fraction of time spent in war between 1960 and 1990.}
+#' \item{\code{WARTORN}}{Indicator for countries that participated in external war between 1960 and 1990.}
+#' \item{\code{YRSOPEN}}{Number of years economy has been open between 1950 and 1994.}
+#' \item{\code{ZTROPICS}}{Fraction tropical climate zone.}}
+#' @references Sala i Martin, X., Doppelhofer, G., Miller, R.I. (2004)
+#' <DOI: 10.1257/0002828042002570>.
+#' Determinants of long-term growth: a Bayesian averaging of classical estimates (BACE) approach.
+#'  American Economic Review 94: 813--835.
+#' @keywords datasets
+#' @examples
+#' data(SDM)
+#'
+"SDM"
