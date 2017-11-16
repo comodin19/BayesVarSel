@@ -139,32 +139,32 @@ Jointness <- function(x, covariates = "All") {
       x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
                                  2 * x$jointinclprob[i, j])
 
+
+
     jointness <-
-      list(as.data.frame(
-        c(prob_joint, joint_LS1, joint_LS2),
-        row.names = c("prob_joint", "joint_LS1", "joint_LS2")
-      ), covariates)
-
-
-    names(jointness) <- c("value","names")
+      list("prob_joint" = prob_joint,
+           "joint_LS1" = joint_LS1,
+           "joint_LS2" = joint_LS2,
+           "covariates" =  covariates)
     class(jointness) <- "jointness"
-    jointness
+
+    return(jointness)
   }
 }
 
 
 
 print.jointness <- function(x, ...) {
-  if (length(x) == 2) {
+  if (length(x) == 4) {
     cat("---------\n")
     cat(
       paste(
         "The joint inclusion probability for",
-        x[[2]][1],
+        x[[4]][1],
         "and",
-        x[[2]][2],
+        x[[4]][2],
         "is: ",
-        round(x[[1]][1, 1], 2),
+        round(x[[1]], 2),
         "\n",
         sep = " "
       )
@@ -173,7 +173,7 @@ print.jointness <- function(x, ...) {
     cat(
       paste(
         "The ratio between the probability of including both covariates and the probability of including at least one of then is: ",
-        round(x[[1]][2, 1], 2),
+        round(x[[2]], 2),
         "\n",
         sep = ""
       )
@@ -182,7 +182,7 @@ print.jointness <- function(x, ...) {
     cat(
       paste(
         "The probability of including both covariates together is",
-        round(x[[1]][3, 1], 2),
+        round(x[[3]], 2),
         "times the probability of including one of them alone \n",
         sep = " "
       )
