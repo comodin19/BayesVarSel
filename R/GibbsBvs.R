@@ -40,7 +40,8 @@
 #' to save memory and computation time if 'n.iter' is large. Default is 1. This
 #' parameter jointly with \code{n.iter} sets the number of simulations kept and
 #' used to construct the estimates so is important to keep in mind that a large
-#' value for 'n.thin' can reduce the precision of the results.
+#' value for 'n.thin' can reduce the precision of the results
+#' @param n.models The number of models to show in the summary (ordered by their Bayes Factor)
 #' @param time.test If TRUE and the number of variables is large (>=21) a
 #' preliminary test to estimate computational time is performed.
 #' @param priorprobs A p+1 dimensional vector defining the prior probabilities
@@ -125,6 +126,7 @@ GibbsBvs <-
            init.model = "Full",
            n.burnin = 500,
            n.thin = 1,
+           n.models=1,
            time.test = TRUE,
            priorprobs = NULL,
            seed = runif(1, 0, 16091956)) {
@@ -923,11 +925,12 @@ GibbsBvs <-
       result$lmnull <- lmnull # The lm object for the null model
     }
 
+    models<- round(modelslBF[ordered(modelslBF[,"logBFi0"]),],0)
     result$variables <- namesx #The name of the competing variables
     result$n <- n #number of observations
     result$p <- p #number of competing variables
     result$k <- knull#number of fixed covariates
-    result$HPMbin <- models#The binary code for the HPM model
+    result$HPMbin <-models[1:min(n.models,n.iter),-dim(models)[2]]#The binary code for the HPM model
     names(result$HPMbin) <- namesx
     #result$modelsprob <- mod.mat
     result$modelslogBF <-
