@@ -96,7 +96,7 @@
 #' in the case where \code{prior.models}= "User"; see details.)
 #' @param parallel A logical parameter specifying whether parallel computation
 #' must be used (if set to TRUE)
-#' @n.nodes The number of cores to be used if parallel computation is used.
+#' @param n.nodes The number of cores to be used if parallel computation is used.
 #' @return \code{Bvs} returns an object of class \code{Bvs} with the following
 #' elements: \item{time }{The internal time consumed in solving the problem}
 #' \item{lmfull }{The \code{lm} class object that results when the model
@@ -204,7 +204,7 @@ Bvs <-
 		if (parallel) {
 	    if (n.nodes < 2) {
 	      stop("At least 2 nodes are needed\n")
-			}						
+			}
 		}
 
     #Get a tempdir as working directory
@@ -376,7 +376,7 @@ Bvs <-
         )
         n.keep <- 2 ^ p  / n.nodes
       }
-			
+
 
       # if(length(fixed.cov)<length(namesnull)){
       #   warning("Some of the included covariates are factors. One dummy variable have been included for each level taking the first one (alphabethical order) as the base one.")
@@ -431,7 +431,7 @@ Bvs <-
         )
         n.keep <- 2 ^ p  / n.nodes
       }
-			
+
     }
 
     #write the data files in the working directory
@@ -537,12 +537,12 @@ Bvs <-
 		  #if name.start.end has length 3 it comes from the parallel (which needs a suffix to differentiate)
 			#each of the processes and is a number in the first position in this vector. Otherwise
 			#it has dimension two. To reconciliate both in a common function do the following
-			
+
 			#non-parallel case:
 			if (length(name.start.end) == 2){
 				name.start.end<- c("", name.start.end)
 			}
-			
+
       Cresult <- switch(method,
         "gc" = .C(
           "gConst",
@@ -727,7 +727,7 @@ Bvs <-
       )
 			return(Cresult)
     }
- 
+
     #The previous test (for time)
     estim.time <- 0
 
@@ -740,7 +740,7 @@ Bvs <-
       	estim.time <- Cresult[[8]] * 2 ^ (p) / (60 * 4000 * n.nodes)
 			}
 			else estim.time <- Cresult[[8]] * 2 ^ (p) / (60 * 4000)
-				
+
       cat("The problem would take ",
           estim.time,
           "minutes (approx.) to run\n")
@@ -757,10 +757,10 @@ Bvs <-
       }
 
     }
-		
+
     #if the answer is yes work on the problem
     cat("Working on the problem...please wait.\n")
-		
+
 		if (parallel){
 
 	    #Calculate how to distribute the model space through the nodes:
@@ -774,14 +774,14 @@ Bvs <-
 	    }
 	    distrib[[n.nodes]] <-
 	      c(n.nodes, (n.nodes - 1) * iterperproc + 1, 2 ^ (p) - 1)
-		  
+
 		  cl <- makeCluster(n.nodes)
 			#Load the library in the different nodes
 		  clusterEvalQ(cl, library(BayesVarSel))
-				
+
 		  clusterApply(cl, distrib, myfun, method = method)
 	    stopCluster(cl)
-			
+
 	    ##############Put together the results
 
 		    #next is the prior probability for the null model Pr(M_0)=p_0/sum(p_j)
@@ -1027,16 +1027,16 @@ Bvs <-
 		    )
 
 	    ##############End of put together the results
-			
-			
+
+
 		}
 		else {
-			
+
 			Cresult <- myfun(c(1, (2^p - 1)), method = method)
-	    time <- Cresult[[8]]		
-							
-		} 
-			
+	    time <- Cresult[[8]]
+
+		}
+
 
     #a function to transform the number of the model into a binary number.
     integer.base.b_C <- function(x, k) {
@@ -1142,7 +1142,7 @@ Bvs <-
     	result$method <- "full"
 		}
 		else result$method <- "parallel"
-			
+
     class(result) <- "Bvs"
     result
 

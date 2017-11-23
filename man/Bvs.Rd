@@ -10,7 +10,7 @@
 \usage{
 Bvs(formula, fixed.cov = c("Intercept"), data, prior.betas = "Robust",
   prior.models = "ScottBerger", n.keep = 10, time.test = TRUE,
-  priorprobs = NULL)
+  priorprobs = NULL, parallel = FALSE, n.nodes = detectCores())
 }
 \arguments{
 \item{formula}{Formula defining the most complex regression model in the
@@ -41,6 +41,11 @@ the total number of models.}
 \item{priorprobs}{A p+1 (p is the number of non-fixed covariates)
 dimensional vector defining the prior probabilities Pr(M_i) (should be used
 in the case where \code{prior.models}= "User"; see details.)}
+
+\item{parallel}{A logical parameter specifying whether parallel computation
+must be used (if set to TRUE)}
+
+\item{n.nodes}{The number of cores to be used if parallel computation is used.}
 }
 \value{
 \code{Bvs} returns an object of class \code{Bvs} with the following
@@ -59,7 +64,8 @@ most probable, a posteriori models, and their associated probability.}
 the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 probabilities of the dimension of the true model} \item{call }{The
-\code{call} to the function} \item{method }{\code{full}}
+\code{call} to the function} \item{method }{\code{full} or \code{parallel} in case of
+parallel computation}
 }
 \description{
 Exact computation of summaries of the posterior distribution using
@@ -200,8 +206,6 @@ Zellner, ed.) 389-399. Edward Elgar Publishing Limited.
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
 predictions.
-
-\code{\link[BayesVarSel]{PBvs}} for a parallelized version of \code{Bvs}.
 
 \code{\link[BayesVarSel]{GibbsBvs}} for a heuristic approximation based on
 Gibbs sampling (recommended when p>20, no other possibilities when p>31).

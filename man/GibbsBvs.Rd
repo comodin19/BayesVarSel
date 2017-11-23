@@ -7,8 +7,8 @@ sampling.}
 \usage{
 GibbsBvs(formula, fixed.cov = c("Intercept"), data, prior.betas = "Robust",
   prior.models = "ScottBerger", n.iter = 10000, init.model = "Full",
-  n.burnin = 500, n.thin = 1, time.test = TRUE, priorprobs = NULL,
-  seed = runif(1, 0, 16091956))
+  n.burnin = 500, n.thin = 1, n.models = 1, time.test = TRUE,
+  priorprobs = NULL, seed = runif(1, 0, 16091956))
 }
 \arguments{
 \item{formula}{Formula defining the most complex regression model in the
@@ -45,7 +45,9 @@ the beginning.}
 to save memory and computation time if 'n.iter' is large. Default is 1. This
 parameter jointly with \code{n.iter} sets the number of simulations kept and
 used to construct the estimates so is important to keep in mind that a large
-value for 'n.thin' can reduce the precision of the results.}
+value for 'n.thin' can reduce the precision of the results}
+
+\item{n.models}{The number of models to show in the summary (ordered by their Bayes Factor)}
 
 \item{time.test}{If TRUE and the number of variables is large (>=21) a
 preliminary test to estimate computational time is performed.}
