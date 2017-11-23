@@ -143,6 +143,12 @@ Btest <-
            relax.nest = FALSE) {
     #N is the number of models:
     N <- length(models)
+		
+		if (!is.list(models)) stop("Argument models should be a list\n")
+			
+		#If models come wihtout a name, give one by default:
+		if (is.null(names(models))) names(models) <- paste("model", 1:N, sep="")
+			
     #n is the sample size
     n <- dim(data)[1]
     #SSE is a vector with SSE's for each model; Dim with the dimension (number of regressors in each)
@@ -158,9 +164,7 @@ Btest <-
         pfb != "z" &&
         pfb != "l" &&
         pfb != "f")
-      stop("I am very sorry: prior for betas no valid\n")
-
-
+      stop("I am very sorry: prior for betas not valid\n")
 
 
     #prior for model space:
