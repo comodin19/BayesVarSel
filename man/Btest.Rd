@@ -6,11 +6,12 @@
 \title{Bayes factors and posterior probabilities for linear regression models}
 \usage{
 Btest(models, data, prior.betas = "Robust", prior.models = "Constant",
-  priorprobs = NULL, relax.nest = FALSE)
+  priorprobs = NULL, relax.nest = FALSE, null.model = NULL)
 }
 \arguments{
 \item{models}{A named list with the entertained models defined with their
-corresponding formulas. One model must be nested in all the others.}
+corresponding formulas. If the list is unnamed, default names are given by
+the routine. One model must be nested in all the others.}
 
 \item{data}{data frame containing the data.}
 
@@ -18,17 +19,24 @@ corresponding formulas. One model must be nested in all the others.}
 model. Possible choices include "Robust", "Liangetal", "gZellner",
 "ZellnerSiow" and "FLS" (see details).}
 
-\item{prior.models}{Prior probabilities of the models. Possible choices are
+\item{prior.models}{Type of prior probabilities of the models. Possible choices are
 "Constant" and "User" (see details).}
 
 \item{priorprobs}{A named list (same length and names as in argument
-\code{models}) with the prior probabilities of the models.)}
+\code{models}) with the prior probabilities of the models (used in combination
+of \code{prior.models}). If the provided list
+is not named, then the order in the list of model is used to assign the prior
+probabilities}
 
 \item{relax.nest}{By default, the names of covariates in the different
 models are used to identify the null model (the model which is nested in all
 the others). An error is produced if such identification fails. This check
 is not performed if this argument is set to TRUE in which case the model
-with a smaller sum of squared errors is taken as the null model.}
+defined in \code{null.model} is taken as the null model
+(with must coincide with that model with the largest sum of squared errors).}
+
+\item{null.model}{The name of the null model. If it is not provided, the null model
+is identified by the function.}
 }
 \value{
 \code{Btest} returns an object of type \code{Btest} which is a
@@ -91,11 +99,11 @@ of the simplest model.
 #load data
 data(UScrime)
 #Model selection among the following models: (note model1 is nested in all the others)
-model1<- as.formula("y~1+Prob")
-model2<- as.formula("y~1+Prob+Time")
-model3<- as.formula("y~1+Prob+Po1+Po2")
-model4<- as.formula("y~1+Prob+So")
-model5<- as.formula("y~.")
+model1<- y ~ 1 + Prob
+model2<- y ~ 1 + Prob + Time
+model3<- y ~ 1 + Prob + Po1 + Po2
+model4<- y ~ 1 + Prob + So
+model5<- y ~ .
 
 #Equal prior probabilities for models:
 crime.BF<- Btest(models=list(basemodel=model1,
