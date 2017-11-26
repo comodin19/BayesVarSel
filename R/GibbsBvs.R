@@ -16,12 +16,12 @@
 #' @export
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.
+#' @param data data frame containing the data.
 #' @param fixed.cov A character vector with the names of the covariates that
 #' will be considered as fixed (no variable selection over these). This
 #' argument provides an implicit definition of the simplest model considered.
 #' Default is "Intercept". Use NULL if selection should be performed over all
 #' the variables defined by \code{formula}
-#' @param data data frame containing the data.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
 #' "ZellnerSiow" and "FLS" (see details).
@@ -118,8 +118,8 @@
 #'
 GibbsBvs <-
   function(formula,
-           fixed.cov = c("Intercept"),
            data,
+           fixed.cov = c("Intercept"),
            prior.betas = "Robust",
            prior.models = "ScottBerger",
            n.iter = 10000,
