@@ -31,7 +31,7 @@
 #'
 #' Maintainer: <anabel.forte@@uv.es>
 #' @seealso See \code{\link[BayesVarSel]{BMAcoeff}}. Also see
-#' \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}} and
+#' \code{\link[BayesVarSel]{Bvs}} and
 #' \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 #' \code{BMAcoeff}.
 #' @examples

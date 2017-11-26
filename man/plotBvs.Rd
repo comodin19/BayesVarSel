@@ -62,8 +62,7 @@ plotBvs(crime.Bvs, option="not")
 
 }
 \seealso{
-See \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}}
-and \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
+See \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 \code{Bvs}.
 }
 \author{

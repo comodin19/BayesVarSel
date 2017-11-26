@@ -22,8 +22,7 @@
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso See \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}}
-#' and \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
+#' @seealso See \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 #' \code{Bvs}.
 #' @examples
 #'

@@ -27,7 +27,7 @@
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso See \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}}
+#' @seealso See \code{\link[BayesVarSel]{Bvs}} 
 #' and \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 #' \code{Bvs}.
 #' @references Bernardo, J. M. and Smith, A. F. M.

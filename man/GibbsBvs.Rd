@@ -5,7 +5,7 @@
 \title{Bayesian Variable Selection for linear regression models using Gibbs
 sampling.}
 \usage{
-GibbsBvs(formula, fixed.cov = c("Intercept"), data, prior.betas = "Robust",
+GibbsBvs(formula, data, fixed.cov = c("Intercept"), prior.betas = "Robust",
   prior.models = "ScottBerger", n.iter = 10000, init.model = "Full",
   n.burnin = 500, n.thin = 1, n.models = 1, time.test = TRUE,
   priorprobs = NULL, seed = runif(1, 0, 16091956))
@@ -14,13 +14,13 @@ GibbsBvs(formula, fixed.cov = c("Intercept"), data, prior.betas = "Robust",
 \item{formula}{Formula defining the most complex regression model in the
 analysis. See details.}
 
+\item{data}{data frame containing the data.}
+
 \item{fixed.cov}{A character vector with the names of the covariates that
 will be considered as fixed (no variable selection over these). This
 argument provides an implicit definition of the simplest model considered.
 Default is "Intercept". Use NULL if selection should be performed over all
 the variables defined by \code{formula}}
-
-\item{data}{data frame containing the data.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
 model. Possible choices include "Robust", "Liangetal", "gZellner",
@@ -142,8 +142,8 @@ selection. Statistica Sinica, 7, 339:372.
 of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
 predictions.
 
-\code{\link[BayesVarSel]{Bvs}} and \code{\link[BayesVarSel]{PBvs}} for exact
-versions obtained enumerating all entertained models (recommended when
+\code{\link[BayesVarSel]{Bvs}} for exact
+version obtained enumerating all entertained models (recommended when
 p<20).
 }
 \author{

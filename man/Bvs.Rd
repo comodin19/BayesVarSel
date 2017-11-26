@@ -8,7 +8,7 @@
 \alias{summary}
 \title{Bayesian Variable Selection for linear regression models}
 \usage{
-Bvs(formula, fixed.cov = c("Intercept"), data, prior.betas = "Robust",
+Bvs(formula, data, fixed.cov = c("Intercept"), prior.betas = "Robust",
   prior.models = "ScottBerger", n.keep = 10, time.test = TRUE,
   priorprobs = NULL, parallel = FALSE, n.nodes = detectCores())
 }
@@ -16,13 +16,13 @@ Bvs(formula, fixed.cov = c("Intercept"), data, prior.betas = "Robust",
 \item{formula}{Formula defining the most complex regression model in the
 analysis. See details.}
 
+\item{data}{data frame containing the data.}
+
 \item{fixed.cov}{A character vector with the names of the covariates that
 will be considered as fixed (no variable selection over these). This
 argument provides an implicit definition of the simplest model considered.
 Default is "Intercept". Use NULL if selection should be performed over all
 the variables defined by \code{formula}}
-
-\item{data}{data frame containing the data.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
 model. Possible choices include "Robust", "Liangetal", "gZellner",

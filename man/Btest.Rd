@@ -6,7 +6,7 @@
 \title{Bayes factors and posterior probabilities for linear regression models}
 \usage{
 Btest(models, data, prior.betas = "Robust", prior.models = "Constant",
-  priorprobs = NULL, relax.nest = FALSE, null.model = NULL)
+  priorprobs = NULL, null.model = NULL)
 }
 \arguments{
 \item{models}{A named list with the entertained models defined with their
@@ -22,21 +22,19 @@ model. Possible choices include "Robust", "Liangetal", "gZellner",
 \item{prior.models}{Type of prior probabilities of the models. Possible choices are
 "Constant" and "User" (see details).}
 
-\item{priorprobs}{A named list (same length and names as in argument
+\item{priorprobs}{A named vector ir list (same length and names as in argument
 \code{models}) with the prior probabilities of the models (used in combination
-of \code{prior.models}). If the provided list
-is not named, then the order in the list of model is used to assign the prior
+of \code{prior.models="User"}). If the provided object
+is not named, then the order in the list of \code{models} is used to assign the prior
 probabilities}
 
-\item{relax.nest}{By default, the names of covariates in the different
+\item{null.model}{By default, the names of covariates in the different
 models are used to identify the null model (the model which is nested in all
 the others). An error is produced if such identification fails. This check
-is not performed if this argument is set to TRUE in which case the model
-defined in \code{null.model} is taken as the null model
-(with must coincide with that model with the largest sum of squared errors).}
-
-\item{null.model}{The name of the null model. If it is not provided, the null model
-is identified by the function.}
+is not performed if the identification of the null model is provided, with this argument,
+by the user
+(the \code{null.model} must coincide with that model with the largest
+sum of squared errors and should be smaller in dimension to any other model).}
 }
 \value{
 \code{Btest} returns an object of type \code{Btest} which is a
@@ -47,21 +45,21 @@ list with the entertained models. } \item{nullmodel}{The position of the
 simplest model. }
 }
 \description{
-Computes the Bayes factors and posterior probabilities of a list of linear
+It Computes the Bayes factors and posterior probabilities of a list of linear
 regression models proposed to explain a common response variable over the
 same dataset
 }
 \details{
-The Bayes factors, Bi, are expressed in relation with the simplest model
+The Bayes factors, BFi0, are expressed in relation with the simplest model
 (the one nested in all the others). Then, the posterior probabilities of the
 entertained models are obtained as
 
-Pr(Mi | \code{data})=Pr(Mi)*Bi/C,
+Pr(Mi | \code{data})=Pr(Mi)*BFi0/C,
 
 where Pr(Mi) is the prior probability of model Mi and C is the normalizing
 constant.
 
-The Bayes factor B_i depends on the prior assigned for the regression
+The Bayes factor BF_i0 depends on the prior assigned for the regression
 parameters in Mi.
 
 \code{Btest} implements a number of popular choices plus the "Robust" prior

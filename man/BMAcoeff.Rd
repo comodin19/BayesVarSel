@@ -80,7 +80,7 @@ Oz35.GibbsBvs.BMA<- BMAcoeff(Oz35.GibbsBvs, n.sim=10000)
 \seealso{
 See \code{\link[BayesVarSel]{histBMA}} for a histogram-like
 representation of the columns in the object. See
-\code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}} and
+\code{\link[BayesVarSel]{Bvs}} and
 \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 \code{Bvs}. See \code{\link[mvtnorm]{rmvnorm} for details about argument
 method.}

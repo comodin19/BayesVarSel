@@ -35,7 +35,7 @@
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}},
+#' @seealso \code{\link[BayesVarSel]{Bvs}} and
 #' \code{\link[BayesVarSel]{GibbsBvs}} for performing variable selection and
 #' obtaining an object of class \code{Bvs}.
 #'

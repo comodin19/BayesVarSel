@@ -73,7 +73,7 @@ in Bayesian variable selection with applications to growth regression.
 Journal of Macroeconomics, 29(3):476-493.
 }
 \seealso{
-\code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}},
+\code{\link[BayesVarSel]{Bvs}} and
 \code{\link[BayesVarSel]{GibbsBvs}} for performing variable selection and
 obtaining an object of class \code{Bvs}.
 

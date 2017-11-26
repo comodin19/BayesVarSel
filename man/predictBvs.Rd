@@ -70,7 +70,7 @@ Bernardo, J. M. and Smith, A. F. M.
 (1994)<DOI:10.1002/9780470316870> Bayesian Theory. Chichester: Wiley.
 }
 \seealso{
-See \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}}
+See \code{\link[BayesVarSel]{Bvs}} 
 and \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 \code{Bvs}.
 }

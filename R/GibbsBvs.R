@@ -72,8 +72,8 @@
 #' of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
 #' predictions.
 #'
-#' \code{\link[BayesVarSel]{Bvs}} and \code{\link[BayesVarSel]{PBvs}} for exact
-#' versions obtained enumerating all entertained models (recommended when
+#' \code{\link[BayesVarSel]{Bvs}} for exact
+#' version obtained enumerating all entertained models (recommended when
 #' p<20).
 #' @references Garcia-Donato, G. and Martinez-Beneito, M.A.
 #' (2013)<DOI:10.1080/01621459.2012.742443> On sampling strategies in Bayesian
