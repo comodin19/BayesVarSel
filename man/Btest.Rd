@@ -6,11 +6,12 @@
 \title{Bayes factors and posterior probabilities for linear regression models}
 \usage{
 Btest(models, data, prior.betas = "Robust", prior.models = "Constant",
-  priorprobs = NULL, relax.nest = FALSE)
+  priorprobs = NULL, null.model = NULL)
 }
 \arguments{
 \item{models}{A named list with the entertained models defined with their
-corresponding formulas. One model must be nested in all the others.}
+corresponding formulas. If the list is unnamed, default names are given by
+the routine. One model must be nested in all the others.}
 
 \item{data}{data frame containing the data.}
 
@@ -18,17 +19,22 @@ corresponding formulas. One model must be nested in all the others.}
 model. Possible choices include "Robust", "Liangetal", "gZellner",
 "ZellnerSiow" and "FLS" (see details).}
 
-\item{prior.models}{Prior probabilities of the models. Possible choices are
+\item{prior.models}{Type of prior probabilities of the models. Possible choices are
 "Constant" and "User" (see details).}
 
-\item{priorprobs}{A named list (same length and names as in argument
-\code{models}) with the prior probabilities of the models.)}
+\item{priorprobs}{A named vector ir list (same length and names as in argument
+\code{models}) with the prior probabilities of the models (used in combination
+of \code{prior.models="User"}). If the provided object
+is not named, then the order in the list of \code{models} is used to assign the prior
+probabilities}
 
-\item{relax.nest}{By default, the names of covariates in the different
+\item{null.model}{By default, the names of covariates in the different
 models are used to identify the null model (the model which is nested in all
 the others). An error is produced if such identification fails. This check
-is not performed if this argument is set to TRUE in which case the model
-with a smaller sum of squared errors is taken as the null model.}
+is not performed if the identification of the null model is provided, with this argument,
+by the user
+(the \code{null.model} must coincide with that model with the largest
+sum of squared errors and should be smaller in dimension to any other model).}
 }
 \value{
 \code{Btest} returns an object of type \code{Btest} which is a
@@ -39,21 +45,21 @@ list with the entertained models. } \item{nullmodel}{The position of the
 simplest model. }
 }
 \description{
-Computes the Bayes factors and posterior probabilities of a list of linear
+It Computes the Bayes factors and posterior probabilities of a list of linear
 regression models proposed to explain a common response variable over the
 same dataset
 }
 \details{
-The Bayes factors, Bi, are expressed in relation with the simplest model
+The Bayes factors, BFi0, are expressed in relation with the simplest model
 (the one nested in all the others). Then, the posterior probabilities of the
 entertained models are obtained as
 
-Pr(Mi | \code{data})=Pr(Mi)*Bi/C,
+Pr(Mi | \code{data})=Pr(Mi)*BFi0/C,
 
 where Pr(Mi) is the prior probability of model Mi and C is the normalizing
 constant.
 
-The Bayes factor B_i depends on the prior assigned for the regression
+The Bayes factor BF_i0 depends on the prior assigned for the regression
 parameters in Mi.
 
 \code{Btest} implements a number of popular choices plus the "Robust" prior
@@ -91,11 +97,11 @@ of the simplest model.
 #load data
 data(UScrime)
 #Model selection among the following models: (note model1 is nested in all the others)
-model1<- as.formula("y~1+Prob")
-model2<- as.formula("y~1+Prob+Time")
-model3<- as.formula("y~1+Prob+Po1+Po2")
-model4<- as.formula("y~1+Prob+So")
-model5<- as.formula("y~.")
+model1<- y ~ 1 + Prob
+model2<- y ~ 1 + Prob + Time
+model3<- y ~ 1 + Prob + Po1 + Po2
+model4<- y ~ 1 + Prob + So
+model5<- y ~ .
 
 #Equal prior probabilities for models:
 crime.BF<- Btest(models=list(basemodel=model1,

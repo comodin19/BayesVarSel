@@ -30,9 +30,9 @@ And the two measurements of Ley and Steel (2007)
 
 \eqn{\mathcal{j}^*=\frac{P(i \cap j)}{P(i\cup j)-P(i\cap j)}}
 
-If \code{covariates} is a two dimensional vector, \code{Jointness} return a
-list of two elements. The first one of them is a data frame containing the
-measurements above but just for the given pair of covariates. The second
+If \code{covariates} is a vector of length 2, \code{Jointness} return a
+list of four elements. The first three of them is a list of three values containing the
+measurements above but just for the given pair of covariates. The fourth
 element is the \code{covariates} vector.
 
 If method \code{print.jointness} is used a message with the meaning of the
@@ -73,14 +73,14 @@ in Bayesian variable selection with applications to growth regression.
 Journal of Macroeconomics, 29(3):476-493.
 }
 \seealso{
-\code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}},
+\code{\link[BayesVarSel]{Bvs}} and
 \code{\link[BayesVarSel]{GibbsBvs}} for performing variable selection and
 obtaining an object of class \code{Bvs}.
 
-\code{\link[BayesVarSel]{plotBvs}} for different descriptive plots of the
+\code{\link[BayesVarSel]{plot.Bvs}} for different descriptive plots of the
 results, \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged
 simulations of regression coefficients and
-\code{\link[BayesVarSel]{predictBvs}} for predictions.
+\code{\link[BayesVarSel]{predict.Bvs}} for predictions.
 }
 \author{
 Gonzalo Garcia-Donato and Anabel Forte

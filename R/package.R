@@ -38,7 +38,7 @@ NULL
 #' commands.
 #'
 #' \tabular{ll}{ Package: \tab BayesVarSel\cr Type: \tab Package\cr Version:
-#' \tab 1.7.0\cr Date: \tab 2016-08-31\cr License: \tab GPL-2\cr }
+#' \tab 1.7.1.9000\cr Date: \tab 2016-08-31\cr License: \tab GPL-2\cr }
 #'
 #' @name BayesVarSel-package
 #' @aliases BayesVarSel-package BayesVarSel
@@ -47,8 +47,8 @@ NULL
 #'
 #' Maintainer: Anabel Forte \email{anabel.forte@@uv.es}
 #' @seealso \code{\link[BayesVarSel]{Btest}}, \code{\link[BayesVarSel]{Bvs}},
-#' \code{\link[BayesVarSel]{PBvs}}, \code{\link[BayesVarSel]{GibbsBvs}},
-#' \code{\link[BayesVarSel]{BMAcoeff}}, \code{\link[BayesVarSel]{predictBvs}}
+#' \code{\link[BayesVarSel]{GibbsBvs}},
+#' \code{\link[BayesVarSel]{BMAcoeff}}, \code{\link[BayesVarSel]{predict.Bvs}}
 #' @references
 #'
 #' Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G.

@@ -25,9 +25,9 @@
 #'
 #' \eqn{\mathcal{j}^*=\frac{P(i \cap j)}{P(i\cup j)-P(i\cap j)}}
 #'
-#' If \code{covariates} is a two dimensional vector, \code{Jointness} return a
-#' list of two elements. The first one of them is a data frame containing the
-#' measurements above but just for the given pair of covariates. The second
+#' If \code{covariates} is a vector of length 2, \code{Jointness} return a
+#' list of four elements. The first three of them is a list of three values containing the
+#' measurements above but just for the given pair of covariates. The fourth
 #' element is the \code{covariates} vector.
 #'
 #' If method \code{print.jointness} is used a message with the meaning of the
@@ -35,14 +35,14 @@
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso \code{\link[BayesVarSel]{Bvs}}, \code{\link[BayesVarSel]{PBvs}},
+#' @seealso \code{\link[BayesVarSel]{Bvs}} and
 #' \code{\link[BayesVarSel]{GibbsBvs}} for performing variable selection and
 #' obtaining an object of class \code{Bvs}.
 #'
-#' \code{\link[BayesVarSel]{plotBvs}} for different descriptive plots of the
+#' \code{\link[BayesVarSel]{plot.Bvs}} for different descriptive plots of the
 #' results, \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged
 #' simulations of regression coefficients and
-#' \code{\link[BayesVarSel]{predictBvs}} for predictions.
+#' \code{\link[BayesVarSel]{predict.Bvs}} for predictions.
 #' @references
 #'
 #' Ley, E. and Steel, M.F.J. (2007)<DOI:10.1016/j.jmacro.2006.12.002>Jointness
@@ -104,7 +104,10 @@ Jointness <- function(x, covariates = "All") {
     }
 
 
-    jointness <- list(joint, joint_LS1, joint_LS2)
+    jointness <-
+      list("prob_joint" = joint,
+           "joint_LS1" = joint_LS1,
+           "joint_LS2" = joint_LS2)
     class(jointness) <- "jointness"
 
     return(jointness)
@@ -136,32 +139,32 @@ Jointness <- function(x, covariates = "All") {
       x$jointinclprob[i, j] / (x$jointinclprob[i, i] + x$jointinclprob[j, j] -
                                  2 * x$jointinclprob[i, j])
 
+
+
     jointness <-
-      list(as.data.frame(
-        c(prob_joint, joint_LS1, joint_LS2),
-        row.names = c("prob_joint", "joint_LS1", "joint_LS2")
-      ), covariates)
-
-
-    names(jointness) <- "value"
+      list("prob_joint" = prob_joint,
+           "joint_LS1" = joint_LS1,
+           "joint_LS2" = joint_LS2,
+           "covariates" =  covariates)
     class(jointness) <- "jointness"
-    jointness
+
+    return(jointness)
   }
 }
 
 
 
 print.jointness <- function(x, ...) {
-  if (length(x) == 2) {
+  if (length(x) == 4) {
     cat("---------\n")
     cat(
       paste(
         "The joint inclusion probability for",
-        x[[2]][1],
+        x[[4]][1],
         "and",
-        x[[2]][2],
+        x[[4]][2],
         "is: ",
-        round(x[[1]][1, 1], 2),
+        round(x[[1]], 2),
         "\n",
         sep = " "
       )
@@ -170,7 +173,7 @@ print.jointness <- function(x, ...) {
     cat(
       paste(
         "The ratio between the probability of including both covariates and the probability of including at least one of then is: ",
-        round(x[[1]][2, 1], 2),
+        round(x[[2]], 2),
         "\n",
         sep = ""
       )
@@ -179,7 +182,7 @@ print.jointness <- function(x, ...) {
     cat(
       paste(
         "The probability of including both covariates together is",
-        round(x[[1]][3, 1], 2),
+        round(x[[3]], 2),
         "times the probability of including one of them alone \n",
         sep = " "
       )

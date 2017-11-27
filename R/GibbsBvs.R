@@ -16,12 +16,12 @@
 #' @export
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.
+#' @param data data frame containing the data.
 #' @param fixed.cov A character vector with the names of the covariates that
 #' will be considered as fixed (no variable selection over these). This
 #' argument provides an implicit definition of the simplest model considered.
 #' Default is "Intercept". Use NULL if selection should be performed over all
 #' the variables defined by \code{formula}
-#' @param data data frame containing the data.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
 #' "ZellnerSiow" and "FLS" (see details).
@@ -40,7 +40,8 @@
 #' to save memory and computation time if 'n.iter' is large. Default is 1. This
 #' parameter jointly with \code{n.iter} sets the number of simulations kept and
 #' used to construct the estimates so is important to keep in mind that a large
-#' value for 'n.thin' can reduce the precision of the results.
+#' value for 'n.thin' can reduce the precision of the results
+#' @param n.models The number of models to show in the summary (ordered by their Bayes Factor)
 #' @param time.test If TRUE and the number of variables is large (>=21) a
 #' preliminary test to estimate computational time is performed.
 #' @param priorprobs A p+1 dimensional vector defining the prior probabilities
@@ -66,13 +67,13 @@
 #' that model to the null model.} \item{call }{The \code{call} to the
 #' function.} \item{method }{\code{gibbs}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
-#' @seealso \code{\link[BayesVarSel]{plotBvs}} for several plots of the result,
+#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
-#' of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
+#' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
 #' predictions.
 #'
-#' \code{\link[BayesVarSel]{Bvs}} and \code{\link[BayesVarSel]{PBvs}} for exact
-#' versions obtained enumerating all entertained models (recommended when
+#' \code{\link[BayesVarSel]{Bvs}} for exact
+#' version obtained enumerating all entertained models (recommended when
 #' p<20).
 #' @references Garcia-Donato, G. and Martinez-Beneito, M.A.
 #' (2013)<DOI:10.1080/01621459.2012.742443> On sampling strategies in Bayesian
@@ -112,19 +113,20 @@
 #' summary(Oz35.GibbsBvs)
 #'
 #' #Plots:
-#' plotBvs(Oz35.GibbsBvs, option="conditional")
+#' plot(Oz35.GibbsBvs, option="conditional")
 #' }
 #'
 GibbsBvs <-
   function(formula,
-           fixed.cov = c("Intercept"),
            data,
+           fixed.cov = c("Intercept"),
            prior.betas = "Robust",
            prior.models = "ScottBerger",
            n.iter = 10000,
            init.model = "Full",
            n.burnin = 500,
            n.thin = 1,
+           n.models=1,
            time.test = TRUE,
            priorprobs = NULL,
            seed = runif(1, 0, 16091956)) {
@@ -923,11 +925,12 @@ GibbsBvs <-
       result$lmnull <- lmnull # The lm object for the null model
     }
 
+    models<- round(modelslBF[ordered(modelslBF[,"logBFi0"]),],0)
     result$variables <- namesx #The name of the competing variables
     result$n <- n #number of observations
     result$p <- p #number of competing variables
     result$k <- knull#number of fixed covariates
-    result$HPMbin <- models#The binary code for the HPM model
+    result$HPMbin <-models[1:min(n.models,n.iter),-dim(models)[2]]#The binary code for the HPM model
     names(result$HPMbin) <- namesx
     #result$modelsprob <- mod.mat
     result$modelslogBF <-

@@ -11,6 +11,6 @@ summary(hald.Bvs)
 
 #plots for the result
 #image plot of the conditional probabilities
-plotBvs(hald.Bvs, option="conditional")
+plot(hald.Bvs, option="conditional")
 
 

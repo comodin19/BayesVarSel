@@ -71,16 +71,16 @@
 #' should not vary much with the prior) and/or using more accurate definitions
 #' of the simplest model (via the \code{fixed.cov} argument).
 #'
-#' @aliases Bvs print.Bvs summary.Bvs print summary
+#' @aliases Bvs print.Bvs
 #' @export
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.
+#' @param data data frame containing the data.
 #' @param fixed.cov A character vector with the names of the covariates that
 #' will be considered as fixed (no variable selection over these). This
 #' argument provides an implicit definition of the simplest model considered.
 #' Default is "Intercept". Use NULL if selection should be performed over all
 #' the variables defined by \code{formula}
-#' @param data data frame containing the data.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
 #' "ZellnerSiow" and "FLS" (see details).
@@ -94,6 +94,9 @@
 #' @param priorprobs A p+1 (p is the number of non-fixed covariates)
 #' dimensional vector defining the prior probabilities Pr(M_i) (should be used
 #' in the case where \code{prior.models}= "User"; see details.)
+#' @param parallel A logical parameter specifying whether parallel computation
+#' must be used (if set to TRUE)
+#' @param n.nodes The number of cores to be used if parallel computation is used.
 #' @return \code{Bvs} returns an object of class \code{Bvs} with the following
 #' elements: \item{time }{The internal time consumed in solving the problem}
 #' \item{lmfull }{The \code{lm} class object that results when the model
@@ -110,16 +113,15 @@
 #' the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 #' inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 #' probabilities of the dimension of the true model} \item{call }{The
-#' \code{call} to the function} \item{method }{\code{full}}
+#' \code{call} to the function} \item{method }{\code{full} or \code{parallel} in case of
+#' parallel computation}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso \code{\link[BayesVarSel]{plotBvs}} for several plots of the result,
+#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
-#' of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
+#' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
 #' predictions.
-#'
-#' \code{\link[BayesVarSel]{PBvs}} for a parallelized version of \code{Bvs}.
 #'
 #' \code{\link[BayesVarSel]{GibbsBvs}} for a heuristic approximation based on
 #' Gibbs sampling (recommended when p>20, no other possibilities when p>31).
@@ -175,26 +177,35 @@
 #'
 #' #A plot with the posterior probabilities of the dimension of the
 #' #true model:
-#' plotBvs(crime.Bvs, option="dimension")
+#' plot(crime.Bvs, option="dimension")
 #'
 #' #Two image plots of the conditional inclusion probabilities:
-#' plotBvs(crime.Bvs, option="conditional")
-#' plotBvs(crime.Bvs, option="not")
+#' plot(crime.Bvs, option="conditional")
+#' plot(crime.Bvs, option="not")
 #' }
 #'
 Bvs <-
   function(formula,
-           fixed.cov = c("Intercept"),
            data,
+           fixed.cov = c("Intercept"),
            prior.betas = "Robust",
            prior.models = "ScottBerger",
            n.keep = 10,
            time.test = TRUE,
-           priorprobs = NULL) {
+           priorprobs = NULL,
+					 parallel = FALSE,
+					 n.nodes = detectCores()) {
     formula <- as.formula(formula)
 
     #Let's define the result
     result <- list()
+
+		#at least two nodes are needed in the parallel
+		if (parallel) {
+	    if (n.nodes < 2) {
+	      stop("At least 2 nodes are needed\n")
+			}
+		}
 
     #Get a tempdir as working directory
     wd <- tempdir()
@@ -202,8 +213,6 @@ Bvs <-
     unlink(paste(wd, "*", sep = "/"))
 
     #eval the full model
-
-
     #Set the design matrix if fixed covariates present:
     if (!is.null(fixed.cov)) {
       lmfull = lm(formula, data, y = TRUE, x = TRUE)
@@ -311,8 +320,6 @@ Bvs <-
       fixed.pos <- which(namesx %in% namesnull)
 
 
-
-
       n <- dim(data)[1]
 
       #the response variable for the C code
@@ -341,7 +348,7 @@ Bvs <-
       p <- dim(X)[2]#Number of covariates to select from
 
       #check if the number of models to save is correct
-      if (n.keep > 2 ^ (p)) {
+      if (!parallel & n.keep > 2 ^ (p)) {
         warning(
           paste(
             "The number of models to keep (",
@@ -355,6 +362,21 @@ Bvs <-
         )
         n.keep <- 2 ^ p
       }
+      if (parallel & n.keep > 2 ^ (p) / n.nodes) {
+        warning(
+          paste(
+            "The number of models to keep (",
+            n.keep,
+            ") must be smaller than the total number of models per node(",
+            2 ^ (p) / n.nodes,
+            ") and it has been set to ",
+            2 ^ (p) / n.nodes ,
+            sep = ""
+          )
+        )
+        n.keep <- 2 ^ p  / n.nodes
+      }
+
 
       # if(length(fixed.cov)<length(namesnull)){
       #   warning("Some of the included covariates are factors. One dummy variable have been included for each level taking the first one (alphabethical order) as the base one.")
@@ -381,7 +403,7 @@ Bvs <-
       p <- dim(X)[2]
       n <- dim(X)[1]
       #check if the number of models to save is correct
-      if (n.keep > 2 ^ (p)) {
+      if (!parallel & n.keep > 2 ^ (p)) {
         warning(
           paste(
             "The number of models to keep (",
@@ -395,6 +417,21 @@ Bvs <-
         )
         n.keep <- 2 ^ p
       }
+      if (parallel & n.keep > 2 ^ (p) / n.nodes) {
+        warning(
+          paste(
+            "The number of models to keep (",
+            n.keep,
+            ") must be smaller than the total number of models per node(",
+            2 ^ (p) / n.nodes,
+            ") and it has been set to ",
+            2 ^ (p) / n.nodes ,
+            sep = ""
+          )
+        )
+        n.keep <- 2 ^ p  / n.nodes
+      }
+
     }
 
     #write the data files in the working directory
@@ -489,9 +526,206 @@ Bvs <-
         n.keep,
         "most probable (a posteriori) are kept\n")
 
+
     #check if the number of covariates is too big.
     if (p > 30) {
       stop("Number of covariates too big. . . consider using GibbsBvs\n")
+    }
+
+
+    myfun <- function(name.start.end, method) {
+		  #if name.start.end has length 3 it comes from the parallel (which needs a suffix to differentiate)
+			#each of the processes and is a number in the first position in this vector. Otherwise
+			#it has dimension two. To reconciliate both in a common function do the following
+
+			#non-parallel case:
+			if (length(name.start.end) == 2){
+				name.start.end<- c("", name.start.end)
+			}
+
+      Cresult <- switch(method,
+        "gc" = .C(
+          "gConst",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "gs" = .C(
+          "gSB",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "gu" = .C(
+          "gUser",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "rc" = .C(
+          "RobustConst",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "rs" = .C(
+          "RobustSB",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "ru" = .C(
+          "RobustUser",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "lc" = .C(
+          "LiangConst",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "ls" = .C(
+          "LiangSB",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "lu" = .C(
+          "LiangUser",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "zc" = .C(
+          "ZSConst",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "zs" = .C(
+          "ZSSB",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "zu" = .C(
+          "ZSUser",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "fc" = .C(
+          "flsConst",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "fs" = .C(
+          "flsSB",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        ),
+        "fu" = .C(
+          "flsUser",
+          as.character(name.start.end[1]),
+          as.integer(n),
+          as.integer(p),
+          as.integer(n.keep),
+          as.integer(name.start.end[2]),
+          as.integer(name.start.end[3]),
+          as.character(wd),
+          as.double(estim.time),
+          as.integer(knull)
+        )
+      )
+			return(Cresult)
     }
 
     #The previous test (for time)
@@ -499,207 +733,14 @@ Bvs <-
 
     if (time.test && p >= 18) {
       cat("Time test. . . .\n")
-      aux <- system.time(result <- switch(
-        method,
-        "gc" = .C(
-          "gConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "gs" = .C(
-          "gSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "gu" = .C(
-          "gUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "rc" = .C(
-          "RobustConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "rs" = .C(
-          "RobustSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "ru" = .C(
-          "RobustUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "lc" = .C(
-          "LiangConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "ls" = .C(
-          "LiangSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "lu" = .C(
-          "LiangUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "zc" = .C(
-          "ZSConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "zs" = .C(
-          "ZSSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "zu" = .C(
-          "ZSUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "fc" = .C(
-          "flsConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "fs" = .C(
-          "flsSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        ),
-        "fu" = .C(
-          "flsUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(4000),
-          as.integer(2 ^ (p - 1) -
-                       1999),
-          as.integer(2 ^ (p - 1) + 2000),
-          as.character(wd),
-          as.double(estim.time),
-          as.integer(knull)
-        )
+			smallset <- c(2 ^ (p - 1) - 1999, (2 ^ (p - 1) + 2000))
+			Cresult <- myfun(smallset, method = method)
 
-      ))
+			if (parallel){
+      	estim.time <- Cresult[[8]] * 2 ^ (p) / (60 * 4000 * n.nodes)
+			}
+			else estim.time <- Cresult[[8]] * 2 ^ (p) / (60 * 4000)
 
-      estim.time <- result[[8]] * 2 ^ (p) / (60 * 4000)
       cat("The problem would take ",
           estim.time,
           "minutes (approx.) to run\n")
@@ -716,196 +757,286 @@ Bvs <-
       }
 
     }
+
     #if the answer is yes work on the problem
     cat("Working on the problem...please wait.\n")
 
-    #if the answer is yes work on the problem
-    result <- switch(
-      method,
-      "gc" = .C(
-        "gConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "gs" = .C(
-        "gSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "gu" = .C(
-        "gUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "rc" = .C(
-        "RobustConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "rs" = .C(
-        "RobustSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "ru" = .C(
-        "RobustUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "lc" = .C(
-        "LiangConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "ls" = .C(
-        "LiangSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "lu" = .C(
-        "LiangUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "zc" = .C(
-        "ZSConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "zs" = .C(
-        "ZSSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "zu" = .C(
-        "ZSUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "fc" = .C(
-        "flsConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "fs" = .C(
-        "flsSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      ),
-      "fu" = .C(
-        "flsUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(n.keep),
-        as.integer(1),
-        as.integer(2 ^ (p) - 1),
-        as.character(wd),
-        as.double(estim.time),
-        as.integer(knull)
-      )
+		if (parallel){
 
-    )
+	    #Calculate how to distribute the model space through the nodes:
 
-    time <- result[[8]]
+	    iterperproc <- round((2 ^ (p) - 1) / n.nodes)
+	    if (n.keep > iterperproc)
+	      stop("Number of kept models should be smaller than the number of models per node\n")
+	    distrib <- list()
+	    for (i in 1:(n.nodes - 1)) {
+	      distrib[[i]] <- c(i, (i - 1) * iterperproc + 1, i * iterperproc)
+	    }
+	    distrib[[n.nodes]] <-
+	      c(n.nodes, (n.nodes - 1) * iterperproc + 1, 2 ^ (p) - 1)
+
+		  cl <- makeCluster(n.nodes)
+			#Load the library in the different nodes
+		  clusterEvalQ(cl, library(BayesVarSel))
+
+		  clusterApply(cl, distrib, myfun, method = method)
+	    stopCluster(cl)
+
+	    ##############Put together the results
+
+		    #next is the prior probability for the null model Pr(M_0)=p_0/sum(p_j)
+		    if (pfms == "c") {
+		      PrM0 <- 1 / 2 ^ (p - 1)
+		      #the unnormalized prior prob for M0:
+		      p0 <- 1
+		    }
+
+		    if (pfms == "s") {
+		      PrM0 <- 1 / (p + 1)
+		      #the unnormalized prior prob for M0:
+		      p0 <- 1
+		    }
+
+		    if (pfms == "u") {
+		      PrM0 <- priorprobs[1] / sum(choose(p, 0:p) * priorprobs)
+		      #the unnormalized prior prob for M0:
+		      p0 <- priorprobs[1]
+		    }
+
+		    fPostProb <- paste(wd, "PostProb", sep = "/")
+		    fInclusionProb <- paste(wd, "InclusionProb", sep = "/")
+		    fMostProbModels <- paste(wd, "MostProbModels", sep = "/")
+		    fNormConstant <- paste(wd, "NormConstant", sep = "/")
+		    fNormConstantPrior <- paste(wd, "NormConstantPrior", sep = "/")
+		    fProbDimension <- paste(wd, "ProbDimension", sep = "/")
+		    fJointInclusionProb <- paste(wd, "JointInclusionProb", sep = "/")
+		    fBetahat <- paste(wd, "betahat", sep = "/")
+
+		    #Obtain the normalizing constant (say E) for the prior probabilities:
+		    #Pr(Ml)=p_l/E
+		    E <- 0
+		    for (i in 1:n.nodes) {
+		      E <- E + scan(
+		        file = paste(fNormConstantPrior, i, sep = ""),
+		        n = 1,
+		        quiet = T
+		      )
+		    }
+		    E <- E - (n.nodes - 1) * p0
+
+		    #Obtain the normalizing constant (say D) for the posterior probabilities:
+		    #Pr(Ml|data)=B_{l0}*Pr(M_l)/D, where B_{l0}=m_l(data)/m_0(data)
+		    D <- 0
+		    for (i in 1:n.nodes) {
+		      D <-
+		        D + scan(
+		          file = paste(fNormConstant, i, sep = ""),
+		          n = 1,
+		          quiet = T
+		        ) * scan(
+		          file = paste(fNormConstantPrior, i, sep = ""),
+		          n = 1,
+		          quiet = T
+		        )
+		    }
+		    D <- (D - (n.nodes - 1) * PrM0) / E
+
+
+		    #Now obtain the n.keep most probable models
+		    i <- 1
+		    thisNormConstant <-
+		      scan(
+		        file = paste(fNormConstant, i, sep = ""),
+		        n = 1,
+		        quiet = T
+		      )
+		    thisNormConstantPrior <-
+		      scan(file = paste(fNormConstantPrior, i, sep = ""),
+		           quiet = T)
+		    #next is the Bayes factor times the (unnormalized) prior for this model
+		    #(see the main.c code to see how is the unnormalized prior). So, if
+		    #the unnormalized prior is=1, then next is the Bayes factor*1 and so on
+		    thisUnnorPostProb <-
+		      read.table(file = paste(fPostProb, i, sep = ""),
+		                 colClasses = "numeric")[[1]] * thisNormConstant * thisNormConstantPrior
+
+		    thisMostProbModels <-
+		      read.table(file = paste(fMostProbModels, 1, sep = ""),
+		                 colClasses = "numeric")[[1]]
+
+		    for (i in 2:n.nodes) {
+		      readNormConstant <-
+		        scan(
+		          file = paste(fNormConstant, i, sep = ""),
+		          n = 1,
+		          quiet = T
+		        )
+		      readNormConstantPrior <-
+		        scan(file = paste(fNormConstantPrior, i, sep = ""),
+		             quiet = T)
+		      readUnnorPostProb <-
+		        read.table(file = paste(fPostProb, i, sep = ""),
+		                   colClasses = "numeric")[[1]] * readNormConstant * readNormConstantPrior
+		      readMostProbModels <-
+		        read.table(file = paste(fMostProbModels, i, sep = ""),
+		                   colClasses = "numeric")[[1]]
+
+		      jointUnnorPostProb <- c(readUnnorPostProb, thisUnnorPostProb)
+		      jointModels <- c(readMostProbModels, thisMostProbModels)
+		      reorder <- order(jointUnnorPostProb, decreasing = T)
+		      thisUnnorPostProb <- jointUnnorPostProb[reorder[1:n.keep]]
+		      thisMostProbModels <- jointModels[reorder[1:n.keep]]
+		    }
+
+
+		    #The inclusion probabilities
+		    accum.InclusionProb <-
+		      read.table(file = paste(fInclusionProb, i, sep = ""))[[1]] * 0
+		    for (i in 1:n.nodes) {
+		      readNormConstant <-
+		        scan(
+		          file = paste(fNormConstant, i, sep = ""),
+		          n = 1,
+		          quiet = T
+		        )
+		      readNormConstantPrior <-
+		        scan(file = paste(fNormConstantPrior, i, sep = ""),
+		             quiet = T)
+		      accum.InclusionProb <-
+		        accum.InclusionProb + read.table(file = paste(fInclusionProb, i, sep =
+		                                                        ""),
+		                                         colClasses = "numeric")[[1]] * readNormConstant * readNormConstantPrior
+		    }
+
+		    accum.InclusionProb <- accum.InclusionProb / (D * E)
+
+		    #The joint inclusion probs:
+		    accum.JointInclusionProb <-
+		      as.matrix(read.table(
+		        file = paste(fJointInclusionProb, i, sep = ""),
+		        colClasses = "numeric"
+		      )) * 0
+		    for (i in 1:n.nodes) {
+		      readNormConstant <-
+		        scan(
+		          file = paste(fNormConstant, i, sep = ""),
+		          n = 1,
+		          quiet = T
+		        )
+		      readNormConstantPrior <-
+		        scan(file = paste(fNormConstantPrior, i, sep = ""),
+		             quiet = T)
+		      accum.JointInclusionProb <- accum.JointInclusionProb +
+		        as.matrix(read.table(
+		          file = paste(fJointInclusionProb, i, sep = ""),
+		          colClasses = "numeric"
+		        )) * readNormConstant * readNormConstantPrior
+		    }
+
+		    accum.JointInclusionProb <- accum.JointInclusionProb / (D * E)
+		    #-----
+
+		    #The dimension probabilities
+		    accum.ProbDimension <-
+		      read.table(file = paste(fProbDimension, i, sep = ""),
+		                 colClasses = "numeric")[[1]] * 0
+		    for (i in 1:n.nodes) {
+		      readNormConstant <-
+		        scan(
+		          file = paste(fNormConstant, i, sep = ""),
+		          n = 1,
+		          quiet = T
+		        )
+		      readNormConstantPrior <-
+		        scan(file = paste(fNormConstantPrior, i, sep = ""),
+		             quiet = T)
+		      accum.ProbDimension <-
+		        accum.ProbDimension + read.table(file = paste(fProbDimension, i, sep =
+		                                                        ""),
+		                                         colClasses = "numeric")[[1]] * readNormConstant * readNormConstantPrior
+		    }
+
+		    accum.ProbDimension <- accum.ProbDimension / (D * E)
+
+		    betahat <-
+		      read.table(file = paste(fBetahat, i, sep = ""), colClasses = "numeric")[[1]] *
+		      0
+		    ac <- 0
+		    for (i in 1:n.nodes) {
+		      readNormConstant <-
+		        scan(
+		          file = paste(fNormConstant, i, sep = ""),
+		          n = 1,
+		          quiet = T
+		        )
+		      readNormConstantPrior <-
+		        scan(file = paste(fNormConstantPrior, i, sep = ""),
+		             quiet = T)
+		      betahat <-
+		        betahat + read.table(file = paste(fBetahat, i, sep = ""),
+		                             colClasses = "numeric")[[1]] * readNormConstant * readNormConstantPrior
+		      ac <- ac + readNormConstant
+		    }
+		    betahat <- betahat / (D * E)
+
+		    write.table(
+		      file = fMostProbModels,
+		      thisMostProbModels,
+		      row.names = F,
+		      col.names = F
+		    )
+		    write.table(
+		      file = fPostProb,
+		      thisUnnorPostProb / (D * E),
+		      row.names = F,
+		      col.names = F
+		    )
+		    write.table(
+		      file = fInclusionProb,
+		      accum.InclusionProb,
+		      row.names = F,
+		      col.names = F
+		    )
+		    write.table(
+		      file = fProbDimension,
+		      accum.ProbDimension,
+		      row.names = F,
+		      col.names = F
+		    )
+		    write.table(file = fNormConstant,
+		                D,
+		                row.names = F,
+		                col.names = F)
+		    write.table(file = fNormConstant,
+		                D,
+		                row.names = F,
+		                col.names = F)
+		    write.table(file = fNormConstantPrior,
+		                E,
+		                row.names = F,
+		                col.names = F)
+		    write.table(file = fBetahat,
+		                betahat,
+		                row.names = F,
+		                col.names = F)
+		    write.table(
+		      file = fJointInclusionProb,
+		      accum.JointInclusionProb,
+		      row.names = F,
+		      col.names = F
+		    )
+
+	    ##############End of put together the results
+
+
+		}
+		else {
+
+			Cresult <- myfun(c(1, (2^p - 1)), method = method)
+	    time <- Cresult[[8]]
+
+		}
+
 
     #a function to transform the number of the model into a binary number.
     integer.base.b_C <- function(x, k) {
@@ -966,17 +1097,15 @@ Bvs <-
       varnames.aux[mod.mat[i, 1:p] == 1] <- "*"
       mod.mat[i, 1:p] <- varnames.aux
     }
-    #
+
     mod.mat[, (p + 1)] <- prob[]
-    #
-    #
-    inclusion <- incl#inclusion probabilities except for the intercept
-    #names(inclusion) <- namesx
+
+    inclusion <- incl #inclusion probabilities except for the intercept
 
     #the final result
 
     result <- list()
-    #
+
     result$time <- time #The time it took the programm to finish
     result$lmfull <- lmfull # The lm object for the full model
     if (!is.null(fixed.cov)) {
@@ -1009,11 +1138,52 @@ Bvs <-
     #rownames(result$betahat)<-namesx
     #names(result$betahat) <- "BetaHat"
     result$call <- match.call()
-    result$method <- "full"
+		if (!parallel){
+    	result$method <- "full"
+		}
+		else result$method <- "parallel"
+
     class(result) <- "Bvs"
     result
 
+  }
 
+
+print.Bvs <-
+  function(x, ...){
+    cat("\n")
+    cat("Call:\n")
+    print(x$call)
+    #cat("\nThis is the result for a model selection problem with ")
+    #cat(x$p-1)
+    pp<-2^x$p-1
+    n.keep<-dim(x$modelsprob)[1]
+    #cat(" covariates and ")
+    #cat(x$n)
+    #cat(" observations\n")
+    #cat("The potential covariates are:\n")
+    #cat(x$variables[-1])
+    #if(!is.null(x$time)){
+    #  cat("\nComputational time: ")
+    #  cat(x$time)
+    #  cat(" seconds.\n")
+    #}
+    if(x$method=="gibbs"){
+      cat("\nAmong the visited models, the model with the largest probability contains: \n")
+      print(names(which(x$HPMbin==1)))
+    }
+    if(x$method!="gibbs"){
+      if(n.keep<=10){
+        cat(paste("\nThe",n.keep,"most probable models and their probabilities are:\n",sep=" "))
+        print(x$modelsprob)
+      }
+      if(n.keep>10){
+        cat("\nThe 10 most probable models and their probabilities are:\n")
+        print(x$modelsprob[1:10,])
+        cat("\n(The remanining", n.keep-10, "models are kept but omitted in this print)")
+      }
+    }
+    cat("\n")
 
   }
 print.Bvs <-

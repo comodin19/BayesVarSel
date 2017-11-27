@@ -1,19 +1,19 @@
 #' Bayes factors and posterior probabilities for linear regression models
 #'
-#' Computes the Bayes factors and posterior probabilities of a list of linear
+#' It Computes the Bayes factors and posterior probabilities of a list of linear
 #' regression models proposed to explain a common response variable over the
 #' same dataset
 #'
-#' The Bayes factors, Bi, are expressed in relation with the simplest model
+#' The Bayes factors, BFi0, are expressed in relation with the simplest model
 #' (the one nested in all the others). Then, the posterior probabilities of the
 #' entertained models are obtained as
 #'
-#' Pr(Mi | \code{data})=Pr(Mi)*Bi/C,
+#' Pr(Mi | \code{data})=Pr(Mi)*BFi0/C,
 #'
 #' where Pr(Mi) is the prior probability of model Mi and C is the normalizing
 #' constant.
 #'
-#' The Bayes factor B_i depends on the prior assigned for the regression
+#' The Bayes factor BF_i0 depends on the prior assigned for the regression
 #' parameters in Mi.
 #'
 #' \code{Btest} implements a number of popular choices plus the "Robust" prior
@@ -47,20 +47,26 @@
 #' @aliases Btest print.Btest
 #' @export
 #' @param models A named list with the entertained models defined with their
-#' corresponding formulas. One model must be nested in all the others.
+#' corresponding formulas. If the list is unnamed, default names are given by
+#' the routine. One model must be nested in all the others.
 #' @param data data frame containing the data.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
 #' "ZellnerSiow" and "FLS" (see details).
-#' @param prior.models Prior probabilities of the models. Possible choices are
+#' @param prior.models Type of prior probabilities of the models. Possible choices are
 #' "Constant" and "User" (see details).
-#' @param priorprobs A named list (same length and names as in argument
-#' \code{models}) with the prior probabilities of the models.)
-#' @param relax.nest By default, the names of covariates in the different
+#' @param priorprobs A named vector ir list (same length and names as in argument
+#' \code{models}) with the prior probabilities of the models (used in combination
+#' of \code{prior.models="User"}). If the provided object
+#' is not named, then the order in the list of \code{models} is used to assign the prior
+#' probabilities
+#' @param null.model By default, the names of covariates in the different
 #' models are used to identify the null model (the model which is nested in all
 #' the others). An error is produced if such identification fails. This check
-#' is not performed if this argument is set to TRUE in which case the model
-#' with a smaller sum of squared errors is taken as the null model.
+#' is not performed if the identification of the null model is provided, with this argument,
+#' by the user
+#' (the \code{null.model} must coincide with that model with the largest
+#' sum of squared errors and should be smaller in dimension to any other model).
 #' @return \code{Btest} returns an object of type \code{Btest} which is a
 #' \code{list} with the following elements: \item{BFio }{A vector with the
 #' Bayes factor of each model to the simplest model.} \item{PostProbi }{A
@@ -112,11 +118,11 @@
 #' #load data
 #' data(UScrime)
 #' #Model selection among the following models: (note model1 is nested in all the others)
-#' model1<- as.formula("y~1+Prob")
-#' model2<- as.formula("y~1+Prob+Time")
-#' model3<- as.formula("y~1+Prob+Po1+Po2")
-#' model4<- as.formula("y~1+Prob+So")
-#' model5<- as.formula("y~.")
+#' model1<- y ~ 1 + Prob
+#' model2<- y ~ 1 + Prob + Time
+#' model3<- y ~ 1 + Prob + Po1 + Po2
+#' model4<- y ~ 1 + Prob + So
+#' model5<- y ~ .
 #'
 #' #Equal prior probabilities for models:
 #' crime.BF<- Btest(models=list(basemodel=model1,
@@ -140,9 +146,28 @@ Btest <-
            prior.betas = "Robust",
            prior.models = "Constant",
            priorprobs = NULL,
-           relax.nest = FALSE) {
-    #N is the number of models:
-    N <- length(models)
+		       null.model = NULL) {
+
+	#N is the number of models:
+  N <- length(models)
+
+	if (!is.list(models)) stop("Argument models should be a list\n")
+
+	#If competing models come wihtout a name, give one by default:
+	if (is.null(names(models))){
+		if (!is.null(null.model)) stop("Please provide a name for the competing models. The null model must be in that list\n")
+		names(models) <- paste("model", 1:N, sep="")
+	}
+
+	#Check if the given null model is one of the competing models:
+	if (!is.null(null.model)){
+	  relax.nest = TRUE
+		pos.user.null.model <- which(null.model == names(models))
+		if (length(pos.user.null.model) == 0) stop("The null model provided is not in the list of competing models.\n")
+	}
+  else relax.nest = FALSE
+
+
     #n is the sample size
     n <- dim(data)[1]
     #SSE is a vector with SSE's for each model; Dim with the dimension (number of regressors in each)
@@ -158,9 +183,7 @@ Btest <-
         pfb != "z" &&
         pfb != "l" &&
         pfb != "f")
-      stop("I am very sorry: prior for betas no valid\n")
-
-
+      stop("I am very sorry: prior for betas not valid\n")
 
 
     #prior for model space:
@@ -179,6 +202,11 @@ Btest <-
     if (pfms == "u" &&
         sum(priorprobs < 0) > 0) {
       stop("Prior probabilities must be positive\n")
+    }
+    #If priorprobs are unnamed, give this vector the name of the models
+    if (pfms == "u" &&
+        is.null(names(priorprobs))) {
+          names(priorprobs)<- names(models)
     }
 
     #Prior probabilities of models:
@@ -211,12 +239,21 @@ Btest <-
     #Which acts as null model:
     nullmodel <- ordered.SSE$ix[1]
 
+	#Check that the given null model and the model with largest SSE
+	#(which in turns defines the null model)
+	#coincides
+	if (!is.null(null.model)){
+		if (nullmodel != pos.user.null.model){
+		stop("The given null model does not coincide with the one with the largest sum of squared error (and it should).\n")
+		}
+	}
+
     if (pfb != "f") {
       for (i in (1:N)[-nullmodel]) {
         #check if the "null" model is nested in all the others
         if (!relax.nest &
             sum(covar.list[[nullmodel]] %in% covar.list[[i]]) < Dim[nullmodel]) {
-          stop("Unable to determine a simpler model using names\n")
+            stop("I suspect that perhaps the simplest (null) model is not nested in all the others. Define explicitly the simplest model if you are sure it is the case\n.\n")
         }
         Qi0 <- SSE[i] / SSE[nullmodel]
         #The .C to be used:
