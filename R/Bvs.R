@@ -71,7 +71,7 @@
 #' should not vary much with the prior) and/or using more accurate definitions
 #' of the simplest model (via the \code{fixed.cov} argument).
 #'
-#' @aliases Bvs print.Bvs summary.Bvs print summary
+#' @aliases Bvs print.Bvs
 #' @export
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.

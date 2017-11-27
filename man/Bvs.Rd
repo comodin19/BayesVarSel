@@ -3,9 +3,6 @@
 \name{Bvs}
 \alias{Bvs}
 \alias{print.Bvs}
-\alias{summary.Bvs}
-\alias{print}
-\alias{summary}
 \title{Bayesian Variable Selection for linear regression models}
 \usage{
 Bvs(formula, data, fixed.cov = c("Intercept"), prior.betas = "Robust",
