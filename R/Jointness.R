@@ -42,7 +42,7 @@
 #' \code{\link[BayesVarSel]{plot.Bvs}} for different descriptive plots of the
 #' results, \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged
 #' simulations of regression coefficients and
-#' \code{\link[BayesVarSel]{predictBvs}} for predictions.
+#' \code{\link[BayesVarSel]{predict.Bvs}} for predictions.
 #' @references
 #'
 #' Ley, E. and Steel, M.F.J. (2007)<DOI:10.1016/j.jmacro.2006.12.002>Jointness

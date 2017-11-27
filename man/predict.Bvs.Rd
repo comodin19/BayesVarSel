@@ -55,14 +55,14 @@ crime.Bvs.predict<- predict(crime.Bvs, newdata=UScrime[1:2,], n.sim=10000)
 #summary(crime.Bvs.predict)
 #
 #To study more in deep the first set:
-#plot(density(crime.Bvs.predict[,1]))
+plot(density(crime.Bvs.predict[,1]))
 #Point prediction
-#median(crime.Bvs.predict[,1])
+median(crime.Bvs.predict[,1])
 #A credible 95\% interval for the prediction:
 #lower bound:
-#quantile(crime.Bvs.predict[,1], probs=0.025)
+quantile(crime.Bvs.predict[,1], probs=0.025)
 #upper bound:
-#quantile(crime.Bvs.predict[,1], probs=0.975)
+quantile(crime.Bvs.predict[,1], probs=0.975)
 
 }
 

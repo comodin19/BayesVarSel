@@ -46,9 +46,9 @@ NULL
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: Anabel Forte \email{anabel.forte@@uv.es}
-#' @seealso \code{\link[BayesVarSel]{Btest}}, \code{\link[BayesVarSel]{Bvs}}, 
+#' @seealso \code{\link[BayesVarSel]{Btest}}, \code{\link[BayesVarSel]{Bvs}},
 #' \code{\link[BayesVarSel]{GibbsBvs}},
-#' \code{\link[BayesVarSel]{BMAcoeff}}, \code{\link[BayesVarSel]{predictBvs}}
+#' \code{\link[BayesVarSel]{BMAcoeff}}, \code{\link[BayesVarSel]{predict.Bvs}}
 #' @references
 #'
 #' Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G.

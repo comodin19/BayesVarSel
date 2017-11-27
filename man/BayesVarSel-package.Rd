@@ -74,9 +74,9 @@ Inference and Decision techniques: Essays in Honor of Bruno de Finetti (A.
 Zellner, ed.) 389-399. Edward Elgar Publishing Limited.
 }
 \seealso{
-\code{\link[BayesVarSel]{Btest}}, \code{\link[BayesVarSel]{Bvs}}, 
+\code{\link[BayesVarSel]{Btest}}, \code{\link[BayesVarSel]{Bvs}},
 \code{\link[BayesVarSel]{GibbsBvs}},
-\code{\link[BayesVarSel]{BMAcoeff}}, \code{\link[BayesVarSel]{predictBvs}}
+\code{\link[BayesVarSel]{BMAcoeff}}, \code{\link[BayesVarSel]{predict.Bvs}}
 }
 \author{
 Gonzalo Garcia-Donato and Anabel Forte

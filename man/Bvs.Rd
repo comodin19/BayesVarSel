@@ -204,7 +204,7 @@ Zellner, ed.) 389-399. Edward Elgar Publishing Limited.
 \seealso{
 \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
-of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
+of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
 predictions.
 
 \code{\link[BayesVarSel]{GibbsBvs}} for a heuristic approximation based on
