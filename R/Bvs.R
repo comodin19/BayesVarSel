@@ -1147,3 +1147,89 @@ Bvs <-
     result
 
   }
+
+
+print.Bvs <-
+  function(x, ...){
+    cat("\n")
+    cat("Call:\n")
+    print(x$call)
+    #cat("\nThis is the result for a model selection problem with ")
+    #cat(x$p-1)
+    pp<-2^x$p-1
+    n.keep<-dim(x$modelsprob)[1]
+    #cat(" covariates and ")
+    #cat(x$n)
+    #cat(" observations\n")
+    #cat("The potential covariates are:\n")
+    #cat(x$variables[-1])
+    #if(!is.null(x$time)){
+    #  cat("\nComputational time: ")
+    #  cat(x$time)
+    #  cat(" seconds.\n")
+    #}
+    if(x$method=="gibbs"){
+      cat("\nAmong the visited models, the model with the largest probability contains: \n")
+      print(names(which(x$HPMbin==1)))
+    }
+    if(x$method!="gibbs"){
+      if(n.keep<=10){
+        cat(paste("\nThe",n.keep,"most probable models and their probabilities are:\n",sep=" "))
+        print(x$modelsprob)
+      }
+      if(n.keep>10){
+        cat("\nThe 10 most probable models and their probabilities are:\n")
+        print(x$modelsprob[1:10,])
+        cat("\n(The remanining", n.keep-10, "models are kept but omitted in this print)")
+      }
+    }
+    cat("\n")
+
+  }
+
+
+summary.Bvs <-
+  function(object,...){
+
+    #we use object because it is requiered by S3 methods
+    z <- object
+    p <- z$p
+    if (!inherits(object, "Bvs"))
+      warning("calling summary.Bvs(<fake-Bvs-x>) ...")
+    ans<-list()
+    #ans$coefficients <- z$betahat
+    #dimnames(ans$coefficients) <- list(names(z$lm$coefficients),"Estimate")
+
+    HPM <- z$HPMbin
+    MPM <- as.numeric(z$inclprob>=0.5)
+    astHPM <- matrix(" ",ncol=1,nrow=(p))
+    astMPM <- matrix(" ",ncol=1,nrow=(p))
+    astHPM[HPM==1] <- "*"
+    astMPM[MPM==1] <- "*"
+
+    incl.prob<-z$inclprob
+
+    summ.Bvs <- as.data.frame(cbind(round(incl.prob,digits=4),astHPM,astMPM))
+    dimnames(summ.Bvs)<- list(z$variables,c("Incl.prob.","HPM","MPM"))
+
+    ans$summary<-summ.Bvs
+    ans$method <- z$method
+    ans$call<-z$call
+    class(ans) <- "summary.Bvs"
+    ans
+  }
+
+
+print.summary.Bvs <- function(x,...){
+  cat("\n")
+  cat("Call:\n")
+  print(x$call)
+  cat("\n")
+  cat("Inclusion Probabilities:\n")
+  print(x$summary)
+  cat("---\n")
+  cat("Code: HPM stands for Highest posterior Probability Model and\n MPM for Median Probability Model.\n ")
+  if(x$method=="gibbs"){
+    cat("Results are estimates based on the visited models.\n")
+  }
+}
