@@ -51,7 +51,7 @@ set.seed(171) # For reproducibility of simulations.
 data(Hald)
 hald_Bvs <- Bvs(formula = "y ~ x1 + x2 + x3 + x4", data = Hald[-c(1:2),])
 summary(hald_Bvs)
-colMeans(predictBvs(hald_Bvs, Hald[1:2,]))
+colMeans(predict(hald_Bvs, Hald[1:2,]))
 
 # Simulate coefficients
 sim_coef <- BMAcoeff(hald_Bvs);

@@ -2,7 +2,6 @@
 % Please edit documentation in R/Bvs.R
 \name{Bvs}
 \alias{Bvs}
-\alias{print.Bvs}
 \title{Bayesian Variable Selection for linear regression models}
 \usage{
 Bvs(formula, data, fixed.cov = c("Intercept"), prior.betas = "Robust",

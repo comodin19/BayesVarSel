@@ -926,11 +926,29 @@ GibbsBvs <-
     }
 
     models<- round(modelslBF[ordered(modelslBF[,"logBFi0"]),],0)
+
+
+
+    #data.frame with Most probable models
+    mod.mat <- as.data.frame(cbind(t(rep(0, p))))
+
+    names(mod.mat) <- c(namesx)
+
+    N <- n.models
+
+    for (i in 1:N) {
+      mod.mat[i, 1:p] <- models[i,-dim(models)[2]]
+      varnames.aux <- rep("", p)
+      varnames.aux[mod.mat[i, 1:p] == 1] <- "*"
+      mod.mat[i, ] <- varnames.aux
+    }
+
+
     result$variables <- namesx #The name of the competing variables
     result$n <- n #number of observations
     result$p <- p #number of competing variables
     result$k <- knull#number of fixed covariates
-    result$HPMbin <-models[1:min(n.models,n.iter),-dim(models)[2]]#The binary code for the HPM model
+    result$HPMbin <-mod.mat#The binary code for the nmodel, HPM model
     names(result$HPMbin) <- namesx
     #result$modelsprob <- mod.mat
     result$modelslogBF <-
@@ -953,6 +971,7 @@ GibbsBvs <-
     #names(result$betahat) <- "BetaHat"
     result$call <- match.call()
     result$method <- "gibbs"
+    result$nmodels <- n.models
     class(result) <- "Bvs"
     result
 

@@ -71,7 +71,7 @@
 #' should not vary much with the prior) and/or using more accurate definitions
 #' of the simplest model (via the \code{fixed.cov} argument).
 #'
-#' @aliases Bvs print.Bvs
+#'
 #' @export
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.
@@ -1200,16 +1200,23 @@ print.Bvs <-
     #  cat(x$time)
     #  cat(" seconds.\n")
     #}
+
     if(x$method=="gibbs"){
-      cat("\nAmong the visited models, the model with the largest probability contains: \n")
-      print(names(which(x$HPMbin==1)))
+      if(x$nmodels<=10){
+        cat(paste("\nAmong the visited models, the",x$nmodels,"with the largest BF are:\n",sep=" "))
+        print(x$HPMbin)
+      }else{
+        cat("\nAmong the visited models, the 10 with the largest BF are:\n")
+        print(x$HPMbin[1:10, ])
+        cat("\n(The remanining", x$nmodels - 10, "models are kept but omitted in this print)")
+      }
     }
+
     if(x$method!="gibbs"){
       if(n.keep<=10){
         cat(paste("\nThe",n.keep,"most probable models and their probabilities are:\n",sep=" "))
         print(x$modelsprob)
-      }
-      if (n.keep > 10) {
+      }else{
         cat("\nThe 10 most probable models and their probabilities are:\n")
         print(x$modelsprob[1:10, ])
         cat("\n(The remanining", n.keep - 10, "models are kept but omitted in this print)")

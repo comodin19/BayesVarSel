@@ -2,6 +2,7 @@
 
 S3method(plot,Bvs)
 S3method(predict,Bvs)
+S3method(print,Btest)
 S3method(print,Bvs)
 S3method(summary,Bvs)
 export(BMAcoeff)

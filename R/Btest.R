@@ -44,7 +44,7 @@
 #' should not vary much with the prior) and/or using more accurate definitions
 #' of the simplest model.
 #'
-#' @aliases Btest print.Btest
+#' @aliases Btest
 #' @export
 #' @param models A named list with the entertained models defined with their
 #' corresponding formulas. If the list is unnamed, default names are given by
@@ -337,3 +337,45 @@ Btest <-
     class(result) <- "Btest"
     result
   }
+
+
+
+#' Print an object of class \code{Btest}
+#'
+#'Print an object of class \code{Btest}
+#' @export
+#' @param x Object of class Btest
+#' @param ... Additional parameters to be passed
+#'
+#' @seealso See \code{\link[BayesVarSel]{Btest}} for creating objects of the class \code{Btest}.
+#'
+#'
+#' @examples
+#'  \dontrun{
+#' #Analysis of Crime Data
+#' #load data
+#' data(UScrime)
+#' #Model selection among the following models: (note model1 is nested in all the others)
+#' model1<- y ~ 1 + Prob
+#' model2<- y ~ 1 + Prob + Time
+#' model3<- y ~ 1 + Prob + Po1 + Po2
+#' model4<- y ~ 1 + Prob + So
+#' model5<- y ~ .
+#'
+#' #Equal prior probabilities for models:
+#' crime.BF<- Btest(models=list(basemodel=model1,
+#' 	ProbTimemodel=model2, ProbPolmodel=model3,
+#' 	ProbSomodel=model4, fullmodel=model5), data=UScrime)
+#' 	crime.BF
+#' 	}
+print.Btest <- function(x, ...){
+  cat("---------\n")
+  cat("Models:\n")
+  print(x$models)
+  cat("---------\n")
+  cat(paste("Bayes factors (expressed in relation to ",names(x$models)[x$nullmodel],")\n", sep=""))
+  print(x$BFi0)
+  cat("---------\n")
+  cat("Posterior probabilities:\n")
+  print(round(x$PostProbi,3))
+}

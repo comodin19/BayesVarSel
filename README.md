@@ -37,7 +37,8 @@ can be installed using:
 You can track, download the latest version or contribute to the
 development of `BayesVarSel` at
 [https://github.com/carlosvergara/BayesVarSel](https://github.com/comodin19/BayesVarSel).
-To install the most recent version of the package (1.7.1) you should:
+To install the most recent version of the package (1.7.1.9000) you
+should:
 
 1.  Install devtools from CRAN with `install.packages("devtools")`.
 2.  Install the development version of `BayesVarSel` from
@@ -68,9 +69,9 @@ Variable selection
 ------------------
 
     library(BayesVarSel)
-    #> Loading required package: parallel
     #> Loading required package: MASS
     #> Loading required package: mvtnorm
+    #> Loading required package: parallel
     #> #########
     #> ## NOTE: Since v1.7.0 former function 'BayesFactor' has been renamed as 'Btest'
     #> ## Copyright (C) 2013-2017 Anabel Forte and Gonzalo Garcia-Donato
@@ -101,7 +102,7 @@ Variable selection
     #> Code: HPM stands for Highest posterior Probability Model and
     #>  MPM for Median Probability Model.
     #> 
-    colMeans(predictBvs(hald_Bvs, Hald[1:2,]))
+    colMeans(predict(hald_Bvs, Hald[1:2,]))
     #> 
     #> Simulations obtained using the best 10 models
     #> that accumulate 1 of the total posterior probability
@@ -130,41 +131,46 @@ Model selection
     reducedmodel <- as.formula("y ~ x1 + x2")
     nullmodel <- as.formula("y ~ 1")
     Btest(models = c(H0 = nullmodel, H1 = fullmodel, H2 = reducedmodel), data = Hald)
-    #> ---------
-    #> Models:
-    #> $H0
-    #> y ~ 1
-    #> 
-    #> $H1
-    #> y ~ x1 + x2 + x3 + x4
-    #> 
-    #> $H2
-    #> y ~ x1 + x2
-    #> 
-    #> ---------
-    #> Bayes factors (expressed in relation to H0)
+    #> $BFi0
     #>  H0.to.H0  H1.to.H0  H2.to.H0 
     #>       1.0   44300.8 3175456.4 
-    #> ---------
-    #> Posterior probabilities:
-    #>    H0    H1    H2 
-    #> 0.000 0.014 0.986
+    #> 
+    #> $PostProbi
+    #>           H0           H1           H2 
+    #> 3.105823e-07 1.375905e-02 9.862406e-01 
+    #> 
+    #> $models
+    #> $models$H0
+    #> y ~ 1
+    #> 
+    #> $models$H1
+    #> y ~ x1 + x2 + x3 + x4
+    #> 
+    #> $models$H2
+    #> y ~ x1 + x2
+    #> 
+    #> 
+    #> $nullmodel
+    #> [1] 1
+    #> 
+    #> attr(,"class")
+    #> [1] "Btest"
 
 References
 ----------
 
 -   Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G. (2012).
-    Criteria for Bayesian Model choice with Application to
-    Variable Selection. *Annals of Statistics, 40*: 1550-1577. DOI:
+    Criteria for Bayesian Model choice with Application to Variable
+    Selection. *Annals of Statistics, 40*: 1550-1577. DOI:
     [10.1214/12-aos1013](http://www.dx.doi.org/10.1214/12-aos1013)
 -   Fernandez, C., Ley, E. and Steel, M.F.J. (2001). Benchmark priors
-    for Bayesian model averaging. *Journal of Econometrics,
-    100*: 381-427. DOI:
+    for Bayesian model averaging. *Journal of Econometrics, 100*:
+    381-427. DOI:
     [10.1016/s0304-4076(00)00076-2](http://www.dx.doi.org/10.1016/s0304-4076(00)00076-2)
 -   Garcia-Donato, G. and Martinez-Beneito, M.A. (2013). On sampling
-    strategies in Bayesian variable selection problems with large
-    model spaces. *Journal of the American Statistical Association,
-    108*: 340-352. DOI:
+    strategies in Bayesian variable selection problems with large model
+    spaces. *Journal of the American Statistical Association, 108*:
+    340-352. DOI:
     [10.1080/01621459.2012.742443](http://www.dx.doi.org/10.1080/01621459.2012.742443)
 -   Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger, J.O. (2008).
     Mixtures of g-priors for Bayesian Variable Selection. *Journal of

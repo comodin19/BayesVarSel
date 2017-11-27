@@ -2,7 +2,6 @@
 % Please edit documentation in R/Btest.R
 \name{Btest}
 \alias{Btest}
-\alias{print.Btest}
 \title{Bayes factors and posterior probabilities for linear regression models}
 \usage{
 Btest(models, data, prior.betas = "Robust", prior.models = "Constant",
