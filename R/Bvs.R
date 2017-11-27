@@ -1149,6 +1149,38 @@ Bvs <-
   }
 
 
+
+
+
+#' Print an object of class \code{Bvs}
+#'
+#' Print an object of class \code{Bvs}
+#'
+#' @export
+#' @param x An object of class \code{Bvs}
+#' @param ... Additional parameters to be passed
+#' @author Gonzalo Garcia-Donato and Anabel Forte
+#'
+#'   Maintainer: <anabel.forte@@uv.es>
+#' @seealso See \code{\link[BayesVarSel]{Bvs}},
+#'   \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
+#'   \code{Bvs}.
+#' @examples
+#'
+#' \dontrun{
+#' #Analysis of Crime Data
+#' #load data
+#' data(UScrime)
+#'
+#' #Default arguments are Robust prior for the regression parameters
+#' #and constant prior over the model space
+#' #Here we keep the 1000 most probable models a posteriori:
+#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#'
+#' #A look at the results:
+#' print(crime.Bvs)
+#' }
+#'
 print.Bvs <-
   function(x, ...){
     cat("\n")
@@ -1177,10 +1209,10 @@ print.Bvs <-
         cat(paste("\nThe",n.keep,"most probable models and their probabilities are:\n",sep=" "))
         print(x$modelsprob)
       }
-      if(n.keep>10){
+      if (n.keep > 10) {
         cat("\nThe 10 most probable models and their probabilities are:\n")
-        print(x$modelsprob[1:10,])
-        cat("\n(The remanining", n.keep-10, "models are kept but omitted in this print)")
+        print(x$modelsprob[1:10, ])
+        cat("\n(The remanining", n.keep - 10, "models are kept but omitted in this print)")
       }
     }
     cat("\n")
@@ -1188,6 +1220,36 @@ print.Bvs <-
   }
 
 
+
+#' Summary of an object of class \code{Bvs}
+#'
+#' Summary of an object of class \code{Bvs}
+#'
+#' @export
+#' @param object An object of class \code{Bvs}
+#' @param ... Additional parameters to be passed
+#' @author Gonzalo Garcia-Donato and Anabel Forte
+#'
+#'   Maintainer: <anabel.forte@@uv.es>
+#' @seealso See \code{\link[BayesVarSel]{Bvs}},
+#'   \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
+#'   \code{Bvs}.
+#' @examples
+#'
+#' \dontrun{
+#' #Analysis of Crime Data
+#' #load data
+#' data(UScrime)
+#'
+#' #Default arguments are Robust prior for the regression parameters
+#' #and constant prior over the model space
+#' #Here we keep the 1000 most probable models a posteriori:
+#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#'
+#' #A look at the results:
+#' summary(crime.Bvs)
+#' }
+#'
 summary.Bvs <-
   function(object,...){
 
@@ -1196,40 +1258,37 @@ summary.Bvs <-
     p <- z$p
     if (!inherits(object, "Bvs"))
       warning("calling summary.Bvs(<fake-Bvs-x>) ...")
-    ans<-list()
+    ans <- list()
     #ans$coefficients <- z$betahat
     #dimnames(ans$coefficients) <- list(names(z$lm$coefficients),"Estimate")
 
     HPM <- z$HPMbin
-    MPM <- as.numeric(z$inclprob>=0.5)
-    astHPM <- matrix(" ",ncol=1,nrow=(p))
-    astMPM <- matrix(" ",ncol=1,nrow=(p))
-    astHPM[HPM==1] <- "*"
-    astMPM[MPM==1] <- "*"
+    MPM <- as.numeric(z$inclprob >= 0.5)
+    astHPM <- matrix(" ", ncol = 1, nrow = p)
+    astMPM <- matrix(" ", ncol = 1, nrow = p)
+    astHPM[HPM == 1] <- "*"
+    astMPM[MPM == 1] <- "*"
 
-    incl.prob<-z$inclprob
+    incl.prob <- z$inclprob
 
-    summ.Bvs <- as.data.frame(cbind(round(incl.prob,digits=4),astHPM,astMPM))
-    dimnames(summ.Bvs)<- list(z$variables,c("Incl.prob.","HPM","MPM"))
+    summ.Bvs <- as.data.frame(cbind(round(incl.prob ,digits = 4), astHPM, astMPM))
+    dimnames(summ.Bvs) <- list(z$variables, c("Incl.prob.", "HPM", "MPM"))
 
-    ans$summary<-summ.Bvs
+    ans$summary <- summ.Bvs
     ans$method <- z$method
-    ans$call<-z$call
+    ans$call <- z$call
+
+    cat("\n")
+    cat("Call:\n")
+    print(ans$call)
+    cat("\n")
+    cat("Inclusion Probabilities:\n")
+    print(ans$summary)
+    cat("---\n")
+    cat("Code: HPM stands for Highest posterior Probability Model and\n MPM for Median Probability Model.\n ")
+    if (ans$method == "gibbs") {
+      cat("Results are estimates based on the visited models.\n")
+    }
     class(ans) <- "summary.Bvs"
-    ans
+    return(invisible(ans))
   }
-
-
-print.summary.Bvs <- function(x,...){
-  cat("\n")
-  cat("Call:\n")
-  print(x$call)
-  cat("\n")
-  cat("Inclusion Probabilities:\n")
-  print(x$summary)
-  cat("---\n")
-  cat("Code: HPM stands for Highest posterior Probability Model and\n MPM for Median Probability Model.\n ")
-  if(x$method=="gibbs"){
-    cat("Results are estimates based on the visited models.\n")
-  }
-}
