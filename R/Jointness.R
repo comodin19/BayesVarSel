@@ -39,7 +39,7 @@
 #' \code{\link[BayesVarSel]{GibbsBvs}} for performing variable selection and
 #' obtaining an object of class \code{Bvs}.
 #'
-#' \code{\link[BayesVarSel]{plotBvs}} for different descriptive plots of the
+#' \code{\link[BayesVarSel]{plot.Bvs}} for different descriptive plots of the
 #' results, \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged
 #' simulations of regression coefficients and
 #' \code{\link[BayesVarSel]{predictBvs}} for predictions.

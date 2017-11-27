@@ -6,3 +6,7 @@
 
 * In Bvs and GibbsBvs the order of arguments has slightly changed and now data is the second argument followed by formula.
 
+* Now plotBvs is a S3 function defined as plot.Bvs
+
+* Now predictBvs is a S3 function defined as predict.Bvs
+

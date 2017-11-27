@@ -17,17 +17,18 @@
 #' taken from Bernardo and Smith (1994) page 442.
 #'
 #' @export
-#' @param x An object of class \code{Bvs}
+#' @param object An object of class \code{Bvs}
 #' @param newdata A data frame in which to look for variables with which to
 #' predict
 #' @param n.sim Number of simulations to be produced
-#' @return \code{predictBvs} returns a matrix with \code{n.sim} rows with the
+#' @param ... Further arguments to be passed (currently none implemented).
+#' @return \code{predict} returns a matrix with \code{n.sim} rows with the
 #' simulations. Each column of the matrix corresponds to each of the
 #' configurations for the covariates defined in \code{newdata}.
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso See \code{\link[BayesVarSel]{Bvs}} 
+#' @seealso See \code{\link[BayesVarSel]{Bvs}}
 #' and \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 #' \code{Bvs}.
 #' @references Bernardo, J. M. and Smith, A. F. M.
@@ -42,26 +43,27 @@
 #'
 #' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
 #' #predict a future observation associated with the first two sets of covariates
-#' crime.Bvs.predict<- predictBvs(crime.Bvs, newdata=UScrime[1:2,], n.sim=10000)
+#' crime.Bvs.predict<- predict(crime.Bvs, newdata=UScrime[1:2,], n.sim=10000)
 #' #(Notice the best 1000 models are used in the mixture)
 #'
 #' #Here you can use standard summaries to describe the underlying predictive distribution
 #' #summary(crime.Bvs.predict)
 #' #
 #' #To study more in deep the first set:
-#' #plot(density(crime.Bvs.predict[,1]))
+#' plot(density(crime.Bvs.predict[,1]))
 #' #Point prediction
-#' #median(crime.Bvs.predict[,1])
+#' median(crime.Bvs.predict[,1])
 #' #A credible 95% interval for the prediction:
 #' #lower bound:
-#' #quantile(crime.Bvs.predict[,1], probs=0.025)
+#' quantile(crime.Bvs.predict[,1], probs=0.025)
 #' #upper bound:
-#' #quantile(crime.Bvs.predict[,1], probs=0.975)
+#' quantile(crime.Bvs.predict[,1], probs=0.975)
 #'
 #' }
 #'
-predictBvs <- function(x, newdata, n.sim = 10000) {
-  #x is an object of class Bvs
+predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
+  #object is an object of class Bvs
+  x<- object
 
   #simulations of the model averaging mixture of the objective posterior predictive distributions.
   #Weights are taken from the previous Bvs or GibbsBvs run.

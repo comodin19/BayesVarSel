@@ -118,7 +118,7 @@
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso \code{\link[BayesVarSel]{plotBvs}} for several plots of the result,
+#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
 #' predictions.
@@ -177,11 +177,11 @@
 #'
 #' #A plot with the posterior probabilities of the dimension of the
 #' #true model:
-#' plotBvs(crime.Bvs, option="dimension")
+#' plot(crime.Bvs, option="dimension")
 #'
 #' #Two image plots of the conditional inclusion probabilities:
-#' plotBvs(crime.Bvs, option="conditional")
-#' plotBvs(crime.Bvs, option="not")
+#' plot(crime.Bvs, option="conditional")
+#' plot(crime.Bvs, option="not")
 #' }
 #'
 Bvs <-

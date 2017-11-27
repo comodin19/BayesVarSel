@@ -16,7 +16,8 @@
 #' @export
 #' @param x An object of class \code{Bvs}
 #' @param option One of "dimension", "joint", "conditional" or "not"
-#' @return If \code{option}="joint", "conditional" or "not" \code{plotBvs} also
+#' @param ... Additional graphical parameters to be passed
+#' @return If \code{option}="joint", "conditional" or "not" \code{plot} also
 #' returns an object of class \code{matrix} with the numeric values of the
 #' printed probabilities.
 #' @author Gonzalo Garcia-Donato and Anabel Forte
@@ -43,20 +44,20 @@
 #'
 #' #A plot with the posterior probabilities of the dimension of the
 #' #true model:
-#' plotBvs(crime.Bvs, option="dimension")
+#' plot(crime.Bvs, option="dimension")
 #'
 #' #An image plot of the joint inclusion probabilities:
-#' plotBvs(crime.Bvs, option="joint")
+#' plot(crime.Bvs, option="joint")
 #'
 #' #Two image plots of the conditional inclusion probabilities:
-#' plotBvs(crime.Bvs, option="conditional")
-#' plotBvs(crime.Bvs, option="not")
+#' plot(crime.Bvs, option="conditional")
+#' plot(crime.Bvs, option="not")
 #'
 #'
-plotBvs <-
-  function(x, option = "dimension") {
-    if (!inherits(x, "Bvs"))
-      warning("calling plotBvs(<fake-Bvs-object>) ...")
+plot.Bvs <-
+  function(x, option = "dimension", ...) {
+    #if (!inherits(x, "Bvs"))
+    #  warning("calling plotBvs(<fake-Bvs-object>) ...")
     p <- x$p
     k <- x$k
     auxtp <- substr(tolower(option), 1, 1)
@@ -74,7 +75,8 @@ plotBvs <-
           main = "Estimated Posterior Dimension Probabilities",
           xlab = "Number of covariates in the true model",
           ylab = "Probability",
-          names.arg = (0:p) + k
+          names.arg = (0:p) + k,
+          ...
         )
       } else{
         barplot(
@@ -82,7 +84,8 @@ plotBvs <-
           main = "Posterior Dimension Probabilities",
           xlab = "Number of covariates in the true model",
           ylab = "Probability",
-          names.arg = (0:p) + k
+          names.arg = (0:p) + k,
+          ...
         )
       }
     }
@@ -99,7 +102,7 @@ plotBvs <-
       x[is.na(x)] <- 0
 
       if (sum(is.na(x)) > 0)
-        warning("The matrix contain NA's. The corresponding values have been set to 0")
+        warning("The matrix contains NA's. The corresponding values have been set to 0")
 
       min <- min(x)
       max <- max(x)
@@ -165,7 +168,7 @@ plotBvs <-
         col = ColorRamp,
         yaxt = "n",
         xaxt = "n"
-      )
+        )
 
       if (!is.null(title)) {
         title(main = title)
@@ -183,7 +186,7 @@ plotBvs <-
         ylab = "",
         axes = FALSE,
         zlim = c(min, max)
-      )
+        )
 
       axis(
         side = 3,
@@ -262,15 +265,13 @@ plotBvs <-
           prob_cond,
           scale = as.vector(x$inclprob),
           diagonal = 1,
-          title = "Estimated Inclusion prob. of column var. given the row var. is included"
-        )
+          title = "Estimated Inclusion prob. of column var. given the row var. is included")
       } else{
         myImagePlot(
           prob_cond,
           scale = as.vector(x$inclprob),
           diagonal = 1,
-          title = "Inclusion prob. of column var. given the row var. is included"
-        )
+          title = "Inclusion prob. of column var. given the row var. is included")
       }
       return(prob_cond)
     }
@@ -312,7 +313,7 @@ plotBvs <-
         myImagePlot(AgivenNotB,
                     scale = as.vector(x$inclprob),
                     title = "Est. Incl. prob of column var. given the row var. is NOT included")
-      } else{
+        } else{
         myImagePlot(AgivenNotB,
                     scale = as.vector(x$inclprob),
                     title = "Incl. prob of column var. given the row var. is NOT included")

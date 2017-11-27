@@ -123,7 +123,7 @@ Oz35.GibbsBvs
 summary(Oz35.GibbsBvs)
 
 #Plots:
-plotBvs(Oz35.GibbsBvs, option="conditional")
+plot(Oz35.GibbsBvs, option="conditional")
 }
 
 }
@@ -137,7 +137,7 @@ George E. and McCulloch R. (1997) Approaches for Bayesian variable
 selection. Statistica Sinica, 7, 339:372.
 }
 \seealso{
-\code{\link[BayesVarSel]{plotBvs}} for several plots of the result,
+\code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
 predictions.

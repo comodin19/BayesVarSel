@@ -159,11 +159,11 @@ summary(crime.Bvs)
 
 #A plot with the posterior probabilities of the dimension of the
 #true model:
-plotBvs(crime.Bvs, option="dimension")
+plot(crime.Bvs, option="dimension")
 
 #Two image plots of the conditional inclusion probabilities:
-plotBvs(crime.Bvs, option="conditional")
-plotBvs(crime.Bvs, option="not")
+plot(crime.Bvs, option="conditional")
+plot(crime.Bvs, option="not")
 }
 
 }
@@ -202,7 +202,7 @@ Inference and Decision techniques: Essays in Honor of Bruno de Finetti (A.
 Zellner, ed.) 389-399. Edward Elgar Publishing Limited.
 }
 \seealso{
-\code{\link[BayesVarSel]{plotBvs}} for several plots of the result,
+\code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
 predictions.

@@ -67,7 +67,7 @@
 #' that model to the null model.} \item{call }{The \code{call} to the
 #' function.} \item{method }{\code{gibbs}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
-#' @seealso \code{\link[BayesVarSel]{plotBvs}} for several plots of the result,
+#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predictBvs}} for
 #' predictions.
@@ -113,7 +113,7 @@
 #' summary(Oz35.GibbsBvs)
 #'
 #' #Plots:
-#' plotBvs(Oz35.GibbsBvs, option="conditional")
+#' plot(Oz35.GibbsBvs, option="conditional")
 #' }
 #'
 GibbsBvs <-
