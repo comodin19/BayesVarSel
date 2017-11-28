@@ -22,13 +22,13 @@ are:
 
 The Joint inclusion probabilities:
 
-\eqn{P(i \cap j)}
+\eqn{P(i & j)}
 
 And the two measurements of Ley and Steel (2007)
 
-\eqn{\mathcal{j}^*= \frac{P(i \cap j)}{P(i\cup j)}}
+\eqn{J*= P(i & j)/P(i U j)}
 
-\eqn{\mathcal{j}^*=\frac{P(i \cap j)}{P(i\cup j)-P(i\cap j)}}
+\eqn{J*=P(i & j)/(P(i U j)-P(i & j))}
 
 If \code{covariates} is a vector of length 2, \code{Jointness} return a
 list of four elements. The first three of them is a list of three values containing the
