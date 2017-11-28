@@ -926,6 +926,9 @@ GibbsBvs <-
     #rownames(result$betahat)<-namesx
     #names(result$betahat) <- "BetaHat"
     result$call <- match.call()
+    if (pfms == "c" ) priorprobs <- rep(1, p + 1)
+    if (pfms == "s" ) priorprobs <- 1/choose(p,0:p)
+    result$priorprobs <- priorprobs
     result$method <- "gibbs"
     class(result)<- "Bvs"
     result

@@ -1202,15 +1202,29 @@ print.Bvs <-
     #}
 
     if(x$method=="gibbs"){
-      if(x$nmodels<=10){
-        cat(paste("\nAmong the visited models, the",x$nmodels,"with the largest BF are:\n",sep=" "))
-        print(x$HPMbin)
-      }else{
-        cat("\nAmong the visited models, the 10 with the largest BF are:\n")
-        print(x$HPMbin[1:10, ])
-        cat("\n(The remanining", x$nmodels - 10, "models are kept but omitted in this print)")
+      p <- x$p
+      n.iter <- dim(x$modelslogBF)[1]
+      for(i in 1:n.iter){
+        x$modelslogBF[i,(p+1)] <-
+          x$modelslogBF[i,(p+1)]+
+          log(x$priorprobs[(sum(x$modelslogBF[i,1:p])+1)])
       }
-    }
+
+      ordenado <- x$modelslogBF[order(x$modelslogBF[,(p+1)],decreasing = T),]
+
+      models <- ordenado[!duplicated(ordenado),]
+      mod.mat <- as.data.frame(models[1:10,1:p])
+
+      for (i in 1:10) {
+        varnames.aux <- rep("", p)
+        varnames.aux[models[i,1:p] == 1] <- "*"
+        mod.mat[i,] <- varnames.aux
+      }
+      cat("\nThe 10 most probable models among the visited ones are:\n")
+      print(mod.mat)
+
+      }
+
 
     if(x$method!="gibbs"){
       if(n.keep<=10){
