@@ -879,36 +879,18 @@ GibbsBvs <-
 
 
     #read the files given by C
-    models <-
-      as.vector(t(read.table(
-        paste(wd, "/MostProbModels", sep = ""), colClasses = "numeric"
-      )))
-    incl <-
-      as.vector(t(read.table(
-        paste(wd, "/InclusionProb", sep = ""), colClasses = "numeric"
-      )))
-    joint <-
-      as.matrix(read.table(paste(wd, "/JointInclusionProb", sep = ""), colClasses =
-                             "numeric"))
-    dimen <-
-      as.vector(t(read.table(
-        paste(wd, "/ProbDimension", sep = ""), colClasses = "numeric"
-      )))
-    betahat <-
-      as.vector(t(read.table(
-        paste(wd, "/betahat", sep = ""), colClasses = "numeric"
-      )))
-    allmodels <-
-      as.matrix(read.table(paste(wd, "/AllModels", sep = ""), colClasses = "numeric"))
-    allBF <-
-      as.vector(t(read.table(
-        paste(wd, "/AllBF", sep = ""), colClasses = "numeric"
-      )))
+    models <- as.vector(t(read.table(paste(wd,"/MostProbModels",sep=""),colClasses="numeric")))
+    incl <- as.vector(t(read.table(paste(wd,"/InclusionProb",sep=""),colClasses="numeric")))
+    joint <- as.matrix(read.table(paste(wd,"/JointInclusionProb",sep=""),colClasses="numeric"))
+    dimen <- as.vector(t(read.table(paste(wd,"/ProbDimension",sep=""),colClasses="numeric")))
+    betahat<- as.vector(t(read.table(paste(wd,"/betahat",sep=""),colClasses="numeric")))
+    allmodels<- as.matrix(read.table(paste(wd,"/AllModels",sep=""),colClasses="numeric"))
+    allBF<- as.vector(t(read.table(paste(wd,"/AllBF",sep=""),colClasses="numeric")))
 
 
     #Log(BF) for every model
-    modelslBF <- cbind(allmodels, log(allBF))
-    colnames(modelslBF) <- c(namesx, "logBFi0")
+    modelslBF<- cbind(allmodels, log(allBF))
+    colnames(modelslBF)<- c(namesx, "logBFi0")
 
 
     #Highest probability model
@@ -921,58 +903,34 @@ GibbsBvs <-
     #
     result$time <- time #The time it took the programm to finish
     result$lmfull <- lmfull # The lm object for the full model
-    if (!is.null(fixed.cov)) {
+    if(!is.null(fixed.cov)){
       result$lmnull <- lmnull # The lm object for the null model
     }
-
-    models<- round(modelslBF[ordered(modelslBF[,"logBFi0"]),],0)
-
-
-
-    #data.frame with Most probable models
-    mod.mat <- as.data.frame(cbind(t(rep(0, p))))
-
-    names(mod.mat) <- c(namesx)
-
-    N <- n.models
-
-    for (i in 1:N) {
-      mod.mat[i, 1:p] <- models[i,-dim(models)[2]]
-      varnames.aux <- rep("", p)
-      varnames.aux[mod.mat[i, 1:p] == 1] <- "*"
-      mod.mat[i, ] <- varnames.aux
-    }
-
 
     result$variables <- namesx #The name of the competing variables
     result$n <- n #number of observations
     result$p <- p #number of competing variables
     result$k <- knull#number of fixed covariates
-    result$HPMbin <-mod.mat#The binary code for the nmodel, HPM model
+    result$HPMbin <- models#The binary code for the HPM model
     names(result$HPMbin) <- namesx
     #result$modelsprob <- mod.mat
-    result$modelslogBF <-
-      modelslBF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
-    result$inclprob <-
-      inclusion #inclusion probability for each variable
+    result$modelslogBF <-modelslBF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
+    result$inclprob <- inclusion #inclusion probability for each variable
     names(result$inclprob) <- namesx
 
-    result$jointinclprob <-
-      data.frame(joint[1:p, 1:p], row.names = namesx)#data.frame for the joint inclusion probabilities
+    result$jointinclprob <- data.frame(joint[1:p,1:p],row.names=namesx)#data.frame for the joint inclusion probabilities
     names(result$jointinclprob) <- namesx
     #
-    result$postprobdim <-
-      dimen #vector with the dimension probabilities.
-    names(result$postprobdim) <-
-      (0:p) + knull #dimension of the true model
+    result$postprobdim <- dimen #vector with the dimension probabilities.
+    names(result$postprobdim) <- (0:p)+knull #dimension of the true model
     #
     #result$betahat <- betahat
     #rownames(result$betahat)<-namesx
     #names(result$betahat) <- "BetaHat"
     result$call <- match.call()
     result$method <- "gibbs"
-    result$nmodels <- n.models
-    class(result) <- "Bvs"
+    class(result)<- "Bvs"
     result
+
 
   }
