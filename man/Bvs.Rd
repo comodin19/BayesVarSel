@@ -4,21 +4,20 @@
 \alias{Bvs}
 \title{Bayesian Variable Selection for linear regression models}
 \usage{
-Bvs(formula, data, fixed.cov = c("Intercept"), prior.betas = "Robust",
-  prior.models = "ScottBerger", n.keep = 10, time.test = TRUE,
-  priorprobs = NULL, parallel = FALSE, n.nodes = detectCores())
+Bvs(formula, data, null.model = paste(as.formula(formula)[[2]], " ~ 1", sep =
+  ""), prior.betas = "Robust", prior.models = "ScottBerger", n.keep = 10,
+  time.test = TRUE, priorprobs = NULL, parallel = FALSE,
+  n.nodes = detectCores())
 }
 \arguments{
-\item{formula}{Formula defining the most complex regression model in the
+\item{formula}{Formula defining the most complex (full) regression model in the
 analysis. See details.}
 
 \item{data}{data frame containing the data.}
 
-\item{fixed.cov}{A character vector with the names of the covariates that
-will be considered as fixed (no variable selection over these). This
-argument provides an implicit definition of the simplest model considered.
-Default is "Intercept". Use NULL if selection should be performed over all
-the variables defined by \code{formula}}
+\item{null.model}{A formula defining which is the simplest (null) model.
+It should be nested in the full model. By default, the null model is defined
+to be the one with just the intercept.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
 model. Possible choices include "Robust", "Liangetal", "gZellner",
@@ -47,9 +46,11 @@ must be used (if set to TRUE)}
 \code{Bvs} returns an object of class \code{Bvs} with the following
 elements: \item{time }{The internal time consumed in solving the problem}
 \item{lmfull }{The \code{lm} class object that results when the model
-defined by \code{formula} is fitted by \code{lm}} \item{lmnull }{The
+defined by \code{formula} is fitted by \code{lm}}
+\item{lmnull }{The
 \code{lm} class object that results when the model defined by
-\code{fixed.cov} is fitted by \code{lm}} \item{variables }{The name of all
+\code{null.model} is fitted by \code{lm}}
+\item{variables }{The name of all
 the potential explanatory variables (the set of variables to select from).}
 \item{n }{Number of observations} \item{p }{Number of explanatory variables
 to select from} \item{k }{Number of fixed variables} \item{HPMbin }{The

@@ -10,3 +10,5 @@
 
 * Now predictBvs is a S3 function defined as predict.Bvs
 
+* In Bvs the argument fixed.cov is deprecated, now replaced by the formula for the null model in the argument null.model
+

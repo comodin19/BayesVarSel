@@ -246,7 +246,7 @@ plot.Bvs <-
                     title = "Joint Inclusion Probabilities")
       }
       prob_joint <- as.matrix(x$jointinclprob)
-      return(prob_joint)
+      return(invisible(prob_joint))
     }
 
 
@@ -273,7 +273,7 @@ plot.Bvs <-
           diagonal = 1,
           title = "Inclusion prob. of column var. given the row var. is included")
       }
-      return(prob_cond)
+      return(invisible(prob_cond))
     }
     #conditional posterior probabilities given Not a variable
     if (auxtp == "n") {
@@ -319,6 +319,6 @@ plot.Bvs <-
                     title = "Incl. prob of column var. given the row var. is NOT included")
       }
       prob_not <- AgivenNotB
-      return (prob_not)
+      return (invisible(prob_not))
     }
   }
