@@ -27,12 +27,13 @@ of \code{prior.models="User"}). If the provided object
 is not named, then the order in the list of \code{models} is used to assign the prior
 probabilities}
 
-\item{null.model}{By default, the names of covariates in the different
-models are used to identify the null model (the model which is nested in all
-the others). An error is produced if such identification fails. This check
-is not performed if the identification of the null model is provided, with this argument,
-by the user
-(the \code{null.model} must coincide with that model with the largest
+\item{null.model}{The name of the null model (eg. the one nested in all the others).
+By default, the names of covariates in the different
+models are used to identify the null model. An error is produced if such identification fails.
+This identification
+is not performed if the definition of the null model is provided, with this argument,
+by the user.
+Note that the (the \code{null.model} must coincide with that model with the largest
 sum of squared errors and should be smaller in dimension to any other model).}
 }
 \value{
