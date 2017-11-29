@@ -168,7 +168,7 @@
 #' #Default arguments are Robust prior for the regression parameters
 #' #and constant prior over the model space
 #' #Here we keep the 1000 most probable models a posteriori:
-#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 #'
 #' #A look at the results:
 #' crime.Bvs

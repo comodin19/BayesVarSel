@@ -5,10 +5,10 @@
 \title{Bayesian Variable Selection for linear regression models using Gibbs
 sampling.}
 \usage{
-GibbsBvs(formula, data, fixed.cov = c("Intercept"), prior.betas = "Robust",
-  prior.models = "ScottBerger", n.iter = 10000, init.model = "Full",
-  n.burnin = 500, n.thin = 1, time.test = TRUE, priorprobs = NULL,
-  seed = runif(1, 0, 16091956))
+GibbsBvs(formula, data, null.model = paste(as.formula(formula)[[2]], " ~ 1",
+  sep = ""), prior.betas = "Robust", prior.models = "ScottBerger",
+  n.iter = 10000, init.model = "Full", n.burnin = 500, n.thin = 1,
+  time.test = TRUE, priorprobs = NULL, seed = runif(1, 0, 16091956))
 }
 \arguments{
 \item{formula}{Formula defining the most complex regression model in the
@@ -16,11 +16,9 @@ analysis. See details.}
 
 \item{data}{data frame containing the data.}
 
-\item{fixed.cov}{A character vector with the names of the covariates that
-will be considered as fixed (no variable selection over these). This
-argument provides an implicit definition of the simplest model considered.
-Default is "Intercept". Use NULL if selection should be performed over all
-the variables defined by \code{formula}}
+\item{null.model}{A formula defining which is the simplest (null) model.
+It should be nested in the full model. By default, the null model is defined
+to be the one with just the intercept.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
 model. Possible choices include "Robust", "Liangetal", "gZellner",
