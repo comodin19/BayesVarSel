@@ -17,11 +17,9 @@
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.
 #' @param data data frame containing the data.
-#' @param fixed.cov A character vector with the names of the covariates that
-#' will be considered as fixed (no variable selection over these). This
-#' argument provides an implicit definition of the simplest model considered.
-#' Default is "Intercept". Use NULL if selection should be performed over all
-#' the variables defined by \code{formula}
+#' @param null.model A formula defining which is the simplest (null) model.
+#' It should be nested in the full model. By default, the null model is defined
+#' to be the one with just the intercept.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
 #' "ZellnerSiow" and "FLS" (see details).
@@ -118,7 +116,7 @@
 GibbsBvs <-
   function(formula,
            data,
-           fixed.cov = c("Intercept"),
+           null.model = paste(as.formula(formula)[[2]], " ~ 1", sep=""),
            prior.betas = "Robust",
            prior.models = "ScottBerger",
            n.iter = 10000,
@@ -128,7 +126,14 @@ GibbsBvs <-
            time.test = TRUE,
            priorprobs = NULL,
            seed = runif(1, 0, 16091956)) {
+
     formula <- as.formula(formula)
+    null.model<- as.formula(null.model)
+
+    #The response in the null model and in the full model must coincide
+    if (formula[[2]] != null.model[[2]]){
+      stop("The response in the full and null model does not coincide.\n")
+    }
 
     #Let's define the result
     result <- list()
@@ -137,6 +142,10 @@ GibbsBvs <-
     wd <- tempdir()
     #remove all the previous documents in the working directory
     unlink(paste(wd, "*", sep = "/"))
+
+    #evaluate the null model:
+    lmnull <- lm(formula = null.model, data, y = TRUE, x = TRUE)
+    fixed.cov <- dimnames(lmnull$x)[[2]]
 
 
     #Set the design matrix if fixed covariates present:
@@ -149,99 +158,17 @@ GibbsBvs <-
       X.full <- lmfull$x
       namesx <- dimnames(X.full)[[2]]
 
-
-      #remove the brackets in "(Intercept)" if present.
-      if (namesx[1] == "(Intercept)") {
-        namesx[1] <-
-          "Intercept" #namesx contains the name of variables including the intercept
-      }
-
-      #Eval of the null model
-      #response <- strsplit(formula,"~")[[1]][1]
-      response <- formula[[2]]
-
-
-      if (length(fixed.cov) == 1) {
-        if ("Intercept" %in% fixed.cov) {
-          formulanull = paste(response, "~1", sep = "")
-        }
-        if (!"Intercept" %in% fixed.cov) {
-          formulanull = paste(response, "~-1+", fixed.cov, sep = "")
-        }
-      }
-
-
-      if (length(fixed.cov) > 1) {
-        if ("Intercept" %in% fixed.cov) {
-          formulanull <-
-            paste(response, "~", paste(fixed.cov[-which(fixed.cov == "Intercept")], collapse =
-                                         "+"), sep = "")
-        }
-        if (!"Intercept" %in% fixed.cov) {
-          formulanull <-
-            paste(response, "~", paste(fixed.cov, collapse = "+"), sep = "")
-          formulanull = paste(formulanull, "-1", sep = "")
-        }
-      }
-
-
-      lmnull <- lm(
-        formula = formulanull,
-        data = data,
-        y = TRUE,
-        x = TRUE
-      )
-
       #check if null model is contained in the full one:
       namesnull <- dimnames(lmnull$x)[[2]]
-
-
-
-      #remove the brackets in "(Intercept)" if present.
-      if (namesnull[1] == "(Intercept)") {
-        namesnull[1] <-
-          "Intercept" #namesx contains the name of variables including the intercept
-      }
-
-      #warning for the use of factors
-      if (length(fixed.cov) < length(namesnull)) {
-        if (!"Intercept" %in% namesnull) {
-          if ("Intercept" %in% namesx) {
-            stop(
-              "When using a factor, Intercept should be included either in both or in non of the models"
-            )
-          }
-        }
-        if ("Intercept" %in% namesnull) {
-          if (!"Intercept" %in% namesx) {
-            stop(
-              "When using a factor, Intercept should be included either in both or in non of the models"
-            )
-          }
-        }
-
-      }
-
-
-      #which variables are wrong
-      ausent <- NULL
-      j <- 0
-      for (i in 1:length(namesnull)) {
-        if (!namesnull[i] %in% namesx) {
-          ausent <- c(ausent, namesnull[i])
-          j <- j + 1
+      "%notin%" <- function(x, table) match(x, table, nomatch = 0) == 0
+      for (i in 1:length(namesnull)){
+        if (namesnull[i] %notin% namesx) {
+          cat("Error in var: ", namesnull[i], "\n")
+          stop("null model is not nested in full model\n")
         }
       }
 
-      if (j > 0) {
-        stop(paste("object '", ausent, "' not found in the full model\n", sep =
-                     ""))
-      }
-
-
-
-
-      #There is any variable to select from?
+      #Is there any variable to select from?
       if (length(namesx) == length(namesnull)) {
         stop(
           "The number of fixed covariates is equal to the number of covariates in the full model. No model selection can be done\n"
@@ -251,9 +178,6 @@ GibbsBvs <-
 
       #position for fixed variables in the full model
       fixed.pos <- which(namesx %in% namesnull)
-
-
-
 
       n <- dim(data)[1]
 
@@ -283,9 +207,6 @@ GibbsBvs <-
 
       p <- dim(X)[2]#Number of covariates to select from
 
-      # if(length(fixed.cov)<length(namesnull)){
-      #   warning("Some of the included covariates are factors. One dummy variable have been included for each level taking the first one (alphabethical order) as the base one.")
-      # }
     }
 
     #If no fixed covariates considered
@@ -316,9 +237,6 @@ GibbsBvs <-
     write(t(X),
           ncolumns = p,
           file = paste(wd, "/Design.txt", sep = ""))
-
-
-
 
     #The initial model:
     if (is.character(init.model) == TRUE) {

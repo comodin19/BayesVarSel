@@ -201,7 +201,7 @@ Bvs <-
 
     #The response in the null model and in the full model must coincide
     if (formula[[2]] != null.model[[2]]){
-      stop("The reponse in the full and null model does not coincide.\n")
+      stop("The response in the full and null model does not coincide.\n")
     }
 
     #Let's define the result
