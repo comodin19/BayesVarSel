@@ -103,7 +103,7 @@ data(Ozone35)
 #of which the first 100 are discharged (burnin) and of the remaining
 #only one each 10 is kept.
 #as initial model we use the Full model
-Oz35.GibbsBvs<- GibbsBvs(formula="y~.", data=Ozone35, prior.betas="gZellner",
+Oz35.GibbsBvs<- GibbsBvs(formula= y ~ ., data=Ozone35, prior.betas="gZellner",
 prior.models="Constant", n.iter=10000, init.model="Full", n.burnin=100,
 time.test = FALSE)
 
