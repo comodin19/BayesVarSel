@@ -36,9 +36,8 @@ can be installed using:
 
 You can track, download the latest version or contribute to the
 development of `BayesVarSel` at
-[https://github.com/carlosvergara/BayesVarSel](https://github.com/comodin19/BayesVarSel).
-To install the most recent version of the package (1.7.1.9000) you
-should:
+<https://github.com/comodin19/BayesVarSel>. To install the most recent
+version of the package (1.7.1.9000) you should:
 
 1.  Install devtools from CRAN with `install.packages("devtools")`.
 2.  Install the development version of `BayesVarSel` from
@@ -76,10 +75,9 @@ Variable selection
     #> ## NOTE: Since v1.7.0 former function 'BayesFactor' has been renamed as 'Btest'
     #> ## Copyright (C) 2013-2017 Anabel Forte and Gonzalo Garcia-Donato
     #> #########
-    set.seed(171) # For reproducibility of simulations.
 
     data(Hald)
-    hald_Bvs <- Bvs(formula = "y ~ x1 + x2 + x3 + x4", data = Hald[-c(1:2),])
+    hald_Bvs <- Bvs(formula = y ~ x1 + x2 + x3 + x4, data = Hald)
     #> Info. . . .
     #> Most complex model has 5 covariates
     #> From those 1 is fixed and we should select from the remaining 4 
@@ -90,14 +88,14 @@ Variable selection
     summary(hald_Bvs)
     #> 
     #> Call:
-    #> Bvs(formula = "y ~ x1 + x2 + x3 + x4", data = Hald[-c(1:2), ])
+    #> Bvs(formula = y ~ x1 + x2 + x3 + x4, data = Hald)
     #> 
     #> Inclusion Probabilities:
     #>    Incl.prob. HPM MPM
-    #> x1     0.9664   *   *
-    #> x2     0.6239   *   *
-    #> x3     0.2644        
-    #> x4     0.5466       *
+    #> x1     0.9762   *   *
+    #> x2     0.7563   *   *
+    #> x3     0.2624        
+    #> x4     0.4153        
     #> ---
     #> Code: HPM stands for Highest posterior Probability Model and
     #>  MPM for Median Probability Model.
@@ -106,9 +104,11 @@ Variable selection
     #> 
     #> Simulations obtained using the best 10 models
     #> that accumulate 1 of the total posterior probability
-    #> [1] 77.18841 71.94447
+    #> [1] 78.90662 73.00883
 
     # Simulate coefficients
+    set.seed(171) # For reproducibility of simulations.
+
     sim_coef <- BMAcoeff(hald_Bvs);
     #> 
     #> Simulations obtained using the best 10 models
@@ -118,43 +118,37 @@ Variable selection
 
 
     colMeans(sim_coef)
-    #>   Intercept          x1          x2          x3          x4 
-    #> 78.45163252  1.44424004  0.33660183 -0.02656885 -0.33266539
+    #>  Intercept         x1         x2         x3         x4 
+    #> 70.9736117  1.4166974  0.4331986 -0.0409743 -0.2170662
 
-Model selection
----------------
+Hypothesis testing
+------------------
 
     library(BayesVarSel)
-    set.seed(171) # For reproducibility of simulations.
     data(Hald)
-    fullmodel <- as.formula("y ~ x1 + x2 + x3 + x4")
-    reducedmodel <- as.formula("y ~ x1 + x2")
-    nullmodel <- as.formula("y ~ 1")
+    fullmodel <- y ~ x1 + x2 + x3 + x4
+    reducedmodel <- y ~ x1 + x2
+    nullmodel <- y ~ 1
     Btest(models = c(H0 = nullmodel, H1 = fullmodel, H2 = reducedmodel), data = Hald)
-    #> $BFi0
-    #>  H0.to.H0  H1.to.H0  H2.to.H0 
-    #>       1.0   44300.8 3175456.4 
-    #> 
-    #> $PostProbi
-    #>           H0           H1           H2 
-    #> 3.105823e-07 1.375905e-02 9.862406e-01 
-    #> 
-    #> $models
-    #> $models$H0
+    #> ---------
+    #> Models:
+    #> $H0
     #> y ~ 1
     #> 
-    #> $models$H1
+    #> $H1
     #> y ~ x1 + x2 + x3 + x4
     #> 
-    #> $models$H2
+    #> $H2
     #> y ~ x1 + x2
     #> 
-    #> 
-    #> $nullmodel
-    #> [1] 1
-    #> 
-    #> attr(,"class")
-    #> [1] "Btest"
+    #> ---------
+    #> Bayes factors (expressed in relation to H0)
+    #>  H0.to.H0  H1.to.H0  H2.to.H0 
+    #>       1.0   44300.8 3175456.4 
+    #> ---------
+    #> Posterior probabilities:
+    #>    H0    H1    H2 
+    #> 0.000 0.014 0.986
 
 References
 ----------

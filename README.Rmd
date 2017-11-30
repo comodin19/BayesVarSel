@@ -28,7 +28,7 @@ install.packages("BayesVarSel")
 ```
 
 ### Development release
-You can track, download the latest version or contribute to the development of `BayesVarSel` at [https://github.com/carlosvergara/BayesVarSel](https://github.com/comodin19/BayesVarSel). To install the most recent version of the package (`r sub("Version: ", "", readLines('DESCRIPTION')[grepl('Version', readLines('DESCRIPTION'))])`) you should:
+You can track, download the latest version or contribute to the development of `BayesVarSel` at [https://github.com/comodin19/BayesVarSel](https://github.com/comodin19/BayesVarSel). To install the most recent version of the package (`r sub("Version: ", "", readLines('DESCRIPTION')[grepl('Version', readLines('DESCRIPTION'))])`) you should:
 
 1. Install devtools from CRAN with `install.packages("devtools")`.
 2. Install the development version of `BayesVarSel` from [GitHub](https://github.com/comodin19/BayesVarSel):
@@ -46,28 +46,28 @@ The interaction with the package is through a friendly interface that syntactica
 
 ```{r}
 library(BayesVarSel)
-set.seed(171) # For reproducibility of simulations.
 
 data(Hald)
-hald_Bvs <- Bvs(formula = "y ~ x1 + x2 + x3 + x4", data = Hald[-c(1:2),])
+hald_Bvs <- Bvs(formula = y ~ x1 + x2 + x3 + x4, data = Hald)
 summary(hald_Bvs)
 colMeans(predict(hald_Bvs, Hald[1:2,]))
 
 # Simulate coefficients
+set.seed(171) # For reproducibility of simulations.
+
 sim_coef <- BMAcoeff(hald_Bvs);
 
 colMeans(sim_coef)
 ```
 
-## Model selection
+## Hypothesis testing
 
 ```{r}
 library(BayesVarSel)
-set.seed(171) # For reproducibility of simulations.
 data(Hald)
-fullmodel <- as.formula("y ~ x1 + x2 + x3 + x4")
-reducedmodel <- as.formula("y ~ x1 + x2")
-nullmodel <- as.formula("y ~ 1")
+fullmodel <- y ~ x1 + x2 + x3 + x4
+reducedmodel <- y ~ x1 + x2
+nullmodel <- y ~ 1
 Btest(models = c(H0 = nullmodel, H1 = fullmodel, H2 = reducedmodel), data = Hald)
 ```
 
