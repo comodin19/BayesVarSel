@@ -29,9 +29,10 @@ posterior distribution of the dimension of the true model. If
 returned. If \code{option}="conditional" an image plot of the conditional
 inclusion probabilities. These should be read as the probabilty that the
 variable in the column is part of the true model if the corresponding
-variables on the row is. Finally, if \code{option}="not" the image plot that
+variables on the row is. If \code{option}="not" the image plot that
 is returned is that of the the probabilty that the variable in the column is
-part of the true model if the corresponding variables on the row is not.
+part of the true model if the corresponding variables on the row is not. Finally,
+if \code{option}="trace", only available if x$method == "Gibbs", returns a plot of the trace of the inclusion probabilities to check for convergence.
 }
 \examples{
 

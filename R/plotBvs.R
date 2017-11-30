@@ -9,9 +9,10 @@
 #' returned. If \code{option}="conditional" an image plot of the conditional
 #' inclusion probabilities. These should be read as the probabilty that the
 #' variable in the column is part of the true model if the corresponding
-#' variables on the row is. Finally, if \code{option}="not" the image plot that
+#' variables on the row is. If \code{option}="not" the image plot that
 #' is returned is that of the the probabilty that the variable in the column is
-#' part of the true model if the corresponding variables on the row is not.
+#' part of the true model if the corresponding variables on the row is not. Finally,
+#' if \code{option}="trace", only available if x$method == "Gibbs", returns a plot of the trace of the inclusion probabilities to check for convergence.
 #'
 #' @export
 #' @param x An object of class \code{Bvs}
@@ -62,7 +63,7 @@ plot.Bvs <-
     k <- x$k
     auxtp <- substr(tolower(option), 1, 1)
 
-    if (auxtp != "d" && auxtp != "j" && auxtp != "c" && auxtp != "n") {
+    if (auxtp != "d" && auxtp != "j" && auxtp != "c" && auxtp != "n"&& auxtp != "t") {
       stop("I am very sorry: type of plot not specified\n")
     }
 
@@ -320,5 +321,33 @@ plot.Bvs <-
       }
       prob_not <- AgivenNotB
       return (invisible(prob_not))
+    }
+
+    #conditional posterior probabilities given Not a variable
+    if (auxtp == "t") {
+      if (!x$method == "gibbs")
+        stop("For convergence graphics use an object from GibbsBvs")
+
+      nmodels <- dim(x$modelslogBF)[1]
+
+      aux <- matrix(rep(1 / 1:nmodels, nmodels), ncol = nmodels, nrow = nmodels)
+      aux2 <- matrix(0, ncol = nmodels, nrow = nmodels)
+      aux2[lower.tri(aux2)] <- aux[lower.tri(aux)]
+      #aux2 used for the calculations of the partial means
+      nvar <- dim(x$modelslogBF)[2] - 1
+
+      incprobiter <- data.frame(t(rep(NA, nvar)))
+      incprobiter <- aux2 %*% x$modelslogBF[, 1:nvar]
+
+      graphics::plot(
+        1:nmodels,
+        incprobiter[, 1],
+        type =  "l",
+        ylim = c(0, 1),
+        ylab = "Inclusion Probability",
+        xlab = "n.iter"
+      )
+      for (i in 2:nvar)
+        graphics::lines(1:nmodels, incprobiter[, i], col = i)
     }
   }
