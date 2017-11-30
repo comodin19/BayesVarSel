@@ -1,4 +1,4 @@
-# BayesVarSel 1.7.1.9000
+# BayesVarSel 1.8
 
 * Merged Bvs and PBvs in just one function (called Bvs and old PBvs disappears). Bvs now has two extra parameters to control parallelization: parallel and n.nodes.
 
@@ -12,3 +12,8 @@
 
 * In Bvs the argument fixed.cov is deprecated, now replaced by the formula for the null model in the argument null.model
 
+* Option "trace" added to plot
+
+* print updated to show the 10 most probable models (among the visited) for method Gibbs
+
+* removed the comment at initialization

@@ -71,7 +71,8 @@ inclusion probabilities of all the variables.} \item{postprobdim }{Estimates
 of posterior probabilities of the dimension of the true model.}
 \item{modelslogBF}{A matrix with both the binary representation of the
 visited models after the burning period and the Bayes factor (log scale) of
-that model to the null model.} \item{call }{The \code{call} to the
+that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
+to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
 function.} \item{method }{\code{gibbs}}
 }
 \description{
