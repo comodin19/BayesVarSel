@@ -12,7 +12,8 @@
 \item{...}{Additional parameters to be passed}
 }
 \description{
-Print an object of class \code{Bvs}
+Print an object of class \code{Bvs}. The ten most probable models (among the visited ones if the object was created with
+GibbsBvs) are shown.
 }
 \examples{
 
@@ -24,7 +25,7 @@ data(UScrime)
 #Default arguments are Robust prior for the regression parameters
 #and constant prior over the model space
 #Here we keep the 1000 most probable models a posteriori:
-crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 
 #A look at the results:
 print(crime.Bvs)

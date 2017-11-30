@@ -41,7 +41,7 @@
 #' #load data
 #' data(UScrime)
 #'
-#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 #' #predict a future observation associated with the first two sets of covariates
 #' crime.Bvs.predict<- predict(crime.Bvs, newdata=UScrime[1:2,], n.sim=10000)
 #' #(Notice the best 1000 models are used in the mixture)

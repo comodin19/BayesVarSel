@@ -12,7 +12,8 @@
 \item{...}{Additional parameters to be passed}
 }
 \description{
-Summary of an object of class \code{Bvs}
+Summary of an object of class \code{Bvs}, providing inclusion probabilities and a representation of
+the Median Probability Model and the Highest Posterior probability Model.
 }
 \examples{
 
@@ -24,7 +25,7 @@ data(UScrime)
 #Default arguments are Robust prior for the regression parameters
 #and constant prior over the model space
 #Here we keep the 1000 most probable models a posteriori:
-crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 
 #A look at the results:
 summary(crime.Bvs)

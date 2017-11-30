@@ -1087,7 +1087,8 @@ Bvs <-
   }
 #' Print an object of class \code{Bvs}
 #'
-#' Print an object of class \code{Bvs}
+#' Print an object of class \code{Bvs}. The ten most probable models (among the visited ones if the object was created with
+#' GibbsBvs) are shown.
 #'
 #' @export
 #' @param x An object of class \code{Bvs}
@@ -1108,7 +1109,7 @@ Bvs <-
 #' #Default arguments are Robust prior for the regression parameters
 #' #and constant prior over the model space
 #' #Here we keep the 1000 most probable models a posteriori:
-#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 #'
 #' #A look at the results:
 #' print(crime.Bvs)
@@ -1137,13 +1138,10 @@ print.Bvs <-
     if(x$method=="gibbs"){
       p <- x$p
       n.iter <- dim(x$modelslogBF)[1]
-      for(i in 1:n.iter){
-        x$modelslogBF[i,(p+1)] <-
-          x$modelslogBF[i,(p+1)]+
-          log(x$priorprobs[(sum(x$modelslogBF[i,1:p])+1)])
-      }
+      dimmodels<- rowSums(x$modelslogBF[,1:p])+1
+      Lpostprob<- x$modelslogBF[, (p+1)] + log(x$priorprobs[dimmodels])
 
-      ordenado <- x$modelslogBF[order(x$modelslogBF[,(p+1)],decreasing = T),]
+      ordenado <- x$modelslogBF[order(Lpostprob,decreasing = T),]
 
       models <- ordenado[!duplicated(ordenado),]
       mod.mat <- as.data.frame(models[1:10,1:p])
@@ -1177,7 +1175,8 @@ print.Bvs <-
 
 #' Summary of an object of class \code{Bvs}
 #'
-#' Summary of an object of class \code{Bvs}
+#' Summary of an object of class \code{Bvs}, providing inclusion probabilities and a representation of
+#' the Median Probability Model and the Highest Posterior probability Model.
 #'
 #' @export
 #' @param object An object of class \code{Bvs}
@@ -1198,7 +1197,7 @@ print.Bvs <-
 #' #Default arguments are Robust prior for the regression parameters
 #' #and constant prior over the model space
 #' #Here we keep the 1000 most probable models a posteriori:
-#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 #'
 #' #A look at the results:
 #' summary(crime.Bvs)

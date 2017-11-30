@@ -50,7 +50,7 @@ covariates as well as the jointness measurements of Ley and Steel (2007)
 
 data(UScrime)
 
-crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 
 #A look at the jointness measurements:
 Jointness(crime.Bvs, covariates="All")

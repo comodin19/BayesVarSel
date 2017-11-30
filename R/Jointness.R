@@ -57,7 +57,7 @@
 #'
 #' data(UScrime)
 #'
-#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 #'
 #' #A look at the jointness measurements:
 #' Jointness(crime.Bvs, covariates="All")

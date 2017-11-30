@@ -53,19 +53,19 @@
 #' #load data
 #' data(UScrime)
 #'
-#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 #' crime.Bvs.BMA<- BMAcoeff(crime.Bvs, n.sim=10000)
 #' #the best 1000 models are used in the mixture
 #'
 #' #We could force all  possible models to be included in the mixture
-#' crime.Bvs.all<- Bvs(formula="y~.", data=UScrime, n.keep=2^15)
+#' crime.Bvs.all<- Bvs(formula= y ~ ., data=UScrime, n.keep=2^15)
 #' crime.Bvs.BMA<- BMAcoeff(crime.Bvs.all, n.sim=10000)
 #' #(much slower as this implies ordering many more models...)
 #'
 #' #With the Gibbs algorithms:
 #' data(Ozone35)
 #'
-#' Oz35.GibbsBvs<- GibbsBvs(formula="y~.", data=Ozone35, prior.betas="gZellner",
+#' Oz35.GibbsBvs<- GibbsBvs(formula= y ~ ., data=Ozone35, prior.betas="gZellner",
 #' prior.models="Constant", n.iter=10000, init.model="Full", n.burnin=100,
 #' time.test = FALSE)
 #' Oz35.GibbsBvs.BMA<- BMAcoeff(Oz35.GibbsBvs, n.sim=10000)

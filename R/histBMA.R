@@ -43,7 +43,7 @@
 #' #load data
 #' data(UScrime)
 #'
-#' crime.Bvs<- Bvs(formula="y~.", data=UScrime, n.keep=1000)
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
 #' crime.Bvs.BMA<- BMAcoeff(crime.Bvs, n.sim=10000)
 #' #the best 1000 models are used in the mixture
 #'
