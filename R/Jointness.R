@@ -153,7 +153,34 @@ Jointness <- function(x, covariates = "All") {
 }
 
 
-
+#' Print an object of class \code{jointness}
+#'
+#' Print an object of class \code{jointness}. Show the different jointness measurements with a small explanation.
+#'
+#' @export
+#' @param x An object of class \code{jointness}
+#' @param ... Additional parameters to be passed
+#' @author Gonzalo Garcia-Donato and Anabel Forte
+#'
+#'   Maintainer: <anabel.forte@@uv.es>
+#' @seealso See \code{\link[BayesVarSel]{Jointness}} for creating objects of the class
+#'   \code{jointness}.
+#' @examples
+#'
+#' \dontrun{
+#' #Analysis of Crime Data
+#' #load data
+#' data(UScrime)
+#'
+#' #Default arguments are Robust prior for the regression parameters
+#' #and constant prior over the model space
+#' #Here we keep the 1000 most probable models a posteriori:
+#' crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
+#'
+#' #A look at the results:
+#' jointness(crime.Bvs)
+#' }
+#'
 print.jointness <- function(x, ...) {
   if (length(x) == 4) {
     cat("---------\n")
