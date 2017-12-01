@@ -17,3 +17,5 @@
 * print updated to show the 10 most probable models (among the visited) for method Gibbs
 
 * removed the comment at initialization
+
+* BMAcoeff no longer shows the graphic for all the variables, instead use histBMA to plot the posterior distribution of the coefficients. 
