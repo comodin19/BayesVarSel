@@ -253,47 +253,9 @@ BMAcoeff <- function(x, n.sim = 10000, method = "svd") {
 
     }
   }
-  #A plot to show the users potential multimodalities
 
-  bma.density <- function(x, name = "x") {
-    x.no0 <- x[x != 0]
-    igual <- sum(x == 0)
-    total = length(x)
-    if (igual == total)
-      print(paste(name, "is not present in any of the considered models"))
-    if (igual != total) {
-      dens <- density(x.no0)
-      dens.mod <- dens$y * (1 - (igual / total))
-      plot(
-        dens$x,
-        dens.mod,
-        type = "l",
-        yaxt = "n",
-        xlab = "",
-        ylab = "",
-        main = name,
-        col = "blue"
-      )
-      text(x = quantile(dens$x, probs = 0.15),
-           y = mean(dens.mod),
-           round(1 - (igual / total), 3))
-      #print("The numeric value in the picture, if any, indicates the probability of that variable to be in the considered models")
-    }
 
-  }
   class(bma.coeffs) <- "bma.coeffs"
-  dx <- dim(bma.coeffs)[2]
-  nc <- round(sqrt(dx))
-  nr <- ceiling(sqrt(dx))
-  par(mfrow = c(nr, nc))
-  for (i in 1:dx) {
-    par(mar = c(2, 1.5, 1.5, 1))
-    histBMA(bma.coeffs, colnames(bma.coeffs)[i], text = F)
-    #plot(density(bma.coeffs[,i]), main=colnames(bma.coeffs)[i],yaxt="n",col=4,xlab="",ylab="")
-  }
-
-  par(mfrow = c(1, 1))
-  par(mar = c(5, 4, 4, 2) + 0.1)
-  return(bma.coeffs)
+    return(bma.coeffs)
 
 }
