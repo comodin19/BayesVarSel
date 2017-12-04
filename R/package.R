@@ -38,7 +38,7 @@ NULL
 #' commands.
 #'
 #' \tabular{ll}{ Package: \tab BayesVarSel\cr Type: \tab Package\cr Version:
-#' \tab 1.8\cr Date: \tab 2016-08-31\cr License: \tab GPL-2\cr }
+#' \tab 1.8.0\cr Date: \tab 2017-12-03\cr License: \tab GPL-2\cr }
 #'
 #' @name BayesVarSel-package
 #' @aliases BayesVarSel-package BayesVarSel
