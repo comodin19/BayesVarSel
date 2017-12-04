@@ -20,12 +20,7 @@ Depends:
     mvtnorm (>= 1.0-5),
     parallel (>= 3.3.2),
     R (>= 3.3.2)
-Suggest:
-    knitr (>= 1.15.1),
-    rmarkdown (>= 0.7.7)
 License: GPL-2
 NeedsCompilation: yes
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown
-VignetteBuilder: knitr
+

@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![](http://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)[![](http://cranlogs.r-pkg.org/badges/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html) [![](http://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html)
+[![](https://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)[![](https://cranlogs.r-pkg.org/badges/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel) [![](https://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)
 
 # [BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/comodin19/BayesVarSel)
 

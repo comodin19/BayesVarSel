@@ -1,5 +1,5 @@
-[![](http://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)[![](http://cranlogs.r-pkg.org/badges/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)](http://cran.rstudio.com/web/packages/BayesVarSel/index.html)
+[![](https://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)[![](https://cranlogs.r-pkg.org/badges/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)
 
 [BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/comodin19/BayesVarSel)
 ============================================================================================================================
@@ -100,7 +100,7 @@ Variable selection
     #> 
     #> Simulations obtained using the best 10 models
     #> that accumulate 1 of the total posterior probability
-    #> [1] 78.88963 73.05327
+    #> [1] 78.86902 73.09265
 
     # Simulate coefficients
     set.seed(171) # For reproducibility of simulations.
