@@ -37,7 +37,7 @@ can be installed using:
 You can track, download the latest version or contribute to the
 development of `BayesVarSel` at
 <https://github.com/comodin19/BayesVarSel>. To install the most recent
-version of the package (1.7.1.9000) you should:
+version of the package (1.8.0) you should:
 
 1.  Install devtools from CRAN with `install.packages("devtools")`.
 2.  Install the development version of `BayesVarSel` from
@@ -71,10 +71,6 @@ Variable selection
     #> Loading required package: MASS
     #> Loading required package: mvtnorm
     #> Loading required package: parallel
-    #> #########
-    #> ## NOTE: Since v1.7.0 former function 'BayesFactor' has been renamed as 'Btest'
-    #> ## Copyright (C) 2013-2017 Anabel Forte and Gonzalo Garcia-Donato
-    #> #########
 
     data(Hald)
     hald_Bvs <- Bvs(formula = y ~ x1 + x2 + x3 + x4, data = Hald)
@@ -104,7 +100,7 @@ Variable selection
     #> 
     #> Simulations obtained using the best 10 models
     #> that accumulate 1 of the total posterior probability
-    #> [1] 78.90662 73.00883
+    #> [1] 78.88963 73.05327
 
     # Simulate coefficients
     set.seed(171) # For reproducibility of simulations.
@@ -113,9 +109,6 @@ Variable selection
     #> 
     #> Simulations obtained using the best 10 models
     #> that accumulate 1 of the total posterior probability
-
-![](man/figures/README-unnamed-chunk-2-1.png)
-
 
     colMeans(sim_coef)
     #>  Intercept         x1         x2         x3         x4 
