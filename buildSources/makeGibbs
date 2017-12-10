@@ -1,0 +1,51 @@
+#mainGibbs:
+    #(cp mainGibbsTemplateVnew.c mainGibbsTemplate.c)
+
+	######main
+	rm ./sources/mainGibbs.c
+
+	####build main.c
+	###add common features of main.c	
+	cp mainGibbsHeader.c ./sources/mainGibbs.c
+
+	###specific features of main.c	
+	
+	######g-prior	
+	##add gConst (the one in the Template)
+	cat mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	##add GibbsgSB
+	sed -e 's/GibbsgConst/GibbsgSB/g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	##add GibbsgUser
+	sed -e 's/GibbsgConst/GibbsgUser/g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	
+	######Robust prior
+	##add GibbsRobustConst
+	sed -e 's/GibbsgConst/GibbsRobustConst/g;s/gBF21fun/RobustBF21fun/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	##add GibbsRobustSB
+	sed -e 's/GibbsgConst/GibbsRobustSB/g;s/gBF21fun/RobustBF21fun/g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	sed -e 's/GibbsgConst/GibbsRobustUser/g;s/gBF21fun/RobustBF21fun/g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	
+	
+	######Liang et al prior
+	##add GibbsLiangConst
+	sed -e 's/GibbsgConst/GibbsLiangConst/g;s/gBF21fun/LiangBF21fun/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	##add GibbsLiangSB
+	sed -e 's/GibbsgConst/GibbsLiangSB/g;s/gBF21fun/LiangBF21fun/g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	sed -e 's/GibbsgConst/GibbsLiangUser/g;s/gBF21fun/LiangBF21fun/g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	
+	
+	######Zellner-Siow prior
+	##add GibbsZSConst
+	sed -e 's/GibbsgConst/GibbsZSConst/g;s/gBF21fun/ZSBF21fun/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	##add GibbsZSSB
+	sed -e 's/GibbsgConst/GibbsZSSB/g;s/gBF21fun/ZSBF21fun/g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	sed -e 's/GibbsgConst/GibbsZSUser/g;s/gBF21fun/ZSBF21fun/g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+
+	######Fernandez-Ley-Steel prior
+	##add GibbsolsConst
+	sed -e 's/GibbsgConst/GibbsflsConst/g;s/gBF21fun(/flsBF21fun(p, /g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	##add GibbsolsSB
+	sed -e 's/GibbsgConst/GibbsflsSB/g;s/gBF21fun(/flsBF21fun(p, /g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+	sed -e 's/GibbsgConst/GibbsflsUser/g;s/gBF21fun(/flsBF21fun(p, /g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ./sources/mainGibbs.c
+		
+	rm mainGibbsTemplate.c

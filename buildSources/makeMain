@@ -1,0 +1,56 @@
+#main:
+    #(cp mainTemplateVnew.c mainTemplate.c)
+
+	######main
+	rm ./sources/main.c
+
+	####build main.c
+	###add common features of main.c	
+	cp mainHeader.c ./sources/main.c
+	
+	###specific features of main.c
+	
+	######g-prior		
+	##add gConst (first change is name, second is BayesFactor, third and fourth is the prior over model space)
+	sed -e 's/tConst/gConst/g;s/tBF21fun/gBF21fun/g;s/tmainalgebraics/Constmainalgebraics/g;s/tpriorprob/Constpriorprob/g' mainTemplate.c >> ./sources/main.c	
+	##add gSB
+	sed -e 's/tConst/gSB/g;s/tBF21fun/gBF21fun/g;s/tmainalgebraics/SBmainalgebraics/g;s/tpriorprob/SBpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add gUser
+	sed -e 's/tConst/gUser/g;s/tBF21fun/gBF21fun/g;s/tmainalgebraics(/Usermainalgebraics(priorvector, /g;s/tpriorprob(p,dimensionNull)/gsl_vector_get(priorvector,dimensionNull)/g' mainTemplate.c >> ./sources/main.c
+
+	######Robust prior
+	##add RobustConst
+	sed -e 's/tConst/RobustConst/g;s/tBF21fun/RobustBF21fun/g;s/tmainalgebraics/Constmainalgebraics/g;s/tpriorprob/Constpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add RobustSB
+	sed -e 's/tConst/RobustSB/g;s/tBF21fun/RobustBF21fun/g;s/tmainalgebraics/SBmainalgebraics/g;s/tpriorprob/SBpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add RobustUser
+	sed -e 's/tConst/RobustUser/g;s/tBF21fun/RobustBF21fun/g;s/tmainalgebraics(/Usermainalgebraics(priorvector, /g;s/tpriorprob(p,dimensionNull)/gsl_vector_get(priorvector,dimensionNull)/g' mainTemplate.c >> ./sources/main.c
+
+	
+	######Liang et al prior
+	##add LiangConst
+	sed -e 's/tConst/LiangConst/g;s/tBF21fun/LiangBF21fun/g;s/tmainalgebraics/Constmainalgebraics/g;s/tpriorprob/Constpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add LiangSB
+	sed -e 's/tConst/LiangSB/g;s/tBF21fun/LiangBF21fun/g;s/tmainalgebraics/SBmainalgebraics/g;s/tpriorprob/SBpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add LiangUser
+	sed -e 's/tConst/LiangUser/g;s/tBF21fun/LiangBF21fun/g;s/tmainalgebraics(/Usermainalgebraics(priorvector, /g;s/tpriorprob(p,dimensionNull)/gsl_vector_get(priorvector,dimensionNull)/g' mainTemplate.c >> ./sources/main.c
+
+	######Zellner-Siow prior
+	##add ZSConst
+	sed -e 's/tConst/ZSConst/g;s/tBF21fun/ZSBF21fun/g;s/tmainalgebraics/Constmainalgebraics/g;s/tpriorprob/Constpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add ZSSB
+	sed -e 's/tConst/ZSSB/g;s/tBF21fun/ZSBF21fun/g;s/tmainalgebraics/SBmainalgebraics/g;s/tpriorprob/SBpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add ZSUser
+	sed -e 's/tConst/ZSUser/g;s/tBF21fun/ZSBF21fun/g;s/tmainalgebraics(/Usermainalgebraics(priorvector, /g;s/tpriorprob(p,dimensionNull)/gsl_vector_get(priorvector,dimensionNull)/g' mainTemplate.c >> ./sources/main.c
+		
+	######Fernandez-Ley-Steel prior
+	##add flsConst
+	sed -e 's/tConst/flsConst/g;s/tBF21fun(/flsBF21fun(p, /g;s/tmainalgebraics/Constmainalgebraics/g;s/tpriorprob/Constpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add olsSB
+	sed -e 's/tConst/flsSB/g;s/tBF21fun(/flsBF21fun(p, /g;s/tmainalgebraics/SBmainalgebraics/g;s/tpriorprob/SBpriorprob/g' mainTemplate.c >> ./sources/main.c
+	##add olsUser
+	sed -e 's/tConst/flsUser/g;s/tBF21fun(/flsBF21fun(p, /g;s/tmainalgebraics(/Usermainalgebraics(priorvector, /g;s/tpriorprob(p,dimensionNull)/gsl_vector_get(priorvector,dimensionNull)/g' mainTemplate.c >> ./sources/main.c
+
+
+
+	rm mainTemplate.c
