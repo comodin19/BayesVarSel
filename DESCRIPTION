@@ -2,7 +2,7 @@ Package: BayesVarSel
 Type: Package
 Title: Bayes Factors, Model Choice and Variable Selection in Linear
         Models
-Version: 1.8.0
+Version: 1.8.0.999
 Date: 2017-12-03
 Authors@R: c(
     person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
@@ -13,8 +13,8 @@ Maintainer: Anabel Forte <anabel.forte@uv.es>
 Description: Conceived to calculate Bayes factors in linear models and then to provide a formal Bayesian answer to testing and variable selection problems. From a theoretical side, the emphasis in this package is placed on the prior distributions and it allows a wide range of them: Jeffreys (1961); Zellner and Siow(1980)<DOI:10.1007/bf02888369>; Zellner and Siow(1984); Zellner (1986)<DOI:10.2307/2233941>; Fernandez et al. (2001)<DOI:10.1016/s0304-4076(00)00076-2>; Liang et al. (2008)<DOI:10.1198/016214507000001337>  and Bayarri et al. (2012)<DOI:10.1214/12-aos1013>. The interaction with the package is through a friendly interface that syntactically mimics the well-known lm() command of R. The resulting objects can be easily explored providing the user very valuable information (like marginal, joint and conditional inclusion probabilities of potential variables; the highest posterior probability model, HPM; the median probability model, MPM) about the structure of the true -data generating- model. Additionally, this package incorporates abilities to handle problems with a large number of potential explanatory variables through parallel and heuristic versions of the main commands, Garcia-Donato and Martinez-Beneito (2013)<DOI:10.1080/01621459.2012.742443>.
 Encoding: UTF-8
 LazyData: TRUE
-URL: https://github.com/carlosvergara/BayesVarSel
-BugReports: https://github.com/carlosvergara/BayesVarSel/issues
+URL: https://github.com/comodin19/BayesVarSel
+BugReports: https://github.com/comodin19/BayesVarSel/issues
 Depends:
     MASS (>= 7.3-45),
     mvtnorm (>= 1.0-5),
