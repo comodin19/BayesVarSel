@@ -1,3 +1,7 @@
+/*Header for mainGibbs.c
+ * last changes Oct 10, 2014
+ */
+
 #include "R.h"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
@@ -11,7 +15,7 @@
 //#include <gsl/gsl_sort.h>
 //#include <gsl/gsl_sort_vector.h>
 #include<time.h>
-#include <gsl/gsl_rng.h> 
+#include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
 

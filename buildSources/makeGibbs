@@ -21,6 +21,7 @@
 	sed -e 's/GibbsgConst/GibbsRobustConst/g;s/gBF21fun/RobustBF21fun/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
 	##add GibbsRobustSB
 	sed -e 's/GibbsgConst/GibbsRobustSB/g;s/gBF21fun/RobustBF21fun/g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
+	##add GibbsRobustUser
 	sed -e 's/GibbsgConst/GibbsRobustUser/g;s/gBF21fun/RobustBF21fun/g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
 
 
@@ -29,6 +30,7 @@
 	sed -e 's/GibbsgConst/GibbsLiangConst/g;s/gBF21fun/LiangBF21fun/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
 	##add GibbsLiangSB
 	sed -e 's/GibbsgConst/GibbsLiangSB/g;s/gBF21fun/LiangBF21fun/g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
+	##add GibbsLiangUser
 	sed -e 's/GibbsgConst/GibbsLiangUser/g;s/gBF21fun/LiangBF21fun/g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
 
 
@@ -37,12 +39,14 @@
 	sed -e 's/GibbsgConst/GibbsZSConst/g;s/gBF21fun/ZSBF21fun/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
 	##add GibbsZSSB
 	sed -e 's/GibbsgConst/GibbsZSSB/g;s/gBF21fun/ZSBF21fun/g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
+	##add GibbsZSUser
 	sed -e 's/GibbsgConst/GibbsZSUser/g;s/gBF21fun/ZSBF21fun/g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
 
 	######Fernandez-Ley-Steel prior
-	##add GibbsolsConst
+	##add GibbsflsConst
 	sed -e 's/GibbsgConst/GibbsflsConst/g;s/gBF21fun(/flsBF21fun(p, /g' mainGibbsTemplate.c >> ../src/mainGibbs.c
-	##add GibbsolsSB
+	##add GibbsflsSB
 	sed -e 's/GibbsgConst/GibbsflsSB/g;s/gBF21fun(/flsBF21fun(p, /g;s/Constpriorprob/SBpriorprob/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
+	##add GibbsflsUser
 	sed -e 's/GibbsgConst/GibbsflsUser/g;s/gBF21fun(/flsBF21fun(p, /g;s/Constpriorprob(p,k2)/gsl_vector_get(priorvector,k2)/g' mainGibbsTemplate.c >> ../src/mainGibbs.c
 

@@ -1,0 +1,27 @@
+---
+title: "Bayes Factors in BayesVarSel"
+author: "Anabel Forte"
+date: "28/12/2017"
+output: pdf_document
+---
+
+# The simplest, $g$ fixed
+## $g$-prior of Zellner (1986)
+
+$$BF_{i0}=(1+n)^{\frac{n-k_0-k_i}{2}}(1+nQ_{i0})^{-\frac{n-k_0}{2}}$$
+
+```{rcpp, eval=F}
+double gBF21fun(int n, int k2, int k0, double Q)
+{
+// k2 size of the full model
+// k0 size of the null model
+// Q is Qi0
+		double BF21=0.0;
+    double lBF21=0.0;
+        lBF21 = ((n-k2)/2.0)*log(1.0+n)-((n-k0)/2.0)*log(1.0+n*Q);
+        BF21 = exp(lBF21);
+        if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
+		return BF21;
+}
+```
+

@@ -43,8 +43,8 @@
 	######Fernandez-Ley-Steel prior
 	##add flsConst
 	sed -e 's/tConst/flsConst/g;s/tBF21fun(/flsBF21fun(p, /g;s/tmainalgebraics/Constmainalgebraics/g;s/tpriorprob/Constpriorprob/g' mainTemplate.c >> ../src/main.c
-	##add olsSB
+	##add flsSB
 	sed -e 's/tConst/flsSB/g;s/tBF21fun(/flsBF21fun(p, /g;s/tmainalgebraics/SBmainalgebraics/g;s/tpriorprob/SBpriorprob/g' mainTemplate.c >> ../src/main.c
-	##add olsUser
+	##add flsUser
 	sed -e 's/tConst/flsUser/g;s/tBF21fun(/flsBF21fun(p, /g;s/tmainalgebraics(/Usermainalgebraics(priorvector, /g;s/tpriorprob(p,dimensionNull)/gsl_vector_get(priorvector,dimensionNull)/g' mainTemplate.c >> ../src/main.c
 

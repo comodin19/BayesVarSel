@@ -1,4 +1,8 @@
-//To be included as the first lines in main.c
+
+/*Header for main.c
+ * last changes Jun 11, 2014
+ */
+
 #include "R.h"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
