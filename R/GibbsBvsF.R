@@ -236,6 +236,23 @@ GibbsBvsF <-
       #check if the number of models to save is correct
     }
 
+		#Factors:
+		#positions is a matrix with number of rows equal to the number of regressors
+		#(either factor or numeric) and number of columns the number of columns of X
+		#Each row describes the position (0-1) in X of a regressor (several positions in case
+		#this regressor is a factor)
+		depvars<- attr(lmfull$terms, "term.labels")
+		positions<- matrix(0, ncol=p, nrow=length(depvars))
+		for (i in 1:length(depvars)){positions[i,]<- grepl(depvars[i], colnames(X), fixed=T)}
+		#positionsX is a vector of the same length as columns has X
+		#with 1 in the position with a numeric variable:
+		positionsx<- as.numeric(!grepl("factor(", colnames(X), fixed=T))
+		write(positionsx, ncolumns=1, file = paste(wd, "/positionsx.txt", sep = ""))
+    write(t(positions),
+          ncolumns = p,
+          file = paste(wd, "/positions.txt", sep = ""))
+	  #both files are used to obtain prior probabilities and rank of matrices
+
     #write the data files in the working directory
     write(Y,
           ncolumns = 1,
@@ -364,296 +381,17 @@ GibbsBvsF <-
       )
     }
 
-    method <- paste(pfb, pfms, sep = "")
-
-    #The previous test (for time)
+		#Factors:
+    method<- "rs" #Before: method <- paste(pfb, pfms, sep = "")
+		cat("Robust and SB-SB are used.\n")
     estim.time <- 0
-    if (p <= 20) {
-      warning(
-        "The number of variables is small enough to visit every model. Consider Bvs (or pBvs for its parallel version).\n"
-      )
-    }
-    if (time.test && p > 20) {
-      cat("Time test. . . .\n")
 
-
-      result <- switch(
-        method,
-        "gc" = .C(
-          "GibbsgConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "gs" = .C(
-          "GibbsgSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "gu" = .C(
-          "GibbsgUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "rc" = .C(
-          "GibbsRobustConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "rs" = .C(
-          "GibbsRobustSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "ru" = .C(
-          "GibbsRobustUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "lc" = .C(
-          "GibbsLiangConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "ls" = .C(
-          "GibbsLiangSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "lu" = .C(
-          "GibbsLiangUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "zc" = .C(
-          "GibbsZSConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "zs" = .C(
-          "GibbsZSSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "zu" = .C(
-          "GibbsZSUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "fc" = .C(
-          "GibbsflsConst",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "fs" = .C(
-          "GibbsflsSB",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        ),
-        "fu" = .C(
-          "GibbsflsUser",
-          as.character(""),
-          as.integer(n),
-          as.integer(p),
-          as.integer(49),
-          as.character(wd),
-          as.integer(1),
-          as.double(estim.time),
-          as.integer(knull),
-          as.integer(1),
-          as.integer(seed)
-        )
-      )
-
-      estim.time <- result[[7]] * (n.burnin + n.iter) / (60 * 50)
-      cat("The problem would take ",
-          ceiling(estim.time),
-          "minutes (approx.) to run\n")
-      ANSWER <-
-        readline("Do you want to continue?(y/n) then press enter.\n")
-      while (substr(ANSWER, 1, 1) != "n" &
-             substr(ANSWER, 1, 1) != "y") {
-        ANSWER <- readline("")
-      }
-
-      if (substr(ANSWER, 1, 1) == "n")
-      {
-        return(NULL)
-      }
-
-    }
-
-    #if the answer is yes work on the problem
-    cat("Working on the problem...please wait.\n")
-
+		
     #Call the corresponding function:
     result <- switch(
       method,
-      "gc" = .C(
-        "GibbsgConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "gs" = .C(
-        "GibbsgSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "gu" = .C(
-        "GibbsgUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "rc" = .C(
-        "GibbsRobustConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
       "rs" = .C(
-        "GibbsRobustSB",
+        "GibbsRobustFSB",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -664,138 +402,7 @@ GibbsBvsF <-
         as.integer(knull),
         as.integer(n.thin),
         as.integer(seed)
-      ),
-      "ru" = .C(
-        "GibbsRobustUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "lc" = .C(
-        "GibbsLiangConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "ls" = .C(
-        "GibbsLiangSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "lu" = .C(
-        "GibbsLiangUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "zc" = .C(
-        "GibbsZSConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "zs" = .C(
-        "GibbsZSSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "zu" = .C(
-        "GibbsZSUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "fc" = .C(
-        "GibbsflsConst",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "fs" = .C(
-        "GibbsflsSB",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      ),
-      "fu" = .C(
-        "GibbsflsUser",
-        as.character(""),
-        as.integer(n),
-        as.integer(p),
-        as.integer(floor(n.iter / n.thin)),
-        as.character(wd),
-        as.integer(n.burnin),
-        as.double(estim.time),
-        as.integer(knull),
-        as.integer(n.thin),
-        as.integer(seed)
-      )
-    )
+      ))
 
     time <- result[[7]]
 

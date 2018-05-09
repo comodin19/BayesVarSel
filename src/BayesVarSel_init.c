@@ -38,6 +38,7 @@ extern void ZSBF(void *, void *, void *, void *, void *);
 extern void ZSConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsRobustFSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 
 static const R_CMethodDef CEntries[] = {
     {"flsBF",            (DL_FUNC) &flsBF,             6},
@@ -75,6 +76,7 @@ static const R_CMethodDef CEntries[] = {
     {"ZSConst",          (DL_FUNC) &ZSConst,           9},
     {"ZSSB",             (DL_FUNC) &ZSSB,              9},
     {"ZSUser",           (DL_FUNC) &ZSUser,            9},
+    {"GibbsRobustFSB",   (DL_FUNC) &GibbsRobustFSB,    10},		
     {NULL, NULL, 0}
 };
 
