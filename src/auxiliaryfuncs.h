@@ -21,3 +21,4 @@ int my_gsl_matrix_fprintf(FILE *stream,gsl_matrix *m,char *fmt);
 int my_gsl_vector_fprintf(FILE *stream,gsl_vector *v,char *fmt);
 int gsl_vector_mifrac(gsl_vector *v, const double x);
 
+

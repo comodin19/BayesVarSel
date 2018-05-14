@@ -331,4 +331,3 @@ int my_gsl_vector_fprintf(FILE *stream, gsl_vector *v, char *fmt)
 	
 	return 0;
 }
-
