@@ -252,6 +252,7 @@ GibbsBvsF <-
           ncolumns = p,
           file = paste(wd, "/positions.txt", sep = ""))
 	  #both files are used to obtain prior probabilities and rank of matrices
+		rownames(positions)<- depvars
 
     #write the data files in the working directory
     write(Y,
@@ -452,6 +453,10 @@ GibbsBvsF <-
     #
     result$postprobdim <- dimen #vector with the dimension probabilities.
     names(result$postprobdim) <- (0:p)+knull #dimension of the true model
+		
+		result$positions<- positions
+		result$positionsx<- positionsx
+		
     #
     #result$betahat <- betahat
     #rownames(result$betahat)<-namesx
@@ -461,8 +466,62 @@ GibbsBvsF <-
     if (pfms == "s" ) priorprobs <- 1/choose(p,0:p)
     result$priorprobs <- priorprobs
     result$method <- "gibbs"
-    class(result)<- "Bvs"
+    class(result)<- "BvsF"
     result
 
 
   }
+	
+	summary.BvsF <-
+	  function(object,...){
+
+	    #we use object because it is requiered by S3 methods
+	    z <- object
+	    p <- z$p
+	    if (!inherits(object, "BvsF"))
+	      warning("calling summary.Bvs(<fake-Bvs-x>) ...")
+	    ans <- list()
+	    #ans$coefficients <- z$betahat
+	    #dimnames(ans$coefficients) <- list(names(z$lm$coefficients),"Estimate")
+
+	    HPM <- z$HPMbin
+	    MPM <- as.numeric(z$inclprob >= 0.5)
+	    astHPM <- matrix(" ", ncol = 1, nrow = p)
+	    astMPM <- matrix(" ", ncol = 1, nrow = p)
+	    astHPM[HPM == 1] <- "*"
+	    astMPM[MPM == 1] <- "*"
+
+	    incl.prob <- z$inclprob
+			
+			incl.prob.factors<- colMeans((object$modelslogBF[,-(object$p+1)]%*%t(object$positions))>0)
+			
+	    summ.Bvs <- as.data.frame(cbind(round(incl.prob ,digits = 4), astHPM, astMPM))
+	    dimnames(summ.Bvs) <- list(z$variables, c("Incl.prob.", "HPM", "MPM"))
+			
+			summ.BvsF<- as.data.frame(round(incl.prob.factors, digits=4))
+			colnames(summ.BvsF)<- "Incl.prob."
+
+	    ans$summary <- summ.Bvs
+			ans$summaryF<- summ.BvsF
+	    ans$method <- z$method
+	    ans$call <- z$call
+
+	    cat("\n")
+	    cat("Call:\n")
+	    print(ans$call)
+	    cat("\n")
+	    cat("Inclusion Probabilities:\n")
+	    print(ans$summary)
+	    cat("---\n")
+			cat("Inclusion Probabilities of factors:\n")
+			print(ans$summaryF)
+	    cat("---\n")
+			
+	    cat("Code: HPM stands for Highest posterior Probability Model and\n MPM for Median Probability Model.\n ")
+	    if (ans$method == "gibbs") {
+	      cat("Results are estimates based on the visited models.\n")
+	    }
+	    class(ans) <- "summary.Bvs"
+	    return(invisible(ans))
+	  }
+	

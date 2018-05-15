@@ -27,7 +27,7 @@ double SBpriorprob(int p, int dimensioni)
 double SBSBpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_matrix * positions, int nofvars, gsl_vector * levels,
 	                   int p, gsl_vector * isfactor)
 {
-	//v is a vector that contains positions*index
+ 	//v is a vector that contains positions*index
 	gsl_vector * v = gsl_vector_calloc(nofvars);
 	double suma=0.0, m1=0.0, m1plusm2=0.0;
 	int j=0;
