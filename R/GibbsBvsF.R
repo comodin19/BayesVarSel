@@ -118,7 +118,7 @@ GibbsBvsF <-
   function(formula,
            data,
            prior.betas = "Robust",
-           prior.models = "ScottBerger",
+           prior.models = "SBSB",
            n.iter = 10000,
            init.model = "Full",
            n.burnin = 500,
@@ -160,7 +160,7 @@ GibbsBvsF <-
                   y = TRUE,
                   x = TRUE)
 			#Factors:						
-      X.full<- get_rdX(lmfull) #before:X.full <- lmfull$x
+      X.full<- lmerTest:::get_rdX(lmfull) #before:X.full <- lmfull$x
       namesx <- dimnames(X.full)[[2]]
     
       #check if null model is contained in the full one:
@@ -325,65 +325,25 @@ GibbsBvsF <-
         "are kept and used to construct the summaries\n")
 
 
-    #prior for betas:
-    pfb <- substr(tolower(prior.betas), 1, 1)
-    if (pfb != "g" &&
-        pfb != "r" &&
-        pfb != "z" &&
-        pfb != "l" &&
-        pfb != "f")
-      stop("I am very sorry: prior for betas not supported\n")
-    #prior for model space:
-    pfms <- substr(tolower(prior.models), 1, 1)
-    if (pfms != "c" &&
-        pfms != "s" &&
-        pfms != "u")
-      stop("I am very sorry: prior for model space not valid\n")
-    if (pfms == "u" &&
-        is.null(priorprobs)) {
-      stop("A valid vector of prior probabilities must be provided\n")
-    }
-    if (pfms == "u" &&
-        length(priorprobs) != (p + 1)) {
-      stop("Vector of prior probabilities with incorrect length\n")
-    }
-    if (pfms == "u" &&
-        sum(priorprobs < 0) > 0) {
-      stop("Prior probabilities must be positive\n")
-    }
-    if (pfms == "u" &&
-        priorprobs[1] == 0) {
-      stop(
-        "Vector of prior probabilities not valid: All the theory here implemented works with the implicit assumption that the null model could be the true model\n"
-      )
-    }
-    if (pfms == "u" &&
-        priorprobs[sum(init.model) + 1] == 0) {
-      stop("The initial model has zero prior probability\n")
-    }
-    if (pfms == "u") {
-      #The zero here added is for C compatibility
-      write(
-        priorprobs,
-        ncolumns = 1,
-        file = paste(wd, "/priorprobs.txt", sep = "")
-      )
-    }
-
     #Note: priorprobs.txt is a file that is needed only by the "User" routine. Nevertheless, in order
     #to mantain a common unified version the source files of other routines also reads this file
     #although they do not use. Because of this we create this file anyway.
-    if (pfms == "c" | pfms == "s") {
       priorprobs <- rep(0, p + 1)
       write(
         priorprobs,
         ncolumns = 1,
         file = paste(wd, "/priorprobs.txt", sep = "")
       )
-    }
+
 
 		#Factors:
-    method<- "rs" #Before: method <- paste(pfb, pfms, sep = "")
+		if (prior.models!="SBSB" & prior.models!="ConstConst" & prior.models!="SB" & prior.models!="Const")
+			{stop("Prior over the model space not supported\n")}
+		if (prior.models=="SBSB"){method<- "rSBSB"}
+		if (prior.models=="ConstConst"){method<- "rConstConst"}
+		if (prior.models=="SB"){method<- "rSB"}
+		if (prior.models=="Const"){method<- "rConst"}
+
 		cat("Robust and SB-SB are used.\n")
     estim.time <- 0
 
@@ -391,8 +351,47 @@ GibbsBvsF <-
     #Call the corresponding function:
     result <- switch(
       method,
-      "rs" = .C(
+      "rSBSB" = .C(
+        "GibbsRobustFSBSB",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "rConstConst" = .C(
+        "GibbsRobustFConstConst",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "rSB" = .C(
         "GibbsRobustFSB",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "rConst" = .C(
+        "GibbsRobustFConst",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -462,15 +461,32 @@ GibbsBvsF <-
     #rownames(result$betahat)<-namesx
     #names(result$betahat) <- "BetaHat"
     result$call <- match.call()
-    if (pfms == "c" ) priorprobs <- rep(1, p + 1)
-    if (pfms == "s" ) priorprobs <- 1/choose(p,0:p)
-    result$priorprobs <- priorprobs
+
+    result$priorprobs <- "En obras"
     result$method <- "gibbs"
     class(result)<- "BvsF"
     result
 
 
   }
+	
+	#' Summary of an object of class \code{BvsF}
+	#'
+	#' Summary of an object of class \code{BvsF}, providing inclusion probabilities and a representation of
+	#' the Median Probability Model and the Highest Posterior probability Model.
+	#'
+	#' @export
+	#' @param object An object of class \code{BvsF}
+	#' @param ... Additional parameters to be passed
+	#' @author Gonzalo Garcia-Donato and Anabel Forte
+	#'
+	#'   Maintainer: <anabel.forte@@uv.es>
+	#' @seealso See \code{\link[BayesVarSel]{Bvs}},
+	#'   \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
+	#'   \code{Bvs}.
+	#' @examples
+	#'
+	#'
 	
 	summary.BvsF <-
 	  function(object,...){
