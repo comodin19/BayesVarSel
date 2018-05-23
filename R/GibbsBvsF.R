@@ -125,11 +125,15 @@ GibbsBvsF <-
            n.thin = 1,
            time.test = TRUE,
            priorprobs = NULL,
-           seed = runif(1, 0, 16091956)) {
+           seed = runif(1, 0, 16091956),
+					 contrasts = "none") {
+
 
 		#Factors: The null model only contains the intercept:				 
 	  null.model = paste(as.formula(formula)[[2]], " ~ 1", sep="")
-		
+		#contrasts is one of either "none" for our proposal and "given" using
+		#the one in the factors (perhaps given by default by R)
+		if (contrasts != "none" & contrasts != "given") stop("contrasts not defined.\n")
 		
     formula <- as.formula(formula)
 		
@@ -159,8 +163,14 @@ GibbsBvsF <-
                   data = data,
                   y = TRUE,
                   x = TRUE)
-			#Factors:						
-      X.full<- lmerTest:::get_rdX(lmfull) #before:X.full <- lmfull$x
+			#Factors:
+			#before:X.full <- lmfull$x
+			if (contrasts == "none") {						
+      	X.full<- lmerTest:::get_rdX(lmfull) #rank defficient paramet
+			}
+			if (contrasts == "given") {
+				X.full <- lmfull$x
+			}
       namesx <- dimnames(X.full)[[2]]
     
       #check if null model is contained in the full one:
