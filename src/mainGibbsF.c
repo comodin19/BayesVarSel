@@ -336,10 +336,10 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 			oldcomponent=gsl_vector_get(index, component);
 			gsl_vector_set(index, component, 1-oldcomponent);
             k2=(int) gsl_blas_dasum(index);
-						//Rprintf("\n\n\n");
-						//Rprintf("Model:\n");
-						//PrintVector(index, p);
-						//Rprintf("Su dimension:%d", k2);
+						Rprintf("\n\n\n");
+						Rprintf("Model:\n");
+						PrintVector(index, p);
+						Rprintf("Su dimension:%d", k2);
 
             if (k2>0){
 							
@@ -358,17 +358,20 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	              k2e=k2+knull;
 		
                 newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
-								//Rprintf("Bg0=%.10f, PrMg=%.10f, Bg0*PrMg=%.10f\n", RobustBF21fun(n,k2e,knull,Q), PrMg, newPBF);
+								Rprintf("Bg0=%.10f, PrMg=%.10f, Bg0*PrMg=%.10f\n", RobustBF21fun(n,k2e,knull,Q), PrMg, newPBF);
             }
             else{
-							//Rprintf("Model (null):\n");
-							//PrintVector(index, p);
+							Rprintf("Model (null):\n");
+							PrintVector(index, p);
 							
                 Q=1.0;
 				        k2e=k2+knull;
 								
                 gsl_vector_set_zero(hatbetap);
                 newPBF= 1.0*SBSBpriorprob(index, positionsx, positions, nofvars, levels, p, isfactor);
+								Rprintf("PrMg=%.10f\n", newPBF);
+								
+								
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
