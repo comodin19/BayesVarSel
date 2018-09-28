@@ -269,6 +269,8 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	
     k2=(int) gsl_blas_dasum(index);
     if (k2>0){
+			//Copy the sampled model (index) to a new one (indexfr) that will contain its full rank dimension copy
+			//to compute the Bayes factor. The real model, index, is used for the rest of purposes
 		  gsl_vector_memcpy(indexfr, index);
 			PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 	    k2=(int) gsl_blas_dasum(indexfr);			
@@ -297,6 +299,8 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 			gsl_vector_set(index, component, 1-oldcomponent);
             k2=(int) gsl_blas_dasum(index);
             if (k2>0){
+        			//Copy the sampled model (index) to a new one (indexfr) that will contain its full rank dimension copy
+			        //to compute the Bayes factor. The real model, index, is used for the rest of purposes
 						  gsl_vector_memcpy(indexfr, index);
 							//PrintVector(indexfr, p);	
 							PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
@@ -336,13 +340,10 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 			oldcomponent=gsl_vector_get(index, component);
 			gsl_vector_set(index, component, 1-oldcomponent);
             k2=(int) gsl_blas_dasum(index);
-						Rprintf("\n\n\n");
-						Rprintf("Model:\n");
-						PrintVector(index, p);
-						Rprintf("Su dimension:%d", k2);
 
             if (k2>0){
-							
+			//Copy the sampled model (index) to a new one (indexfr) that will contain its full rank dimension copy
+			//to compute the Bayes factor. The real model, index, is used for the rest of purposes
 							//indexfr is a full rank copy of index
 							  gsl_vector_memcpy(indexfr, index);	
  								PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
@@ -358,18 +359,18 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	              k2e=k2+knull;
 		
                 newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
-								Rprintf("Bg0=%.10f, PrMg=%.10f, Bg0*PrMg=%.10f\n", RobustBF21fun(n,k2e,knull,Q), PrMg, newPBF);
+								//Rprintf("Bg0=%.10f, PrMg=%.10f, Bg0*PrMg=%.10f\n", RobustBF21fun(n,k2e,knull,Q), PrMg, newPBF);
             }
             else{
-							Rprintf("Model (null):\n");
-							PrintVector(index, p);
+							//Rprintf("Model (null):\n");
+							//PrintVector(index, p);
 							
                 Q=1.0;
 				        k2e=k2+knull;
 								
                 gsl_vector_set_zero(hatbetap);
                 newPBF= 1.0*SBSBpriorprob(index, positionsx, positions, nofvars, levels, p, isfactor);
-								Rprintf("PrMg=%.10f\n", newPBF);
+								//Rprintf("PrMg=%.10f\n", newPBF);
 								
 								
             }
@@ -386,6 +387,12 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 			cont++;
 			R_CheckUserInterrupt();
 		}
+		
+		Rprintf("\n\n\n");
+		Rprintf("Accepted model:\n");
+		PrintVector(index, p);
+		Rprintf("Su dimension:%d", k2);
+		Rprintf("Bg0*PrMg=%.10f\n", oldPBF);
 		
 		//update the summaries
 		//inclusion probs:
