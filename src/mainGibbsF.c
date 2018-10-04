@@ -211,8 +211,6 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
-	int k2e=0;
-	
 	int k2fr=0; //The number of covs in the full rank representation
 	
 	//the vector with the inclusion probs:
@@ -284,7 +282,7 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 		  gsl_vector_memcpy(indexfr, index);	
 			PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 			gsl_vector_set_zero(hatbetap);
-      newPBF= 1.0*PrMg;
+      oldPBF= 1.0*PrMg;
  	  }
     
 	double HPMBF=oldPBF;
@@ -478,6 +476,7 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 }
 
 
+
 void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
@@ -666,7 +665,8 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 
 	//k2 will contain the number of covariates in each of the models visited
 	int k2=0;
-	int k2e=0;
+	int k2fr=0; //The number of covs in the full rank representation
+	
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
@@ -725,20 +725,18 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
     k2=(int) gsl_blas_dasum(index);
     if (k2>0){
 		  gsl_vector_memcpy(indexfr, index);
+			//I use the SBSBpriorprob function only to get indexfr
+			PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 			PrMg=Constpriorprob(p,k2);
-	    k2=(int) gsl_blas_dasum(indexfr);			
-      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-	     k2e=k2+knull;
-
-	
-        oldPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
+	    k2fr=(int) gsl_blas_dasum(indexfr);			
+      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+      oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
     }
     else{
-        Q=1.0;
-        k2e=k2+knull;
-        gsl_vector_set_zero(hatbetap);
-        oldPBF= 1.0*Constpriorprob(p,k2);
-			}
+			PrMg=Constpriorprob(p,k2);
+			gsl_vector_set_zero(hatbetap);
+      oldPBF= 1.0*PrMg;
+		}
     
 	double HPMBF=oldPBF;
 	double ratio=0.0;
@@ -752,22 +750,19 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 			gsl_vector_set(index, component, 1-oldcomponent);
             k2=(int) gsl_blas_dasum(index);
             if (k2>0){
+							
 						  gsl_vector_memcpy(indexfr, index);
-							//PrintVector(indexfr, p);	
+							//I use the SBSBpriorprob function only to get indexfr
+							PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 							PrMg=Constpriorprob(p,k2);
-							
-					    k2=(int) gsl_blas_dasum(indexfr);			
-              Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-							
-	            k2e=k2+knull;
-								
-                newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
-            }
+					    k2fr=(int) gsl_blas_dasum(indexfr);			
+				      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+				      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+	          }
             else{
-                Q=1.0;
-				        k2e=k2+knull;
-						    gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*Constpriorprob(p,k2);
+							PrMg=Constpriorprob(p,k2);
+							gsl_vector_set_zero(hatbetap);
+				      newPBF= 1.0*PrMg;
             }
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
             newcomponent=gsl_ran_bernoulli(ran, ratio);
@@ -791,39 +786,21 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 			oldcomponent=gsl_vector_get(index, component);
 			gsl_vector_set(index, component, 1-oldcomponent);
             k2=(int) gsl_blas_dasum(index);
-						//Rprintf("\n\n\n");
-						//Rprintf("Model:\n");
-						//PrintVector(index, p);
-						//Rprintf("Su dimension:%d", k2);
 
             if (k2>0){
 							
-							//indexfr is a full rank copy of index
-							  gsl_vector_memcpy(indexfr, index);	
- 								PrMg=Constpriorprob(p,k2);
-								//Rprintf("\n");
-								//Rprintf("Its full rank representation:\n");
-								//PrintVector(indexfr, p);
-								
-						    k2=(int) gsl_blas_dasum(indexfr);			
-								//Rprintf("Su dimension:%d\n", k2);
-
-                Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-																
-	              k2e=k2+knull;
-		
-                newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
-								//Rprintf("Bg0=%.10f, PrMg=%.10f, Bg0*PrMg=%.10f\n", RobustBF21fun(n,k2e,knull,Q), PrMg, newPBF);
-            }
+						  gsl_vector_memcpy(indexfr, index);
+							//I use the SBSBpriorprob function only to get indexfr
+							PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+							PrMg=Constpriorprob(p,k2);
+					    k2fr=(int) gsl_blas_dasum(indexfr);			
+				      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+				      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+	          }
             else{
-							//Rprintf("Model (null):\n");
-							//PrintVector(index, p);
-							
-                Q=1.0;
-				        k2e=k2+knull;
-								
-                gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*Constpriorprob(p,k2);
+							PrMg=Constpriorprob(p,k2);
+							gsl_vector_set_zero(hatbetap);
+				      newPBF= 1.0*PrMg;
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
@@ -857,7 +834,7 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/Constpriorprob(p,k2)); 
+		fprintf(fAllBF, "%.20f\n", oldPBF/PrMg); 
       
 
 	}
@@ -953,7 +930,6 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 			//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 			//the original null model is only the intercept
 	
-			//16-5-18 version of GibbsRobust with Factors and prior probabilities obtained with a pure constant prior
 	
 			void R_CheckUserInterrupt(void);
 	
@@ -1134,7 +1110,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 
 			//k2 will contain the number of covariates in each of the models visited
 			int k2=0;
-			int k2e=0;
+			int k2fr=0; //The number of covs in the full rank representation
 	
 			//the vector with the inclusion probs:
 			gsl_vector * incl_prob=gsl_vector_calloc(p);
@@ -1193,20 +1169,18 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 		    k2=(int) gsl_blas_dasum(index);
 		    if (k2>0){
 				  gsl_vector_memcpy(indexfr, index);
+					//I use the SBSBpriorprob function only to get indexfr
+					PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 					PrMg=SBpriorprob(p,k2);
-			    k2=(int) gsl_blas_dasum(indexfr);			
-		      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-			     k2e=k2+knull;
-
-	
-		        oldPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
+			    k2fr=(int) gsl_blas_dasum(indexfr);			
+		      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+		      oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		    }
 		    else{
-		        Q=1.0;
-		        k2e=k2+knull;
-		        gsl_vector_set_zero(hatbetap);
-		        oldPBF= 1.0*SBpriorprob(p,k2);
-					}
+					PrMg=SBpriorprob(p,k2);
+					gsl_vector_set_zero(hatbetap);
+		      oldPBF= 1.0*PrMg;
+				}
     
 			double HPMBF=oldPBF;
 			double ratio=0.0;
@@ -1221,21 +1195,17 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 		            k2=(int) gsl_blas_dasum(index);
 		            if (k2>0){
 								  gsl_vector_memcpy(indexfr, index);
-									//PrintVector(indexfr, p);	
+									//I use the SBSBpriorprob function only to get indexfr
+									PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 									PrMg=SBpriorprob(p,k2);
-							
-							    k2=(int) gsl_blas_dasum(indexfr);			
-		              Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-							
-			            k2e=k2+knull;
-								
-		                newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
+							    k2fr=(int) gsl_blas_dasum(indexfr);			
+						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+						      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		            }
 		            else{
-		                Q=1.0;
-						        k2e=k2+knull;
-								    gsl_vector_set_zero(hatbetap);
-		                newPBF= 1.0*SBpriorprob(p,k2);
+									PrMg=SBpriorprob(p,k2);
+									gsl_vector_set_zero(hatbetap);
+						      newPBF= 1.0*PrMg;
 		            }
 		            ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
 		            newcomponent=gsl_ran_bernoulli(ran, ratio);
@@ -1266,32 +1236,18 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 
 		            if (k2>0){
 							
-									//indexfr is a full rank copy of index
-									  gsl_vector_memcpy(indexfr, index);	
-		 								PrMg=SBpriorprob(p,k2);
-										//Rprintf("\n");
-										//Rprintf("Its full rank representation:\n");
-										//PrintVector(indexfr, p);
-								
-								    k2=(int) gsl_blas_dasum(indexfr);			
-										//Rprintf("Su dimension:%d\n", k2);
-
-		                Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-																
-			              k2e=k2+knull;
-		
-		                newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
-										//Rprintf("Bg0=%.10f, PrMg=%.10f, Bg0*PrMg=%.10f\n", RobustBF21fun(n,k2e,knull,Q), PrMg, newPBF);
+								  gsl_vector_memcpy(indexfr, index);
+									//I use the SBSBpriorprob function only to get indexfr
+									PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+									PrMg=SBpriorprob(p,k2);
+							    k2fr=(int) gsl_blas_dasum(indexfr);			
+						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+						      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		            }
 		            else{
-									//Rprintf("Model (null):\n");
-									//PrintVector(index, p);
-							
-		                Q=1.0;
-						        k2e=k2+knull;
-								
-		                gsl_vector_set_zero(hatbetap);
-		                newPBF= 1.0*SBpriorprob(p,k2);
+									PrMg=SBpriorprob(p,k2);
+									gsl_vector_set_zero(hatbetap);
+						      newPBF= 1.0*PrMg;
 		            }
 
 		            ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
@@ -1325,7 +1281,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 				//Write to the file the visited model
 				my_gsl_vector_fprintf(fAllModels, index, "%f");
 				//and the BF's
-				fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2)); 
+				fprintf(fAllBF, "%.20f\n", oldPBF/PrMg); 
       
 
 			}
@@ -1420,7 +1376,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 			//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 			//the original null model is only the intercept
 	
-			//9-5-18 version of GibbsRobust with Factors and prior probabilities obtained with SB-SB
+			//9-5-18 version of GibbsRobust with Factors and prior probabilities obtained with Const-Const
 	
 			void R_CheckUserInterrupt(void);
 	
@@ -1601,7 +1557,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 
 			//k2 will contain the number of covariates in each of the models visited
 			int k2=0;
-			int k2e=0;
+			int k2fr=0; //The number of covs in the full rank representation
 	
 			//the vector with the inclusion probs:
 			gsl_vector * incl_prob=gsl_vector_calloc(p);
@@ -1659,21 +1615,21 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	
 		    k2=(int) gsl_blas_dasum(index);
 		    if (k2>0){
+					//Copy the sampled model (index) to a new one (indexfr) that will contain its full rank dimension copy
+					//to compute Q and the Bayes factor. The real model, index, is used for the rest of purposes
+					//but be CAREFUL as each time the ConstConstriorprob is called the "model" is changed
 				  gsl_vector_memcpy(indexfr, index);
 					PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
-			    k2=(int) gsl_blas_dasum(indexfr);			
-		      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-			     k2e=k2+knull;
-
-	
-		        oldPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
+			    k2fr=(int) gsl_blas_dasum(indexfr);			
+		      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+			    oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		    }
 		    else{
-		        Q=1.0;
-		        k2e=k2+knull;
-		        gsl_vector_set_zero(hatbetap);
-		        oldPBF= 1.0*ConstConstpriorprob(index, positionsx, positions, nofvars, levels, p, isfactor);
-					}
+				  gsl_vector_memcpy(indexfr, index);	
+					PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+					gsl_vector_set_zero(hatbetap);
+		      oldPBF= 1.0*PrMg;
+				}
     
 			double HPMBF=oldPBF;
 			double ratio=0.0;
@@ -1686,24 +1642,22 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 					oldcomponent=gsl_vector_get(index, component);
 					gsl_vector_set(index, component, 1-oldcomponent);
 		            k2=(int) gsl_blas_dasum(index);
-		            if (k2>0){
+						    if (k2>0){
+									//Copy the sampled model (index) to a new one (indexfr) that will contain its full rank dimension copy
+									//to compute Q and the Bayes factor. The real model, index, is used for the rest of purposes
+									//but be CAREFUL as each time the ConstConstriorprob is called the "model" is changed
 								  gsl_vector_memcpy(indexfr, index);
-									//PrintVector(indexfr, p);	
 									PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
-							
-							    k2=(int) gsl_blas_dasum(indexfr);			
-		              Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-							
-			            k2e=k2+knull;
-								
-		                newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
-		            }
-		            else{
-		                Q=1.0;
-						        k2e=k2+knull;
-								    gsl_vector_set_zero(hatbetap);
-		                newPBF= 1.0*ConstConstpriorprob(index, positionsx, positions, nofvars, levels, p, isfactor);
-		            }
+							    k2fr=(int) gsl_blas_dasum(indexfr);			
+						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+							    newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+						    }
+						    else{
+								  gsl_vector_memcpy(indexfr, index);	
+									PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+									gsl_vector_set_zero(hatbetap);
+						      newPBF= 1.0*PrMg;
+								}
 		            ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
 		            newcomponent=gsl_ran_bernoulli(ran, ratio);
 					if (newcomponent==oldcomponent){
@@ -1731,36 +1685,23 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 								//PrintVector(index, p);
 								//Rprintf("Su dimension:%d", k2);
 
-		            if (k2>0){
-							
-									//indexfr is a full rank copy of index
-									  gsl_vector_memcpy(indexfr, index);	
-		 								PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
-										//Rprintf("\n");
-										//Rprintf("Its full rank representation:\n");
-										//PrintVector(indexfr, p);
-								
-								    k2=(int) gsl_blas_dasum(indexfr);			
-										//Rprintf("Su dimension:%d\n", k2);
-
-		                Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2, hatbetap);
-																
-			              k2e=k2+knull;
-		
-		                newPBF= RobustBF21fun(n,k2e,knull,Q)*PrMg;
-										//Rprintf("Bg0=%.10f, PrMg=%.10f, Bg0*PrMg=%.10f\n", RobustBF21fun(n,k2e,knull,Q), PrMg, newPBF);
-		            }
-		            else{
-									//Rprintf("Model (null):\n");
-									//PrintVector(index, p);
-							
-		                Q=1.0;
-						        k2e=k2+knull;
-								
-		                gsl_vector_set_zero(hatbetap);
-		                newPBF= 1.0*ConstConstpriorprob(index, positionsx, positions, nofvars, levels, p, isfactor);
-		            }
-
+						    if (k2>0){
+									//Copy the sampled model (index) to a new one (indexfr) that will contain its full rank dimension copy
+									//to compute Q and the Bayes factor. The real model, index, is used for the rest of purposes
+									//but be CAREFUL as each time the ConstConstriorprob is called the "model" is changed
+								  gsl_vector_memcpy(indexfr, index);
+									PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+							    k2fr=(int) gsl_blas_dasum(indexfr);			
+						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
+							    newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+						    }
+						    else{
+								  gsl_vector_memcpy(indexfr, index);	
+									PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+									gsl_vector_set_zero(hatbetap);
+						      newPBF= 1.0*PrMg;
+								}
+	
 		            ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
 					newcomponent=gsl_ran_bernoulli(ran, ratio);
 					if (newcomponent==oldcomponent){
@@ -1792,7 +1733,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 				//Write to the file the visited model
 				my_gsl_vector_fprintf(fAllModels, index, "%f");
 				//and the BF's
-				fprintf(fAllBF, "%.20f\n", oldPBF/ConstConstpriorprob(index, positionsx, positions, nofvars, levels, p, isfactor)); 
+				fprintf(fAllBF, "%.20f\n", oldPBF/PrMg); 
       
 
 			}
@@ -1881,5 +1822,6 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 		}
 
 		
+
 
 
