@@ -16,6 +16,7 @@ GibbsBvsF <-
 
 		#Factors: The null model only contains the intercept:				 
 	  null.model = paste(as.formula(formula)[[2]], " ~ 1", sep="")
+		cat("At this point, only the intercept is allowed in the simplest model\n")
 		#contrasts is one of either "none" for our proposal and "given" using
 		#the one in the factors (perhaps given by default by R)
 		if (contrasts != "none" & contrasts != "given") stop("contrasts not defined.\n")
@@ -232,16 +233,17 @@ GibbsBvsF <-
 
 
 		#Factors:
-		if (prior.models!="SBSB" & prior.models!="ConstConst" & prior.models!="SB" & prior.models!="Const")
+		#here the added index "2" makes reference of the hierarchical corresponding prior but only keeping
+		#a model of the same class (copies are removed and only the full within each class is kept)
+		if (prior.models!="SBSB2" & prior.models!="ConstConst2" & prior.models!="SB2" & prior.models!="Const2")
 			{stop("Prior over the model space not supported\n")}
-		if (prior.models=="SBSB"){method<- "rSBSB"; cat("Robust and SB-SB are used.\n")}
-		if (prior.models=="ConstConst"){method<- "rConstConst"; cat("Robust and Const-Const are used.\n")}
-		if (prior.models=="SB"){method<- "rSB"; cat("Robust and SB are used.\n")}
-		if (prior.models=="Const"){method<- "rConst"; cat("Robust and Const are used.\n")}
+		if (prior.models=="SBSB2"){method<- "rSBSB"; cat("Robust and SB-SB are used.\n")}
+		if (prior.models=="ConstConst2"){method<- "rConstConst"; cat("Robust and Const-Const are used.\n")}
+		if (prior.models=="SB2"){method<- "rSB"; cat("Robust and SB are used.\n")}
+		if (prior.models=="Const2"){method<- "rConst"; cat("Robust and Const are used.\n")}
 
 		
     estim.time <- 0
-
 		
     #Call the corresponding function:
     result <- switch(
@@ -316,6 +318,13 @@ GibbsBvsF <-
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
 
+
+    #Now the resampling to obtain models with the "2" priors:
+		if (prior.models=="SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
+		if (prior.models=="ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
+		if (prior.models=="SB2"){stop("not implemented"); modelslBF<- resamplingSB(modelslBF, positions)}
+		if (prior.models=="Const2"){stop("not implemented"); modelslBF<- resamplingConst(modelslBF, positions)}
+		
 
     #Highest probability model
     mod.mat <- as.data.frame(t(models))

@@ -24,6 +24,33 @@ resamplingSBSB<- function(modelslBF, positions){
 	return(modelslBF[resamp,])	
 }
 
+resamplingConstConst<- function(modelslBF, positions){
+	#Given the matrix created within BvsF containing a binary expression of models and the log(BF) in the last column obtained 
+	#with GibbsBvs(...prior.models = "ConstConst"...)
+	#(meaning that prior over the model space is obtained with the hierarchical
+	#Pr(Mg)=Pr(Mg|those factors and x's)*Pr(those factors and x's)
+	#and Pr(Mg|those factors and x's)\proto 1/(number of models with those factors and x's)
+	#and Pr(those factors and x's)\propto 1/(number of models))
+	#the function makes a resampling with the new prior being the same but only
+	#keeping unique models (in a same class the full is kept and the others are not)
+	#returning a matrix of the same size with the resampled models
+	levels<- rowSums(positions)
+	levelsf<- levels[levels>1]
+	kplusp<- dim(positions)[1]
+	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
+	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
+	#for each sampled model obtain the ConstConst2 prior prob:
+	allmodelspriorSBSB2<- t(apply(m.actlevels, MARGIN=1, FUN=ConstConst2))
+	#for each sampled model obtain the SBSB1 prior prob:
+	allmodelspriorSBSB1<- t(apply(m.actlevels, MARGIN=1, FUN=ConstConst1))
+	#now the resampling:
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelspriorSBSB2-allmodelspriorSBSB1))
+	return(modelslBF[resamp,])	
+}
+
+
+
+
 priorSBSB1<- function(act.levels){
 	#The original SBSB prior
 	lprMgamma<- -sum(log(levels[act.levels>0])+lchoose(levels[act.levels>0], act.levels[act.levels>0]))-log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0))
@@ -31,7 +58,9 @@ priorSBSB1<- function(act.levels){
 }
 	
 priorSBSB2<- function(act.levels){
-	#The corrected SB-SB prior prob: (four different cases)
+	#The corrected SB-SB prior prob (inversely proportional to the number of models of that rank)
+	#For copies of the same model, we only keep one representative (the full on that class)
+	#(four different cases)
 	
 	#of the active levels take only those that correspond to factors:	
 	act.levelsf<- act.levels[levels>1]	
@@ -59,6 +88,44 @@ priorSBSB2<- function(act.levels){
 	return(l2prMgamma)	
   }
 }
+
+
+priorConstConst1<- function(act.levels){
+	#The original Const-Const prior (conditionally, inversely proportional to the number of models)
+	
+	#of the active levels take only those that correspond to factors:	
+	act.levelsf<- act.levels[levels>1]	
+	
+	lprMgamma<- -sum(log(2^levelsf[act.levelsf>0]-1))-kplusp*log(2)
+	return(lprMgamma)
+}
+
+
+priorConstConst2<- function(act.levels){
+	#The corrected Const-Const prior prob (proportional to a constant for unique models)
+	#For copies of the same model, we only keep one representative (the full on that class)
+	#(four different cases)
+	#of the active levels take only those that correspond to factors:	
+	act.levelsf<- act.levels[levels>1]	
+	
+	#If the model does not contain any factor:
+	if (sum(act.levelsf)==0) return(-kplusp*log(2))
+	
+	#if the model is not saturated nor oversaturated
+	if (sum(act.levelsf >= (levelsf-1)) == 0){
+		l2prMgamma<- -sum(log(2^levelsf[act.levelsf>0]-levelsf[act.levelsf>0]-1))-kplusp*log(2)
+		return(l2prMgamma)	
+			  }
+  #if the model contains at least one level saturated then return -Inf:
+	if (sum(act.levelsf[act.levelsf>0] == (levelsf[act.levelsf>0]-1)) >= 1){
+		return(-Inf)
+	}
+	else { #keep the rest
+		l2prMgamma<- -sum(log(2^levelsf[act.levelsf>0]-levelsf[act.levelsf>0]-1))-kplusp*log(2)
+		return(l2prMgamma)	
+  }
+}
+	
 
 
 my.choose<- function(n, k){
