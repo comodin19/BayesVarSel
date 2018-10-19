@@ -180,8 +180,7 @@ priorSB1<- function(act.levels){
 	return(-lchoose(sum(levels), dimMg)-log(sum(levels)+1))
 }
 	
-		
-}	
+	
 priorSB2<- function(act.levels){
 	#The corrected SB prior prob (inversely proportional to the number of models of that rank)
 	#For copies of the same model, we only keep one representative (the full on that class)
