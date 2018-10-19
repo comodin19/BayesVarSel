@@ -16,11 +16,11 @@ resamplingSBSB<- function(modelslBF, positions){
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelspriorSBSB2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB2))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelspriorSBSB1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB1))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelspriorSBSB2-allmodelspriorSBSB1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -40,11 +40,11 @@ resamplingConstConst<- function(modelslBF, positions){
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the ConstConst2 prior prob:
-	allmodelspriorSBSB2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst2))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelspriorSBSB1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst1))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelspriorSBSB2-allmodelspriorSBSB1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -59,16 +59,16 @@ resamplingSB<- function(modelslBF, positions){
 	levelsfull<- rowSums(positions)
 	levelsf<- levelsfull[levelsfull>1]
 	#ff contains the matrix with the count of models of each rank for each combination of levels
-	ff<- matrix.rank.levels(all.levelsf=levelsf)
+	ff<- rank.levels2(pmax(levelsfull,2))
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelspriorSB2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelspriorSB1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB1))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelspriorSB2-allmodelspriorSB1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -88,11 +88,11 @@ resamplingConst<- function(modelslBF, positions){
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelspriorConst2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst2))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelspriorConst1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst1))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelspriorConst2-allmodelspriorConst1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -190,13 +190,13 @@ priorSB2<- function(act.levels){
   rankMg<- sum(pmin(act.levels[levelsfull>1], levelsfull[levelsfull>1]-1))+sum(act.levels[levelsfull==1])
 	
 	#for the null
-	if (sum(rankMg==0)==length(rankMg)) return(-log(length(gg)))
+	if (sum(rankMg==0)==length(rankMg)) return(-log(length(ff)))
 		
 	act.levelsf<- act.levels[levelsfull>1]	
 
 	#if the model is not saturated nor oversaturated
 	if (sum(act.levelsf >= (levelsf-1)) == 0){
-		l2prMgamma<- -log(gg[as.numeric(names(gg))==rankMg])-log(length(gg))
+		l2prMgamma<- -log(ff[as.numeric(names(ff))==rankMg])-log(length(ff))
 		return(l2prMgamma)	
 			  }
   #if the model contains at least one level saturated then return -Inf:
@@ -204,7 +204,7 @@ priorSB2<- function(act.levels){
 		return(-Inf)
 	}
 	else { #keep the rest
-	l2prMgamma<- -log(gg[as.numeric(names(gg))==rankMg])-log(length(gg))
+	l2prMgamma<- -log(ff[as.numeric(names(ff))==rankMg])-log(length(ff))
 	return(l2prMgamma)	
   }
 }
