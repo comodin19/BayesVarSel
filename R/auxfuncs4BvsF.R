@@ -5,11 +5,11 @@ resamplingSBSB<- function(modelslBF, positions){
 	#Pr(Mg)=Pr(Mg|those factors and x's)*Pr(those factors and x's)
 	#and Pr(Mg|those factors and x's)\proto 1/(number of models of that dimension with those factors and x's)
 	#and Pr(those factors and x's)\propto 1/(number of models of that dimension))
-	#the function makes a resampling with the new prior being
+	#the function makes a resampling with the new priolevelsfullr being
 	#Pr(Mg|those factors and x's)\propto 1/(number of different models of that rank with those factors and x's)
 	#returning a matrix of the same size with the resampled models
-	levels<- rowSums(positions)
-	levelsf<- levels[levels>1]
+	levelsfull<- rowSums(positions)
+	levelsf<- levelsfull[levelsfull>1]
 	#ff contains the matrix with the count of models of each rank for each combination of levels
 	ff<- matrix.rank.levels(all.levelsf=levelsf)
 	kplusp<- dim(positions)[1]
@@ -34,15 +34,15 @@ resamplingConstConst<- function(modelslBF, positions){
 	#the function makes a resampling with the new prior being the same but only
 	#keeping unique models (in a same class the full is kept and the others are not)
 	#returning a matrix of the same size with the resampled models
-	levels<- rowSums(positions)
-	levelsf<- levels[levels>1]
+	levelsfull<- rowSums(positions)
+	levelsf<- levelsfull[levelsfull>1]
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the ConstConst2 prior prob:
-	allmodelspriorSBSB2<- t(apply(m.actlevels, MARGIN=1, FUN=ConstConst2))
+	allmodelspriorSBSB2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst2))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelspriorSBSB1<- t(apply(m.actlevels, MARGIN=1, FUN=ConstConst1))
+	allmodelspriorSBSB1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst1))
 	#now the resampling:
 	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelspriorSBSB2-allmodelspriorSBSB1))
 	return(modelslBF[resamp,])	
@@ -56,8 +56,8 @@ resamplingSB<- function(modelslBF, positions){
 	#the function makes a resampling with the new prior being
 	#Pr(Mg)\propto 1/(number of different models of that rank)
 	#returning a matrix of the same size with the resampled models
-	levels<- rowSums(positions)
-	levelsf<- levels[levels>1]
+	levelsfull<- rowSums(positions)
+	levelsf<- levelsfull[levelsfull>1]
 	#ff contains the matrix with the count of models of each rank for each combination of levels
 	ff<- matrix.rank.levels(all.levelsf=levelsf)
 	kplusp<- dim(positions)[1]
@@ -80,8 +80,8 @@ resamplingConst<- function(modelslBF, positions){
 	#the function makes a resampling with the new prior being
 	#Pr(Mg)\propto 1/(number of unique models)
 	#returning a matrix of the same size with the resampled models
-	levels<- rowSums(positions)
-	levelsf<- levels[levels>1]
+	levelsfull<- rowSums(positions)
+	levelsf<- levelsfull[levelsfull>1]
 	#ff contains the matrix with the count of models of each rank for each combination of levels
 	ff<- matrix.rank.levels(all.levelsf=levelsf)
 	kplusp<- dim(positions)[1]
@@ -99,7 +99,7 @@ resamplingConst<- function(modelslBF, positions){
 
 priorSBSB1<- function(act.levels){
 	#The original SBSB prior
-	lprMgamma<- -sum(log(levels[act.levels>0])+lchoose(levels[act.levels>0], act.levels[act.levels>0]))-log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0))
+	lprMgamma<- -sum(log(levelsfull[act.levels>0])+lchoose(levelsfull[act.levels>0], act.levels[act.levels>0]))-log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0))
 	return(lprMgamma)
 }
 	
@@ -109,7 +109,7 @@ priorSBSB2<- function(act.levels){
 	#(four different cases)
 	
 	#of the active levels take only those that correspond to factors:	
-	act.levelsf<- act.levels[levels>1]	
+	act.levelsf<- act.levels[levelsfull>1]	
 	
 	#If the model does not contain any factor:
 	if (sum(act.levelsf)==0) return(-log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0)))
@@ -140,7 +140,7 @@ priorConstConst1<- function(act.levels){
 	#The original Const-Const prior (conditionally, inversely proportional to the number of models)
 	
 	#of the active levels take only those that correspond to factors:	
-	act.levelsf<- act.levels[levels>1]	
+	act.levelsf<- act.levels[levelsfull>1]	
 	
 	lprMgamma<- -sum(log(2^levelsf[act.levelsf>0]-1))-kplusp*log(2)
 	return(lprMgamma)
@@ -152,7 +152,7 @@ priorConstConst2<- function(act.levels){
 	#For copies of the same model, we only keep one representative (the full on that class)
 	#(four different cases)
 	#of the active levels take only those that correspond to factors:	
-	act.levelsf<- act.levels[levels>1]	
+	act.levelsf<- act.levels[levelsfull>1]	
 	
 	#If the model does not contain any factor:
 	if (sum(act.levelsf)==0) return(-kplusp*log(2))
@@ -177,7 +177,7 @@ priorSB1<- function(act.levels){
 	#The standard SB prior where prob over models is inversely proportional to the number of models
 	#of that dimension
 	dimMg<- sum(act.levels)
-	return(-lchoose(sum(levels), dimMg)-log(sum(levels)+1))
+	return(-lchoose(sum(levelsfull), dimMg)-log(sum(levelsfull)+1))
 }
 	
 	
@@ -187,12 +187,12 @@ priorSB2<- function(act.levels){
 	#(four different cases)
 
   #this prior is only based on the rank of the model:
-  rankMg<- sum(pmin(act.levels[levels>1], levels[levels>1]-1))+sum(act.levels[levels==1])
+  rankMg<- sum(pmin(act.levels[levelsfull>1], levelsfull[levelsfull>1]-1))+sum(act.levels[levelsfull==1])
 	
 	#for the null
 	if (sum(rankMg==0)==length(rankMg)) return(-log(length(gg)))
 		
-	act.levelsf<- act.levels[levels>1]	
+	act.levelsf<- act.levels[levelsfull>1]	
 
 	#if the model is not saturated nor oversaturated
 	if (sum(act.levelsf >= (levelsf-1)) == 0){
@@ -211,22 +211,22 @@ priorSB2<- function(act.levels){
 
 priorConst1<- function(act.levels){
 	#The standard constant prior, inversely proportional to the number of models
-	return(-sum(levels)*log(2))
+	return(-sum(levelsfull)*log(2))
 }
 
 priorConst2<- function(act.levels){
 	#The constant prior over the unique models
 	#For copies of the same model, we only keep one representative (the full on that class)
   #this prior is only based on the rank of the model:
-  rankMg<- sum(pmin(act.levels[levels>1], levels[levels>1]-1))+sum(act.levels[levels==1])
+  rankMg<- sum(pmin(act.levels[levelsfull>1], levelsfull[levelsfull>1]-1))+sum(act.levels[levelsfull==1])
 	
 	#Rui's number (number of unique models):
-	lrui.number<- -sum(log(2^levels-levels))
+	lrui.number<- -sum(log(2^levelsfull-levelsfull))
 	
 	#for the null
 	if (sum(rankMg==0)==length(rankMg)) return(lrui.number)
 		
-	act.levelsf<- act.levels[levels>1]	
+	act.levelsf<- act.levels[levelsfull>1]	
 
 	#if the model is not saturated nor oversaturated
 	if (sum(act.levelsf >= (levelsf-1)) == 0){
@@ -318,35 +318,35 @@ rank.levels<- function(levelsf){
 	return(result)	
 }
 
-rank.levels2<- function(levels){
+rank.levels2<- function(levelsfull){
 	#Given a vector of ACTIVE factors and variables (l1,l2,...,lR), this function computes how many
 	#models there are of all possible ranks 0<=r<=sum(l_i)-R
-	if (length(levels)==1){
-		if (levels==2){
+	if (length(levelsfull)==1){
+		if (levelsfull==2){
 			result<- c(1)
 			names(result)<- "1"
 			return(result)
 			}
 	}
-	p.levels<- prod(levels); n.levels<- length(levels)
+	p.levels<- prod(levelsfull); n.levels<- length(levelsfull)
 	mm<- matrix(0, nrow=p.levels, ncol=n.levels)
-	colnames(mm)<- paste("F", 1:length(levels), sep="")
+	colnames(mm)<- paste("F", 1:length(levelsfull), sep="")
 	if (n.levels>1){
 		for (i in 1:(n.levels-1)){
-			mm[,i]<- rep(0:(levels[i]-1), each=prod(levels[(i+1):n.levels]), length.out=p.levels)
+			mm[,i]<- rep(0:(levelsfull[i]-1), each=prod(levelsfull[(i+1):n.levels]), length.out=p.levels)
 		}
 			i<- i+1
-			mm[,i]<- rep(0:(levels[i]-1), each=1, length.out=p.levels)
+			mm[,i]<- rep(0:(levelsfull[i]-1), each=1, length.out=p.levels)
 		}
-	else mm[,1]<- rep(0:(levels[1]-1), each=1, length.out=p.levels)
+	else mm[,1]<- rep(0:(levelsfull[1]-1), each=1, length.out=p.levels)
 	
 	mm<- cbind(mm, rowSums(mm))
 	mm<- cbind(mm, 0)
-	colnames(mm)[length(levels)+1:2]<- c("sum.act.levels", "combin.prod")
+	colnames(mm)[length(levelsfull)+1:2]<- c("sum.act.levels", "combin.prod")
 	s<- 1
 	for (i in 1:p.levels){
 		for (j in 1:n.levels){
-			s<- s*my.choose(levels[j], mm[i,j])
+			s<- s*my.choose(levelsfull[j], mm[i,j])
 		}
 		mm[i, n.levels+2]<- s; s<- 1
 	}
