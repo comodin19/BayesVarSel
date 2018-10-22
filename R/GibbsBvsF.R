@@ -14,7 +14,7 @@ GibbsBvsF <-
 					 contrasts = "none") {
 
 
-		#Factors: The null model only contains the intercept:				 
+		#Factors:  The null model only contains the intercept:				 
 	  null.model = paste(as.formula(formula)[[2]], " ~ 1", sep="")
 		cat("At this point, only the intercept is allowed in the simplest model\n")
 		#contrasts is one of either "none" for our proposal and "given" using
