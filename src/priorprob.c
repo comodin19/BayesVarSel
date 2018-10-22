@@ -71,7 +71,6 @@ double SBSBpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_matrix *
 	
 }
 
-
 //Double Constant prior
 double ConstConstpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_matrix * positions, int nofvars, gsl_vector * levels,
 	                   int p, gsl_vector * isfactor)
@@ -105,11 +104,11 @@ double ConstConstpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_ma
   
 	 		
 	//m2 is the number of factors in the model:
-	double m2=m1plusm2-m1;
-	double PrMg=(m1+m2)*log(2);
+	//double m2=m1plusm2-m1;
+	double PrMg=nofvars*log(2);
 	for (int i=0; i<nofvars; i++){
 		if (gsl_vector_get(v,i)>0){
-		PrMg=PrMg+gsl_vector_get(levels, i)*log(2);
+		PrMg=PrMg+log(pow(2.0, gsl_vector_get(levels, i))-1.0);
 	}
 	}
 	
@@ -119,3 +118,4 @@ double ConstConstpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_ma
 	return(PrMg);
 	
 }
+
