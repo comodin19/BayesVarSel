@@ -134,6 +134,8 @@ GibbsBvsF <-
 		#contrasts is one of either "none" for our proposal and "given" using
 		#the one in the factors (perhaps given by default by R)
 		if (contrasts != "none" & contrasts != "given") stop("contrasts not defined.\n")
+		#for prior.models="SBSB" use the hierarchical Scott-Berger over the dimension
+		#for prior.models="SBSB2" use the hierarchical Scott-Berger over the rank
 		
     formula <- as.formula(formula)
 		
@@ -347,9 +349,9 @@ GibbsBvsF <-
 
 
 		#Factors:
-		if (prior.models!="SBSB" & prior.models!="ConstConst" & prior.models!="SB" & prior.models!="Const")
+		if (prior.models!="SBSB" & prior.models!="SBSB2" & prior.models!="ConstConst" & prior.models!="SB" & prior.models!="Const")
 			{stop("Prior over the model space not supported\n")}
-		if (prior.models=="SBSB"){method<- "rSBSB"}
+		if (prior.models=="SBSB" | prior.models=="SBSB2"){method<- "rSBSB"}
 		if (prior.models=="ConstConst"){method<- "rConstConst"}
 		if (prior.models=="SB"){method<- "rSB"}
 		if (prior.models=="Const"){method<- "rConst"}
@@ -430,6 +432,11 @@ GibbsBvsF <-
     #Log(BF) for every model
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
+	
+	#for the SBSB2 prior do a resampling to correct post probs:
+	if (prior.models == "SBSB2"){
+		modelslBF<- resamplingSBSB(modelslBF, positions)
+	}
 
 
     #Highest probability model
