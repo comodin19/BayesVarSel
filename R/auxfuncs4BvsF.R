@@ -16,9 +16,9 @@ resamplingSBSB<- function(modelslBF, positions){
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB2, levelsfull=levelsfull, levelsf=levelsf, kplusp=kplusp, ff=ff))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB1, levelsfull=levelsfull, kplusp=kplusp))
 	#now the resampling:
 	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
@@ -40,9 +40,9 @@ resamplingConstConst<- function(modelslBF, positions){
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the ConstConst2 prior prob:
-	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst2, levelsfull=levelsfull, levelsf=levelsf, kplusp=kplusp))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst1, kplusp=kplusp, levelsfull=levelsfull))
 	#now the resampling:
 	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
@@ -64,9 +64,9 @@ resamplingSB<- function(modelslBF, positions){
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2, levelsfull=levelsfull, levels=levels, ff=ff))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB1, levelsfull=levelsfull))
 	#now the resampling:
 	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
@@ -88,22 +88,22 @@ resamplingConst<- function(modelslBF, positions){
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst2))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst2, levelsfull=levelsfull, levelsf=levelsf))
 	#for each sampled model obtain the SBSB1 prior prob:
-	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst1))
+	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst1, levelsfull=levelsfull))
 	#now the resampling:
 	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
 
-priorSBSB1<- function(act.levels){
+priorSBSB1<- function(act.levels, levelsfull, kplusp){
 	#The original SBSB prior
 	lprMgamma<- -sum(log(levelsfull[act.levels>0])+lchoose(levelsfull[act.levels>0], act.levels[act.levels>0]))-log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0))
 	return(lprMgamma)
 }
 	
-priorSBSB2<- function(act.levels){
+priorSBSB2<- function(act.levels, levelsfull, levelsf, kplusp, ff){
 	#The corrected SB-SB prior prob (conditionally: inversely proportional to the number of models of that rank)
 	#For copies of the same model, we only keep one representative (the full on that class)
 	#(four different cases)
@@ -136,7 +136,7 @@ priorSBSB2<- function(act.levels){
 }
 
 
-priorConstConst1<- function(act.levels){
+priorConstConst1<- function(act.levels, kplusp, levelsfull){
 	#The original Const-Const prior (conditionally, inversely proportional to the number of models)
 	
 	#of the active levels take only those that correspond to factors:	
@@ -147,7 +147,7 @@ priorConstConst1<- function(act.levels){
 }
 
 
-priorConstConst2<- function(act.levels){
+priorConstConst2<- function(act.levels, levelsfull, levelsf, kplusp){
 	#The corrected Const-Const prior prob (conditionally: proportional to a constant for unique models)
 	#For copies of the same model, we only keep one representative (the full on that class)
 	#(four different cases)
@@ -173,7 +173,7 @@ priorConstConst2<- function(act.levels){
 }
 	
 
-priorSB1<- function(act.levels){
+priorSB1<- function(act.levels, levelsfull){
 	#The standard SB prior where prob over models is inversely proportional to the number of models
 	#of that dimension
 	dimMg<- sum(act.levels)
@@ -181,7 +181,7 @@ priorSB1<- function(act.levels){
 }
 	
 	
-priorSB2<- function(act.levels){
+priorSB2<- function(act.levels, levelsfull, levelsf, ff){
 	#The corrected SB prior prob (inversely proportional to the number of models of that rank)
 	#For copies of the same model, we only keep one representative (the full on that class)
 	#(four different cases)
@@ -209,12 +209,12 @@ priorSB2<- function(act.levels){
   }
 }
 
-priorConst1<- function(act.levels){
+priorConst1<- function(act.levels, levelsfull){
 	#The standard constant prior, inversely proportional to the number of models
 	return(-sum(levelsfull)*log(2))
 }
 
-priorConst2<- function(act.levels){
+priorConst2<- function(act.levels, levelsfull, levelsf){
 	#The constant prior over the unique models
 	#For copies of the same model, we only keep one representative (the full on that class)
   #this prior is only based on the rank of the model:
