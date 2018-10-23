@@ -20,6 +20,8 @@ GibbsBvsF <-
 		#contrasts is one of either "none" for our proposal and "given" using
 		#the one in the factors (perhaps given by default by R)
 		if (contrasts != "none" & contrasts != "given") stop("contrasts not defined.\n")
+		#for prior.models="SBSB" use the hierarchical Scott-Berger over the dimension
+		#for prior.models="SBSB2" use the hierarchical Scott-Berger over the rank
 		
     formula <- as.formula(formula)
 		
@@ -242,7 +244,6 @@ GibbsBvsF <-
 		if (prior.models=="ConstConst2"){method<- "rConstConst"; cat("Robust and Const-Const are used.\n")}
 		if (prior.models=="SB2"){method<- "rSB"; cat("Robust and SB are used.\n")}
 		if (prior.models=="Const2"){method<- "rConst"; cat("Robust and Const are used.\n")}
-
 		
     estim.time <- 0
 		
@@ -318,6 +319,11 @@ GibbsBvsF <-
     #Log(BF) for every model
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
+	
+	#for the SBSB2 prior do a resampling to correct post probs:
+	if (prior.models == "SBSB2"){
+		modelslBF<- resamplingSBSB(modelslBF, positions)
+	}
 
 
     #Now the resampling to obtain models with the "2" priors:
