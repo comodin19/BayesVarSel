@@ -184,6 +184,10 @@ GibbsBvs <-
 
       n <- dim(data)[1]
 
+			#warning about n<p situation
+			if (n < dim(X.full)[2]) cat("In this dataset n<p and unitary Bayes factors are used for models with k>n")
+
+
       #the response variable for the C code
       Y <- lmnull$residuals
 
