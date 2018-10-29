@@ -33,10 +33,11 @@
 
 double gBF21fun(int n, int k2, int k0, double Q)
 {
-	
+
+		if (k2>=n) return 1.0;
 		double BF21=0.0;
-        BF21 = exp(((n-k2)/2.0)*log(1.0+n)-((n-k0)/2.0)*log(1.0+n*Q));
-        if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
+    BF21 = exp(((n-k2)/2.0)*log(1.0+n)-((n-k0)/2.0)*log(1.0+n*Q));
+    if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
 		return BF21;
 	
 }
