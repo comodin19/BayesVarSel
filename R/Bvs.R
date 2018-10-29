@@ -113,7 +113,9 @@
 #' the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 #' inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 #' probabilities of the dimension of the true model} \item{call }{The
-#' \code{call} to the function} \item{method }{\code{full} or \code{parallel} in case of
+#' \code{call} to the function} 
+#' \item{C}{The value of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+#' \item{method }{\code{full} or \code{parallel} in case of
 #' parallel computation}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
@@ -1072,6 +1074,9 @@ Bvs <-
     names(result$postprobdim) <-
       (0:p) + knull #dimension of the true model
     #
+		
+		result$C<- scan(file=paste(wd,"/NormConstant", sep=""), quiet = T)
+		
     #result$betahat <- betahat
     #rownames(result$betahat)<-namesx
     #names(result$betahat) <- "BetaHat"
