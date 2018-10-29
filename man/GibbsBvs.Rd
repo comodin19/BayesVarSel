@@ -73,7 +73,9 @@ of posterior probabilities of the dimension of the true model.}
 visited models after the burning period and the Bayes factor (log scale) of
 that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
-function.} \item{method }{\code{gibbs}}
+function.} 
+\item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+\item{method }{\code{gibbs}}
 }
 \description{
 Approximate computation of summaries of the posterior distribution using a
