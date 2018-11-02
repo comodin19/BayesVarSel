@@ -8,6 +8,9 @@
 #' This is a heuristic approximation to the function
 #' \code{\link[BayesVarSel]{Bvs}} so the details there apply also here.
 #'
+#' For cases where p>>n consider using the correction \code{\link[BayesVarSel]{pltltn}}
+#' to account for the limitation of MCMC techniques in these extremely large model spaces.
+#'
 #' The algorithm implemented is a Gibbs sampling-based searching algorithm
 #' originally proposed by George and McCulloch (1997). Garcia-Donato and
 #' Martinez-Beneito (2013) have shown that this simple sampling strategy in
@@ -70,7 +73,8 @@
 #' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-#' predictions.
+#' predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
+#' situation where p>>n.
 #'
 #' \code{\link[BayesVarSel]{Bvs}} for exact
 #' version obtained enumerating all entertained models (recommended when
@@ -185,7 +189,7 @@ GibbsBvs <-
       n <- dim(data)[1]
 
 			#warning about n<p situation
-			if (n < dim(X.full)[2]) cat("In this dataset n<p and unitary Bayes factors are used for models with k>n")
+			if (n < dim(X.full)[2]) cat("In this dataset n<p and unitary Bayes factors are used for models with k>n.\n")
 
 
       #the response variable for the C code
@@ -291,14 +295,20 @@ GibbsBvs <-
       if (knull == 1) {
         cat("From those",
             knull,
-            "is fixed and we should select from the remaining",
+            "are fixed and we should select from the remaining",
             p,
             "\n")
       }
-      cat(paste(paste(
-        namesx, collapse = ", ", sep = ""
-      ), "\n", sep = ""))
-    }
+			if (p<50){
+				cat(paste(paste(
+        	namesx, collapse = ", ", sep = ""
+      		), "\n", sep = ""))
+				}
+			else
+			cat(paste(paste(
+      	namesx[1:50], collapse = ", ", sep = ""
+    		), "...\n", sep = ""))
+		}
     cat("The problem has a total of", 2 ^ (p), "competing models\n")
     iter <- n.iter
     cat("Of these,", n.burnin + n.iter, "are sampled with replacement\n")
