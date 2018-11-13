@@ -321,10 +321,10 @@ GibbsBvsF <-
     colnames(modelslBF)<- c(namesx, "logBFi0")
 	
     #Now the resampling to obtain models with the "2" priors:
-		#if (prior.models=="SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
-		#if (prior.models=="ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
-		#if (prior.models=="SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
-		#if (prior.models=="Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
+		if (prior.models=="SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
+		if (prior.models=="ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
+		if (prior.models=="SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
+		if (prior.models=="Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
 		
 
     #Highest probability model

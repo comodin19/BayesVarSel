@@ -127,11 +127,8 @@ double robint (double a,double b, double c,double z){
 double RobustBF21fun(int n, int k2, int k0, double Q)
 {
 //k2, total number of covariates in the model 
-<<<<<<< HEAD
-	
-=======
 	if (k2>=n) return 1.0;	
->>>>>>> 7fe5c29f257ea1b9e5605c6138b69aba7b59f7cc
+
 	double  T1=0.0, T2=0.0, T3=0.0;
 	double arg=0.0;
 	double R1=0.0;
