@@ -73,7 +73,9 @@ of posterior probabilities of the dimension of the true model.}
 visited models after the burning period and the Bayes factor (log scale) of
 that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
-function.} \item{method }{\code{gibbs}}
+function.} 
+\item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+\item{method }{\code{gibbs}}
 }
 \description{
 Approximate computation of summaries of the posterior distribution using a
@@ -83,6 +85,9 @@ Gibbs sampling algorithm to explore the model space and frequency of
 \details{
 This is a heuristic approximation to the function
 \code{\link[BayesVarSel]{Bvs}} so the details there apply also here.
+
+For cases where p>>n consider using the correction \code{\link[BayesVarSel]{pltltn}}
+to account for the limitation of MCMC techniques in these extremely large model spaces.
 
 The algorithm implemented is a Gibbs sampling-based searching algorithm
 originally proposed by George and McCulloch (1997). Garcia-Donato and
@@ -137,7 +142,8 @@ selection. Statistica Sinica, 7, 339:372.
 \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-predictions.
+predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
+situation where p>>n.
 
 \code{\link[BayesVarSel]{Bvs}} for exact
 version obtained enumerating all entertained models (recommended when

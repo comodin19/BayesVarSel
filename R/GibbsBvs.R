@@ -8,6 +8,9 @@
 #' This is a heuristic approximation to the function
 #' \code{\link[BayesVarSel]{Bvs}} so the details there apply also here.
 #'
+#' For cases where p>>n consider using the correction \code{\link[BayesVarSel]{pltltn}}
+#' to account for the limitation of MCMC techniques in these extremely large model spaces.
+#'
 #' The algorithm implemented is a Gibbs sampling-based searching algorithm
 #' originally proposed by George and McCulloch (1997). Garcia-Donato and
 #' Martinez-Beneito (2013) have shown that this simple sampling strategy in
@@ -63,12 +66,15 @@
 #' visited models after the burning period and the Bayes factor (log scale) of
 #' that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 #' to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
-#' function.} \item{method }{\code{gibbs}}
+#' function.} 
+#' \item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+#' \item{method }{\code{gibbs}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-#' predictions.
+#' predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
+#' situation where p>>n.
 #'
 #' \code{\link[BayesVarSel]{Bvs}} for exact
 #' version obtained enumerating all entertained models (recommended when
@@ -182,6 +188,10 @@ GibbsBvs <-
 
       n <- dim(data)[1]
 
+			#warning about n<p situation
+			if (n < dim(X.full)[2]) cat("In this dataset n<p and unitary Bayes factors are used for models with k>n.\n")
+
+
       #the response variable for the C code
       Y <- lmnull$residuals
 
@@ -285,14 +295,20 @@ GibbsBvs <-
       if (knull == 1) {
         cat("From those",
             knull,
-            "is fixed and we should select from the remaining",
+            "are fixed and we should select from the remaining",
             p,
             "\n")
       }
-      cat(paste(paste(
-        namesx, collapse = ", ", sep = ""
-      ), "\n", sep = ""))
-    }
+			if (p<50){
+				cat(paste(paste(
+        	namesx, collapse = ", ", sep = ""
+      		), "\n", sep = ""))
+				}
+			else
+			cat(paste(paste(
+      	namesx[1:50], collapse = ", ", sep = ""
+    		), "...\n", sep = ""))
+		}
     cat("The problem has a total of", 2 ^ (p), "competing models\n")
     iter <- n.iter
     cat("Of these,", n.burnin + n.iter, "are sampled with replacement\n")
@@ -848,9 +864,46 @@ GibbsBvs <-
     if (pfms == "c" ) priorprobs <- rep(1, p + 1)
     if (pfms == "s" ) priorprobs <- 1/choose(p,0:p)
     result$priorprobs <- priorprobs
+		
+		result$C<- calculaC(modelslBF, priorprobs, p)
+		
     result$method <- "gibbs"
     class(result)<- "Bvs"
     result
 
 
   }
+
+
+#A function to obtain an estimate of the normalizing constant
+#based on the method by George&McCulloch(1997)
+#from the output of Gibbs
+#not to be exported as is expected to be used only within the GibbsBvs
+calculaC<- function(modelslBF, priorprobs, p){
+	n<- dim(modelslBF)[1]
+	#The method of George&McCulloch uses to sets. Here these are obtained as 
+	#subsets of the MCMC sample of length K
+	K<- round(n/2)
+	Aset<- sample(x=1:n, size=K, rep=F)
+	Bset<- (1:n)[-Aset]
+	#log-Bayes factors of the models in A
+	lBFAset<- modelslBF[Aset, "logBFi0"]
+	#dimension of these models
+	dimAset<- rowSums(modelslBF[Aset, -dim(modelslBF)[2]])
+
+	#Remove repetitions to have finally the definition of A
+	notdup<- !duplicated(lBFAset)
+	lBFAset<- unique(lBFAset)
+	dimAset<- dimAset[notdup]
+
+	#Prior probabilities of the models in A (suming one is because the first position is occupied by dimension=0)
+	priorAset<- priorprobs[dimAset+1]/sum(priorprobs*choose(p, 0:p))
+	#The sum of Bi0*Pr(Mi) (g(A) in G&McC notation)
+	gAset<- sum(exp(lBFAset+log(priorAset)))
+	#How many of the models in Bset are in A?
+	sumIA<- sum(modelslBF[Bset,"logBFi0"]%in%modelslBF[Aset,"logBFi0"])
+
+	#The estimation of the normalizing constant is then: (1/C in G&McC's notation)
+	C<- gAset*K/sumIA
+	return(C)
+}

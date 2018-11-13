@@ -61,7 +61,9 @@ most probable, a posteriori models, and their associated probability.}
 the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 probabilities of the dimension of the true model} \item{call }{The
-\code{call} to the function} \item{method }{\code{full} or \code{parallel} in case of
+\code{call} to the function} 
+\item{C}{The value of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+\item{method }{\code{full} or \code{parallel} in case of
 parallel computation}
 }
 \description{
@@ -127,6 +129,11 @@ results due to these differences in the implementation.
 Similarly, \code{prior.models} = "ScottBerger" is equivalent to the
 combination \code{prior.models}= "User" and \code{priorprobs} =
 \code{1/choose(p,0:p)}.
+
+The case where n<p is handled assigning to the Bayes factors of models with k regressors
+with n<k a value of 1. This should be interpreted as a generalization of the
+null predictive matching in Bayarri et al (2012). Use \code{\link[BayesVarSel]{GibbsBvs}} for cases where
+p>>n.
 
 Limitations: the error "A Bayes factor is infinite.". Bayes factors can be
 extremely big numbers if i) the sample size is even moderately large or if

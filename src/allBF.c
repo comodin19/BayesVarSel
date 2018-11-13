@@ -33,10 +33,11 @@
 
 double gBF21fun(int n, int k2, int k0, double Q)
 {
-	
+
+		if (k2>=n) return 1.0;
 		double BF21=0.0;
-        BF21 = exp(((n-k2)/2.0)*log(1.0+n)-((n-k0)/2.0)*log(1.0+n*Q));
-        if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
+    BF21 = exp(((n-k2)/2.0)*log(1.0+n)-((n-k0)/2.0)*log(1.0+n*Q));
+    if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
 		return BF21;
 	
 }
@@ -49,6 +50,7 @@ double gBF21fun(int n, int k2, int k0, double Q)
 double flsBF21fun(int p, int n, int k2, int k0, double Q)
 {
     
+  	if (k2>=n) return 1.0;
     int g=GSL_MAX(n, p*p);
     double BF21=0.0;
     if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
@@ -125,7 +127,11 @@ double robint (double a,double b, double c,double z){
 double RobustBF21fun(int n, int k2, int k0, double Q)
 {
 //k2, total number of covariates in the model 
+<<<<<<< HEAD
 	
+=======
+	if (k2>=n) return 1.0;	
+>>>>>>> 7fe5c29f257ea1b9e5605c6138b69aba7b59f7cc
 	double  T1=0.0, T2=0.0, T3=0.0;
 	double arg=0.0;
 	double R1=0.0;
@@ -243,6 +249,8 @@ double liang (double n, double k, double k0, double Q){
 /* Liang Bayes Factor for main.c*/
 double LiangBF21fun(int n, int k2, int k0, double Q)
 {
+	
+	  if (k2>=n) return 1.0;
     double LiangBF21=0.0;
     LiangBF21 = liang((double) n, (double) k2, (double) k0, Q);
     if (!R_FINITE(LiangBF21)){error("A Bayes factor is infinite.");}
@@ -303,6 +311,7 @@ double zell (double n,double k, double k0, double Q){
 /* FUNCION QUE USAREMOS EN EL main.c*/
 double ZSBF21fun(int n, int k2, int k0, double Q)
 {
+  	if (k2>=n) return 1.0;	
     double ZSBF21=0.0;
     ZSBF21 = zell ((double) n,(double) k2, (double) k0, Q);
     if (!R_FINITE(ZSBF21)){error("A Bayes factor is infinite.");}
