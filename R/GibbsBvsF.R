@@ -3,7 +3,7 @@ GibbsBvsF <-
   function(formula,
            data,
            prior.betas = "Robust",
-           prior.models = "SBSB",
+           prior.models = "SBSB2",
            n.iter = 10000,
            init.model = "Full",
            n.burnin = 500,
@@ -320,17 +320,11 @@ GibbsBvsF <-
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
 	
-	#for the SBSB2 prior do a resampling to correct post probs:
-	if (prior.models == "SBSB2"){
-		modelslBF<- resamplingSBSB(modelslBF, positions)
-	}
-
-
     #Now the resampling to obtain models with the "2" priors:
-		if (prior.models=="SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
-		if (prior.models=="ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
-		if (prior.models=="SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
-		if (prior.models=="Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
+		#if (prior.models=="SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
+		#if (prior.models=="ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
+		#if (prior.models=="SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
+		#if (prior.models=="Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
 		
 
     #Highest probability model
