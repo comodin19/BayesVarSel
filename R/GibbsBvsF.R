@@ -11,16 +11,9 @@ GibbsBvsF <-
            n.thin = 1,
            time.test = TRUE,
            priorprobs = NULL,
-           seed = runif(1, 0, 16091956),
-					 contrasts = "none") {
-
+           seed = runif(1, 0, 16091956)) {
 
 		cat("Recall: at this point of development null model should contain intercept\n")
-		#contrasts is one of either "none" for our proposal and "given" using
-		#the one in the factors (perhaps given by default by R) which is full rank
-		if (contrasts != "none" & contrasts != "given") stop("contrasts not defined.\n")
-		#for prior.models="SBSB" use the hierarchical Scott-Berger over the dimension
-		#for prior.models="SBSB2" use the hierarchical Scott-Berger over the rank
 		
     formula <- as.formula(formula)
 		
@@ -52,12 +45,8 @@ GibbsBvsF <-
                   x = TRUE)
 			#Factors:
 			#before:X.full <- lmfull$x
-			if (contrasts == "none") {						
-      	X.full<- lmerTest:::get_rdX(lmfull) #rank defficient paramet
-			}
-			if (contrasts == "given") {
-				X.full <- lmfull$x
-			}
+    	X.full<- lmerTest:::get_rdX(lmfull) #rank defficient paramet
+
       namesx <- dimnames(X.full)[[2]]
     
       #check if null model is contained in the full one:
@@ -320,14 +309,10 @@ GibbsBvsF <-
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
 	
-    #Now the resampling to obtain models with the "2" priors: (only used if contrasts="none")
-		
-		if (contrasts == "none"){
-			if (prior.models == "SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
-			if (prior.models == "ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
-			if (prior.models == "SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
-			if (prior.models == "Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
-	  }
+		if (prior.models == "SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
+		if (prior.models == "ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
+		if (prior.models == "SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
+		if (prior.models == "Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
 
     #Highest probability model
     mod.mat <- as.data.frame(t(models))
