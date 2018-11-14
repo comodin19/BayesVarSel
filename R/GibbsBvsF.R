@@ -2,6 +2,7 @@
 GibbsBvsF <-
   function(formula,
            data,
+           null.model = paste(as.formula(formula)[[2]], " ~ 1", sep=""),					 
            prior.betas = "Robust",
            prior.models = "SBSB2",
            n.iter = 10000,
@@ -14,11 +15,9 @@ GibbsBvsF <-
 					 contrasts = "none") {
 
 
-		# Factors: The null model only contains the intercept:	 			 
-	  null.model = paste(as.formula(formula)[[2]], " ~ 1", sep="")
-		cat("At this point, only the intercept is allowed in the simplest model\n")
+		cat("Recall: at this point of development null model should contain intercept\n")
 		#contrasts is one of either "none" for our proposal and "given" using
-		#the one in the factors (perhaps given by default by R)
+		#the one in the factors (perhaps given by default by R) which is full rank
 		if (contrasts != "none" & contrasts != "given") stop("contrasts not defined.\n")
 		#for prior.models="SBSB" use the hierarchical Scott-Berger over the dimension
 		#for prior.models="SBSB2" use the hierarchical Scott-Berger over the rank
@@ -240,6 +239,7 @@ GibbsBvsF <-
 		if (prior.models!="SBSB2" & prior.models!="ConstConst2" & prior.models!="SB2" & prior.models!="Const2")
 			{stop("Prior over the model space not supported\n")}
 		
+		
 		if (prior.models=="SBSB2"){method<- "rSBSB"; cat("Robust and SB-SB are used.\n")}
 		if (prior.models=="ConstConst2"){method<- "rConstConst"; cat("Robust and Const-Const are used.\n")}
 		if (prior.models=="SB2"){method<- "rSB"; cat("Robust and SB are used.\n")}
@@ -320,12 +320,14 @@ GibbsBvsF <-
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
 	
-    #Now the resampling to obtain models with the "2" priors:
-		if (prior.models=="SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
-		if (prior.models=="ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
-		if (prior.models=="SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
-		if (prior.models=="Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
+    #Now the resampling to obtain models with the "2" priors: (only used if contrasts="none")
 		
+		if (contrasts == "none"){
+			if (prior.models == "SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
+			if (prior.models == "ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
+			if (prior.models == "SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
+			if (prior.models == "Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
+	  }
 
     #Highest probability model
     mod.mat <- as.data.frame(t(models))
