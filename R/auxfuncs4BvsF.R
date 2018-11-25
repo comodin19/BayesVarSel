@@ -73,7 +73,7 @@ resamplingSB<- function(modelslBF, positions){
 	else
 		m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2, levelsfull=levelsfull, levels=levels, ff=ff))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2, levelsfull=levelsfull, levelsf=levelsf, ff=ff))
 	#for each sampled model obtain the SBSB1 prior prob:
 	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB1, levelsfull=levelsfull))
 	#now the resampling:
