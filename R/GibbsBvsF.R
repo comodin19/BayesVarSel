@@ -225,12 +225,13 @@ GibbsBvsF <-
 		#Factors:
 		#here the added index "2" makes reference of the hierarchical corresponding prior but only keeping
 		#a model of the same class (copies are removed and only the full within each class is kept)
-		if (prior.models!="SBSB2" & prior.models!="ConstConst2" & prior.models!="SB2" & prior.models!="Const2")
+		if (prior.models!="SBSB2" & prior.models!="ConstConst2" & prior.models!="SB2" & prior.models!="Const2" & prior.models!="SBConst2")
 			{stop("Prior over the model space not supported\n")}
 		
 		
 		if (prior.models=="SBSB2"){method<- "rSBSB"; cat("Robust and SB-SB are used.\n")}
 		if (prior.models=="ConstConst2"){method<- "rConstConst"; cat("Robust and Const-Const are used.\n")}
+		if (prior.models=="SBConst2"){method<- "rSBConst"; cat("Robust and SB-Const are used.\n")}	
 		if (prior.models=="SB2"){method<- "rSB"; cat("Robust and SB are used.\n")}
 		if (prior.models=="Const2"){method<- "rConst"; cat("Robust and Const are used.\n")}
 		
@@ -254,6 +255,19 @@ GibbsBvsF <-
       ),
       "rConstConst" = .C(
         "GibbsRobustFConstConst",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "rSBConst" = .C(
+        "GibbsRobustFSBConst",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -313,6 +327,7 @@ GibbsBvsF <-
 		if (prior.models == "ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
 		if (prior.models == "SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
 		if (prior.models == "Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
+		if (prior.models == "SBConst2"){modelslBF<- resamplingSBConst(modelslBF, positions)}
 
     #Highest probability model
     mod.mat <- as.data.frame(t(models))
