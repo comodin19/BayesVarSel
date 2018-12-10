@@ -418,7 +418,7 @@ GibbsBvsF <-
 			
 			incl.prob.factors<- colMeans((object$modelslogBF[,-(object$p+1)]%*%t(object$positions))>0)
 			
-			incl.prob.levelsgivenfactors<- t(apply(z$positions, FUN=function(x, v){x*v}, v=incl.prob, MARGIN=1))
+			incl.prob.M<- t(apply(z$positions, FUN=function(x, v){x*v}, v=incl.prob, MARGIN=1))
 			
 	    summ.Bvs <- as.data.frame(cbind(round(incl.prob ,digits = 4), astHPM, astMPM))
 	    dimnames(summ.Bvs) <- list(z$variables, c("Incl.prob.", "HPM", "MPM"))
@@ -428,7 +428,7 @@ GibbsBvsF <-
 			
 			summ.BvsLcF<- list()
 			for (i in 1:dim(z$positions)[1]){
-				summ.BvsLcF[[i]]<- round(incl.prob.levelsgivenfactors[i,z$positions[i,]==1], digits=4)				
+				summ.BvsLcF[[i]]<- round(incl.prob.M[i,z$positions[i,]==1]/incl.prob.factors[i], digits=4)				
 			}
 
 	    ans$summary <- summ.Bvs
@@ -440,15 +440,15 @@ GibbsBvsF <-
 	    cat("\n")
 	    cat("Call:\n")
 	    print(ans$call)
-	    cat("\n")
-	    cat("Inclusion Probabilities:\n")
-	    print(ans$summary)
+	    #cat("\n")
+	    #cat("Inclusion Probabilities:\n")
+	    #print(ans$summary)
 	    cat("---\n")
 			cat("Inclusion Probabilities of factors:\n")
 			print(ans$summaryF)
 	    cat("---\n")
 			cat("Inclusion Probabilities of levels of factors (Conditional on the factor is included):\n")
-			print(ans$summaryF)
+			print(ans$summ.BvsLcF)
 	    cat("---\n")
 			
 			
