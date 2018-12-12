@@ -396,6 +396,10 @@ rank.levels<- function(levelsf){
 rank.levels2<- function(levelsfull){
 	#Given a vector of ACTIVE factors and variables (l1,l2,...,lR), this function computes how many
 	#models there are of all possible ranks 0<=r<=sum(l_i)-R
+	
+	#the resulting table is the same independently of li=1 or li=2
+	levelsfull[levelsfull==1]<- 2
+
 	if (length(levelsfull)==1){
 		if (levelsfull==2){
 			result<- c(1)
