@@ -18,8 +18,8 @@ and variable selection problems. From a theoretical side, the emphasis
 in the package is placed on the prior distributions (a very delicate
 issue in this context) and `BayesVarSel` allows using a wide range of
 them: Jeffreys-Zellner-Siow (Jeffreys, 1961; Zellner and Siow,
-1980,1984) Zellner (1986); Fernandez et al. (2001), Liang et al. (2008)
-and Bayarri et al. (2012).
+1980,1984) Zellner (1986); Fernandez et al. (2001), Liang et al. (2008)
+and Bayarri et al. (2012).
 
 Installation
 ============
@@ -37,7 +37,7 @@ can be installed using:
 You can track, download the latest version or contribute to the
 development of `BayesVarSel` at
 <https://github.com/comodin19/BayesVarSel>. To install the most recent
-version of the package (1.8.0) you should:
+version of the package (1.8.2) you should:
 
 1.  Install devtools from CRAN with `install.packages("devtools")`.
 2.  Install the development version of `BayesVarSel` from
@@ -100,7 +100,7 @@ Variable selection
     #> 
     #> Simulations obtained using the best 10 models
     #> that accumulate 1 of the total posterior probability
-    #> [1] 78.86902 73.09265
+    #> [1] 78.87434 73.06473
 
     # Simulate coefficients
     set.seed(171) # For reproducibility of simulations.
@@ -154,7 +154,11 @@ References
     for Bayesian model averaging. *Journal of Econometrics, 100*:
     381-427. DOI:
     [10.1016/s0304-4076(00)00076-2](http://www.dx.doi.org/10.1016/s0304-4076(00)00076-2)
--   Garcia-Donato, G. and Martinez-Beneito, M.A. (2013). On sampling
+-   Garcia-Donato, G. and Forte, A. (2018). Bayesian Testing, Variable
+    Selection and Model Averaging in Linear Models using R with
+    BayesVarSel. *The R Journal, 10*(1): 155–174. Retrieved from
+    <https://journal.r-project.org/archive/2018/RJ-2018-021/index.html>
+-   Garcia-Donato, G. and Martinez-Beneito, M.A. (2013). On sampling
     strategies in Bayesian variable selection problems with large model
     spaces. *Journal of the American Statistical Association, 108*:
     340-352. DOI:
