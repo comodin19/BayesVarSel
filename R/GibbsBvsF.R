@@ -229,11 +229,21 @@ GibbsBvsF <-
 			{stop("Prior over the model space not supported\n")}
 		
 		
-		if (prior.models=="SBSB2"){method<- "rSBSB"; cat("Robust and SB-SB are used.\n")}
-		if (prior.models=="ConstConst2"){method<- "rConstConst"; cat("Robust and Const-Const are used.\n")}
-		if (prior.models=="SBConst2"){method<- "rSBConst"; cat("Robust and SB-Const are used.\n")}	
-		if (prior.models=="SB2"){method<- "rSB"; cat("Robust and SB are used.\n")}
-		if (prior.models=="Const2"){method<- "rConst"; cat("Robust and Const are used.\n")}
+    if (prior.betas == "Unitary"){write(0, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+    if (prior.betas == "Robust"){write(1, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+    if (prior.betas == "Liangetal"){write(4, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+    if (prior.betas == "gZellner"){write(2, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+    if (prior.betas == "ZellnerSiow"){write(5, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+	  if (prior.betas == "FLS"){stop("Prior FLS not yet supported\n")}
+
+		if (prior.betas != "Unitary" & prior.betas != "Robust" & prior.betas != "Liangetal" & 
+		    prior.betas != "gZellner" & prior.betas != "ZellnerSiow" & prior.betas != "FLS") {stop("Dont recognize the prior for betas\n")}	
+		
+		if (prior.models=="SBSB2"){method<- "rSBSB"}
+		if (prior.models=="ConstConst2"){method<- "rConstConst"}
+		if (prior.models=="SBConst2"){method<- "rSBConst"}	
+		if (prior.models=="SB2"){method<- "rSB"}
+		if (prior.models=="Const2"){method<- "rConst"}
 		
     estim.time <- 0
 		
@@ -241,7 +251,7 @@ GibbsBvsF <-
     result <- switch(
       method,
       "rSBSB" = .C(
-        "GibbsRobustFSBSB",
+        "GibbsFSBSB",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -254,7 +264,7 @@ GibbsBvsF <-
         as.integer(seed)
       ),
       "rConstConst" = .C(
-        "GibbsRobustFConstConst",
+        "GibbsFConstConst",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -267,7 +277,7 @@ GibbsBvsF <-
         as.integer(seed)
       ),
       "rSBConst" = .C(
-        "GibbsRobustFSBConst",
+        "GibbsFSBConst",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -280,7 +290,7 @@ GibbsBvsF <-
         as.integer(seed)
       ),
       "rSB" = .C(
-        "GibbsRobustFSB",
+        "GibbsFSB",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -293,7 +303,7 @@ GibbsBvsF <-
         as.integer(seed)
       ),
       "rConst" = .C(
-        "GibbsRobustFConst",
+        "GibbsFConst",
         as.character(""),
         as.integer(n),
         as.integer(p),
@@ -323,11 +333,11 @@ GibbsBvsF <-
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
 	
-		if (prior.models == "SBSB2"){modelslBF<- resamplingSBSB(modelslBF, positions)}
-		if (prior.models == "ConstConst2"){modelslBF<- resamplingConstConst(modelslBF, positions)}
-		if (prior.models == "SB2"){modelslBF<- resamplingSB(modelslBF, positions)}
-		if (prior.models == "Const2"){modelslBF<- resamplingConst(modelslBF, positions)}
-		if (prior.models == "SBConst2"){modelslBF<- resamplingSBConst(modelslBF, positions)}
+		if (prior.models == "SBSB2"){modelslBF<- BayesVarSel:::resamplingSBSB(modelslBF, positions)}
+		if (prior.models == "ConstConst2"){modelslBF<- BayesVarSel:::resamplingConstConst(modelslBF, positions)}
+		if (prior.models == "SB2"){modelslBF<- BayesVarSel:::resamplingSB(modelslBF, positions)}
+		if (prior.models == "Const2"){modelslBF<- BayesVarSel:::resamplingConst(modelslBF, positions)}
+		if (prior.models == "SBConst2"){modelslBF<- BayesVarSel:::resamplingSBConst(modelslBF, positions)}
 
     #Highest probability model
     mod.mat <- as.data.frame(t(models))
