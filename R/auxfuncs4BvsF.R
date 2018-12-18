@@ -393,17 +393,21 @@ rank.levels<- function(levelsf){
 	return(result)	
 }
 
+
 rank.levels2<- function(levelsfull){
 	#Given a vector of ACTIVE factors and variables (l1,l2,...,lR), this function computes how many
 	#models there are of all possible ranks 0<=r<=sum(l_i)-R
+	#Because of a trick This works even if some of the levelsfull=1 (so numerical vars)
+	#but I created the rank.levels3 exactly for that purpose
+	#but it is much more complex and it does the same
 	
 	#the resulting table is the same independently of li=1 or li=2
 	levelsfull[levelsfull==1]<- 2
 
 	if (length(levelsfull)==1){
 		if (levelsfull==2){
-			result<- c(1)
-			names(result)<- "1"
+			result<- c(1,1)
+			names(result)<- c("0","1")
 			return(result)
 			}
 	}
@@ -441,6 +445,72 @@ rank.levels2<- function(levelsfull){
 	result[as.character(i)]<- 1
 	return(result)	
 }
+
+rank.levels3<- function(levelsfull){
+	#Given a vector of ACTIVE factors and variables (l1,l2,...,lR), this function computes how many
+	#models there are of all possible ranks 0<=r<=sum(l_i)-R
+	
+	#Same as rank.levels2 but for possible l_=1 (so numerical vars)
+	#...at the end rank.levels2 also works in this case because of a trick there
+	
+	if (length(levelsfull)==1){
+		if (levelsfull==2){
+			result<- c(1)
+			names(result)<- "1"
+			return(result)
+			}
+	}
+	
+	#first the matrix for the factors:
+	levelsfullF<- levelsfull[levelsfull>1]
+	
+	p.levels<- prod(levelsfullF); n.levels<- length(levelsfullF)
+	mm<- matrix(0, nrow=p.levels, ncol=n.levels)
+	colnames(mm)<- paste("F", 1:length(levelsfullF), sep="")
+	if (n.levels>1){
+		for (i in 1:(n.levels-1)){
+			mm[,i]<- rep(0:(levelsfullF[i]-1), each=prod(levelsfullF[(i+1):n.levels]), length.out=p.levels)
+		}
+			i<- i+1
+			mm[,i]<- rep(0:(levelsfullF[i]-1), each=1, length.out=p.levels)
+		}
+	else mm[,1]<- rep(0:(levelsfullF[1]-1), each=1, length.out=p.levels)
+	
+	#Second the numeric variables:
+	k<- length(levelsfull[levelsfull==1])
+	mm0<- mm
+	if (k>0){
+		mm<- cbind(mm0, rep(0,each=dim(mm0)[1]))
+		for (i in 1:k){
+			mm<- rbind(mm, cbind(mm0, rep(i, each=dim(mm0)[1])))
+		}
+	}
+		
+	mm<- cbind(mm, rowSums(mm))
+	mm<- cbind(mm, 0)
+	colnames(mm)[length(levelsfullF)+as.numeric(k>0)+1:2]<- c("sum.act.levels", "combin.prod")
+	
+	s<- 1
+	for (i in 1:dim(mm)[1]){
+		for (j in 1:n.levels){
+			s<- s*my.choose(levelsfullF[j], mm[i,j])
+		}
+		if (k>0) s<- s*choose(k, mm[i, (n.levels+1)])
+		mm[i, n.levels+3]<- s; s<- 1
+	}
+
+	possible.values<- min(mm[,"sum.act.levels"]):max(mm[,"sum.act.levels"])
+	result<- rep(0, length(possible.values))
+	names(result)<- possible.values
+	for (i in possible.values){
+		these<- which(mm[,"sum.act.levels"]==i)
+		result[as.character(i)]<- sum(mm[these,"combin.prod"])		
+	}
+	#rectify for the saturated or oversaturated:
+	result[as.character(i)]<- 1
+	return(result)	
+}
+
 
 
 #Taken from Bvs.R:
