@@ -25,6 +25,11 @@
 //and the complex model contains k2 parameters
 
 
+//Unitary Bayes factor::
+double unitBF21fun(int n, int k2, int k0, double Q)
+{
+	return(1.0);
+}
 
 /* -----g-prior-------*/
 
@@ -127,8 +132,6 @@ double robint (double a,double b, double c,double z){
 double RobustBF21fun(int n, int k2, int k0, double Q)
 {
 //k2, total number of covariates in the model 
-	
-	return 1.0;
 	
 	if (k2>=n) return 1.0;	
 

@@ -23,14 +23,15 @@
 //#include "allBF.c"
 #include "priorprob.h"
 
-void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
+void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
 	//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 	//the original null model is only the intercept
 	
-	//9-5-18 version of GibbsRobust with Factors and prior probabilities obtained with SB-SB
+	//18-12-18 version of Gibbs with Factors and prior probabilities obtained with SB-SB
+	//the type of Bayes factor is defined in a file called typeofBF.txt 
 	
 	void R_CheckUserInterrupt(void);
 	
@@ -259,6 +260,29 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
 	
+	
+	//this file contains the type of Bayes factor used:
+	//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
+	//fls is not yet implemented because it depends on an extra parameter
+	char nfileP1[100] = "/typeofBF.txt";
+	strcpy(strtmp,home);
+	strcat(strtmp,nfileP1);
+	strcpy(nfileP1,strtmp);
+	FILE * fpriorconfig = fopen(nfileP1, "r");
+	//it is read and then written in an integer variable called typeofBF
+	int typeofBF=0;
+	fscanf(fpriorconfig, "%d", &typeofBF);
+	fclose(fpriorconfig);	
+	//Now define the function for Bayes factors which is a pointer
+	double (*BF21fun)(int, int, int, double)=NULL;
+	if (typeofBF==0) BF21fun=unitBF21fun;
+	if (typeofBF==1) BF21fun=RobustBF21fun;
+	if (typeofBF==2) BF21fun=gBF21fun;
+	if (typeofBF==4) BF21fun=LiangBF21fun;
+	if (typeofBF==5) BF21fun=ZSBF21fun;
+	
+	
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
 	
@@ -276,7 +300,7 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 			PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 	    k2fr=(int) gsl_blas_dasum(indexfr);			
       Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-	    oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+	    oldPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
     }
     else{
 		  gsl_vector_memcpy(indexfr, index);	
@@ -303,7 +327,7 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 							PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 							k2fr=(int) gsl_blas_dasum(indexfr);			
               Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-		          newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+		          newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
             }
             else{
 						  gsl_vector_memcpy(indexfr, index);	
@@ -339,7 +363,7 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 							PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 							k2fr=(int) gsl_blas_dasum(indexfr);			
               Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-		          newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+		          newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
             }
             else{
 						  gsl_vector_memcpy(indexfr, index);	
@@ -475,7 +499,7 @@ void GibbsRobustFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 
 }
 
-void GibbsRobustFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
+void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
@@ -483,6 +507,8 @@ void GibbsRobustFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	//the original null model is only the intercept
 	
 	//9-5-18 version of GibbsRobust with Factors and prior probabilities obtained with SB-SB
+  //18-12-18 
+  //the type of Bayes factor is defined in a file called typeofBF.txt 
 	
 	void R_CheckUserInterrupt(void);
 	
@@ -711,6 +737,28 @@ void GibbsRobustFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
 	
+	//this file contains the type of Bayes factor used:
+	//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
+	//fls is not yet implemented because it depends on an extra parameter
+	char nfileP1[100] = "/typeofBF.txt";
+	strcpy(strtmp,home);
+	strcat(strtmp,nfileP1);
+	strcpy(nfileP1,strtmp);
+	FILE * fpriorconfig = fopen(nfileP1, "r");
+	//it is read and then written in an integer variable called typeofBF
+	int typeofBF=0;
+	fscanf(fpriorconfig, "%d", &typeofBF);
+	fclose(fpriorconfig);	
+	//Now define the function for Bayes factors which is a pointer
+	double (*BF21fun)(int, int, int, double)=NULL;
+	if (typeofBF==0) BF21fun=unitBF21fun;
+	if (typeofBF==1) BF21fun=RobustBF21fun;
+	if (typeofBF==2) BF21fun=gBF21fun;
+	if (typeofBF==4) BF21fun=LiangBF21fun;
+	if (typeofBF==5) BF21fun=ZSBF21fun;
+
+	
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
 	
@@ -728,7 +776,7 @@ void GibbsRobustFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 			PrMg=SBConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 	    k2fr=(int) gsl_blas_dasum(indexfr);			
       Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-	    oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+	    oldPBF=BF21fun(n,k2fr+knull,knull,Q)*PrMg;
     }
     else{
 		  gsl_vector_memcpy(indexfr, index);	
@@ -755,7 +803,7 @@ void GibbsRobustFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 							PrMg=SBConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 							k2fr=(int) gsl_blas_dasum(indexfr);			
               Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-		          newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+		          newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
             }
             else{
 						  gsl_vector_memcpy(indexfr, index);	
@@ -791,7 +839,7 @@ void GibbsRobustFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 							PrMg=SBConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 							k2fr=(int) gsl_blas_dasum(indexfr);			
               Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-		          newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+		          newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
             }
             else{
 						  gsl_vector_memcpy(indexfr, index);	
@@ -929,7 +977,7 @@ void GibbsRobustFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 
 
 
-void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
+void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
 	//matrix. It keeps track of the possibility that this is used in combination with a previous
@@ -937,6 +985,8 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	//the original null model is only the intercept
 	
 	//16-5-18 version of GibbsRobust with Factors and prior probabilities obtained with a pure constant prior
+  //18-12-18 
+  //the type of Bayes factor is defined in a file called typeofBF.txt 
 	
 	void R_CheckUserInterrupt(void);
 	
@@ -1165,6 +1215,28 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	gsl_vector * hatbetap=gsl_vector_calloc(p);
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
+	
+	//this file contains the type of Bayes factor used:
+	//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
+	//fls is not yet implemented because it depends on an extra parameter
+	char nfileP1[100] = "/typeofBF.txt";
+	strcpy(strtmp,home);
+	strcat(strtmp,nfileP1);
+	strcpy(nfileP1,strtmp);
+	FILE * fpriorconfig = fopen(nfileP1, "r");
+	//it is read and then written in an integer variable called typeofBF
+	int typeofBF=0;
+	fscanf(fpriorconfig, "%d", &typeofBF);
+	fclose(fpriorconfig);	
+	//Now define the function for Bayes factors which is a pointer
+	double (*BF21fun)(int, int, int, double)=NULL;
+	if (typeofBF==0) BF21fun=unitBF21fun;
+	if (typeofBF==1) BF21fun=RobustBF21fun;
+	if (typeofBF==2) BF21fun=gBF21fun;
+	if (typeofBF==4) BF21fun=LiangBF21fun;
+	if (typeofBF==5) BF21fun=ZSBF21fun;
+
+	
 	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
@@ -1182,7 +1254,7 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 			PrMg=Constpriorprob(p,k2);
 	    k2fr=(int) gsl_blas_dasum(indexfr);			
       Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-      oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+      oldPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
     }
     else{
 			PrMg=Constpriorprob(p,k2);
@@ -1209,7 +1281,7 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 							PrMg=Constpriorprob(p,k2);
 					    k2fr=(int) gsl_blas_dasum(indexfr);			
 				      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-				      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+				      newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 	          }
             else{
 							PrMg=Constpriorprob(p,k2);
@@ -1247,7 +1319,7 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 							PrMg=Constpriorprob(p,k2);
 					    k2fr=(int) gsl_blas_dasum(indexfr);			
 				      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-				      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+				      newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 	          }
             else{
 							PrMg=Constpriorprob(p,k2);
@@ -1375,13 +1447,16 @@ void GibbsRobustFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 }
 
 
-void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
+void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 		{
 			//Version where the null model is only the error term and vs is performed over the whole design
 			//matrix. It keeps track of the possibility that this is used in combination with a previous
 			//transformation of the data on which the null ORIGINAL model had knull covariates (eg. knull=1 if
 			//the original null model is only the intercept
 	
+//18-12-18 version of Gibbs with Factors and prior probabilities obtained with SB-SB
+//the type of Bayes factor is defined in a file called typeofBF.txt 
+
 	
 			void R_CheckUserInterrupt(void);
 	
@@ -1609,6 +1684,27 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 			gsl_vector * hatbetap=gsl_vector_calloc(p);
 			//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 			gsl_vector * meanhatbetap=gsl_vector_calloc(p);
+			
+			//this file contains the type of Bayes factor used:
+			//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
+			//fls is not yet implemented because it depends on an extra parameter
+			char nfileP1[100] = "/typeofBF.txt";
+			strcpy(strtmp,home);
+			strcat(strtmp,nfileP1);
+			strcpy(nfileP1,strtmp);
+			FILE * fpriorconfig = fopen(nfileP1, "r");
+			//it is read and then written in an integer variable called typeofBF
+			int typeofBF=0;
+			fscanf(fpriorconfig, "%d", &typeofBF);
+			fclose(fpriorconfig);	
+			//Now define the function for Bayes factors which is a pointer
+			double (*BF21fun)(int, int, int, double)=NULL;
+			if (typeofBF==0) BF21fun=unitBF21fun;
+			if (typeofBF==1) BF21fun=RobustBF21fun;
+			if (typeofBF==2) BF21fun=gBF21fun;
+			if (typeofBF==4) BF21fun=LiangBF21fun;
+			if (typeofBF==5) BF21fun=ZSBF21fun;
+
 	
 			// //////////////////////////////////////////////
 			int iter=1, component=1, oldcomponent=1, newcomponent=1;
@@ -1626,7 +1722,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 					PrMg=SBpriorprob(p,k2);
 			    k2fr=(int) gsl_blas_dasum(indexfr);			
 		      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-		      oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+		      oldPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		    }
 		    else{
 					PrMg=SBpriorprob(p,k2);
@@ -1652,7 +1748,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 									PrMg=SBpriorprob(p,k2);
 							    k2fr=(int) gsl_blas_dasum(indexfr);			
 						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-						      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+						      newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		            }
 		            else{
 									PrMg=SBpriorprob(p,k2);
@@ -1694,7 +1790,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 									PrMg=SBpriorprob(p,k2);
 							    k2fr=(int) gsl_blas_dasum(indexfr);			
 						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-						      newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+						      newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		            }
 		            else{
 									PrMg=SBpriorprob(p,k2);
@@ -1821,7 +1917,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 
 		}
 		
-		void GibbsRobustFConstConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
+		void GibbsFConstConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 		{
 			//Version where the null model is only the error term and vs is performed over the whole design
 			//matrix. It keeps track of the possibility that this is used in combination with a previous
@@ -1830,6 +1926,9 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	
 			//9-5-18 version of GibbsRobust with Factors and prior probabilities obtained with Const-Const
 	
+      //18-12-18 
+      //the type of Bayes factor is defined in a file called typeofBF.txt 
+	    
 			void R_CheckUserInterrupt(void);
 	
 			clock_t tiempo_ejec=clock();
@@ -2056,6 +2155,28 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 			gsl_vector * hatbetap=gsl_vector_calloc(p);
 			//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 			gsl_vector * meanhatbetap=gsl_vector_calloc(p);
+			
+			//this file contains the type of Bayes factor used:
+			//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
+			//fls is not yet implemented because it depends on an extra parameter
+			char nfileP1[100] = "/typeofBF.txt";
+			strcpy(strtmp,home);
+			strcat(strtmp,nfileP1);
+			strcpy(nfileP1,strtmp);
+			FILE * fpriorconfig = fopen(nfileP1, "r");
+			//it is read and then written in an integer variable called typeofBF
+			int typeofBF=0;
+			fscanf(fpriorconfig, "%d", &typeofBF);
+			fclose(fpriorconfig);	
+			//Now define the function for Bayes factors which is a pointer
+			double (*BF21fun)(int, int, int, double)=NULL;
+			if (typeofBF==0) BF21fun=unitBF21fun;
+			if (typeofBF==1) BF21fun=RobustBF21fun;
+			if (typeofBF==2) BF21fun=gBF21fun;
+			if (typeofBF==4) BF21fun=LiangBF21fun;
+			if (typeofBF==5) BF21fun=ZSBF21fun;
+
+			
 	
 			// //////////////////////////////////////////////
 			int iter=1, component=1, oldcomponent=1, newcomponent=1;
@@ -2074,7 +2195,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 					PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 			    k2fr=(int) gsl_blas_dasum(indexfr);			
 		      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-			    oldPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+			    oldPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 		    }
 		    else{
 				  gsl_vector_memcpy(indexfr, index);	
@@ -2102,7 +2223,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 									PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 							    k2fr=(int) gsl_blas_dasum(indexfr);			
 						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-							    newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+							    newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 						    }
 						    else{
 								  gsl_vector_memcpy(indexfr, index);	
@@ -2145,7 +2266,7 @@ void GibbsRobustFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 									PrMg=ConstConstpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
 							    k2fr=(int) gsl_blas_dasum(indexfr);			
 						      Q=Gibbsstatistics(p, n, SSEnull, X, y, indexfr, &k2fr, hatbetap);
-							    newPBF= RobustBF21fun(n,k2fr+knull,knull,Q)*PrMg;
+							    newPBF= BF21fun(n,k2fr+knull,knull,Q)*PrMg;
 						    }
 						    else{
 								  gsl_vector_memcpy(indexfr, index);	
