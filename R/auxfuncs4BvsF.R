@@ -316,10 +316,6 @@ priorSBConst2<- function(act.levels, levelsfull, levelsf, kplusp){
   }
 }
 	
-
-
-
-
 my.choose<- function(n, k){
 	if (k>n | k<0 | n<=0) stop("Bad arguments on my.choose\n")
 	if (k<(n-1)) return(choose(n, k)) 
@@ -348,8 +344,10 @@ matrix.rank.levels<- function(all.levelsf){
 }
 
 rank.levels<- function(levelsf){
-	#Given a vector of ACTIVE levels (l1,l2,...,lR), this function computes how many
-	#models there are of all possible ranks R<=r<=sum(l_i)-R
+	#Expected to be used in combination with SBSB
+	#Given a vector of ACTIVE factors with levels (l1,l2,...,lp), l_i>=2, this function computes how many
+	#models --not saturated, so none of the active levels=l-1-- there are with the same number of active levels (r) 
+	#p<=r<=sum(l_i)-p
 	if (length(levelsf)==1){
 		if (levelsf==2){
 			result<- c(1)
@@ -395,11 +393,13 @@ rank.levels<- function(levelsf){
 
 
 rank.levels2<- function(levelsfull){
-	#Given a vector of ACTIVE factors and variables (l1,l2,...,lR), this function computes how many
-	#models there are of all possible ranks 0<=r<=sum(l_i)-R
-	#Because of a trick This works even if some of the levelsfull=1 (so numerical vars)
+	#Expected to be used in combination with SB functions
+	#Given a vector of p factors and k variables levelsfull=(l1,l2,...,lp,1,...,1), 
+	#(for variables we have the ones), this function computes how many
+	#models there are of all possible ranks 0<=r<=sum(l_i-1)+k
+	#(Because of a trick This works even if some of the levelsfull=1 (so numerical vars)
 	#but I created the rank.levels3 exactly for that purpose
-	#but it is much more complex and it does the same
+	#but it is much more complex and it does the same)
 	
 	#the resulting table is the same independently of li=1 or li=2
 	levelsfull[levelsfull==1]<- 2
