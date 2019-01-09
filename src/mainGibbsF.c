@@ -1229,8 +1229,12 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	strcpy(nfileP1,strtmp);
 	FILE * fpriorconfig = fopen(nfileP1, "r");
 	//it is read and then written in an integer variable called typeofBF
-	int typeofBF=0;
-	fscanf(fpriorconfig, "%d", &typeofBF);
+	int typeofBF=0, ttt=0; //in some compilers we need to assign the value of fscanf (which is an integer)
+	//correspoding to the number of input items successfully matched and assigned
+	ttt = fscanf(fpriorconfig, "%d", &typeofBF);
+	if (ttt != 1) {
+		Rprintf("Error reading file containing the type of Bayes factor\n");
+	}
 	fclose(fpriorconfig);	
 	//Now define the function for Bayes factors which is a pointer
 	double (*BF21fun)(int, int, int, double)=NULL;
@@ -1698,8 +1702,12 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			strcpy(nfileP1,strtmp);
 			FILE * fpriorconfig = fopen(nfileP1, "r");
 			//it is read and then written in an integer variable called typeofBF
-			int typeofBF=0;
-			fscanf(fpriorconfig, "%d", &typeofBF);
+			int typeofBF=0, ttt=0; //in some compilers we need to assign the value of fscanf (which is an integer)
+			//correspoding to the number of input items successfully matched and assigned
+			ttt = fscanf(fpriorconfig, "%d", &typeofBF);
+			if (ttt != 1) {
+				Rprintf("Error reading file containing the type of Bayes factor\n");
+			}
 			fclose(fpriorconfig);	
 			//Now define the function for Bayes factors which is a pointer
 			double (*BF21fun)(int, int, int, double)=NULL;
@@ -2169,8 +2177,12 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			strcpy(nfileP1,strtmp);
 			FILE * fpriorconfig = fopen(nfileP1, "r");
 			//it is read and then written in an integer variable called typeofBF
-			int typeofBF=0;
-			fscanf(fpriorconfig, "%d", &typeofBF);
+			int typeofBF=0, ttt=0; //in some compilers we need to assign the value of fscanf (which is an integer)
+			//correspoding to the number of input items successfully matched and assigned
+			ttt = fscanf(fpriorconfig, "%d", &typeofBF);
+			if (ttt != 1) {
+				Rprintf("Error reading file containing the type of Bayes factor\n");
+			}
 			fclose(fpriorconfig);	
 			//Now define the function for Bayes factors which is a pointer
 			double (*BF21fun)(int, int, int, double)=NULL;
