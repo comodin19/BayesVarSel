@@ -183,7 +183,7 @@ priorConstConst1<- function(act.levels, kplusp, levelsfull){
 	#of the active levels take only those that correspond to factors:	
 	act.levelsf<- act.levels[levelsfull>1]	
 	
-	lprMgamma<- -sum(log(2^levelsf[act.levelsf>0]-1))-kplusp*log(2)
+	lprMgamma<- -sum(log(2^levelsfull[act.levelsf>0]-1))-kplusp*log(2)
 	return(lprMgamma)
 }
 
