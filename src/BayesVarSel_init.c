@@ -84,7 +84,7 @@ static const R_CMethodDef CEntries[] = {
     {"GibbsFSBSB", (DL_FUNC) &GibbsFSBSB, 10},
     {"GibbsFSB",   (DL_FUNC) &GibbsFSB, 10},		
     {"GibbsFConstConst", (DL_FUNC) &GibbsFConstConst, 10},
-    {"GibbsFSBConst", (DL_FUNC) &GibbsFConstConst, 10},			
+    {"GibbsFSBConst", (DL_FUNC) &GibbsFSBConst, 10},			
     {"GibbsFConst",(DL_FUNC) &GibbsFConst, 10},		
 		{NULL, NULL, 0}
 };
