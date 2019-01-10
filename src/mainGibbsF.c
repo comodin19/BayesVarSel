@@ -155,7 +155,7 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	fclose(fDesign);	
 	
   //Factors:
-	gsl_vector * positionsx = gsl_vector_alloc(p);
+	gsl_vector * positionsx = gsl_vector_calloc(p);
   gsl_matrix * positions = gsl_matrix_calloc(nofvars, p);	
 	gsl_vector_fscanf(fpositionsx, positionsx);
 	fclose(fpositionsx);
@@ -500,8 +500,6 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
 	
-	free(BF21fun);
-		
 	gsl_rng_free (ran);
 		
 	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
@@ -987,8 +985,6 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
 	
-	free(BF21fun);
-		
 	gsl_rng_free (ran);
 		
 	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
@@ -1468,8 +1464,6 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
 	
-	free(BF21fun);
-		
 	gsl_rng_free (ran);
 		
 	//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
@@ -1949,8 +1943,6 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			gsl_vector_free(hatbetap);
 			gsl_vector_free(meanhatbetap);
 			
-			free(BF21fun);
-		
 			gsl_rng_free (ran);
 		
 			//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
@@ -2436,8 +2428,6 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			gsl_vector_free(hatbetap);
 			gsl_vector_free(meanhatbetap);
 			
-			free(BF21fun);
-		
 			gsl_rng_free (ran);
 		
 			//Rprintf("Tiempo de ejecucion: %f seg\n", (double) (clock()-tiempo_ejec)/CLOCKS_PER_SEC);	
