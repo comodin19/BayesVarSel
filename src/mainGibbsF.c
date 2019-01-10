@@ -495,6 +495,8 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
+	
+	free(BF21fun);
 		
 	gsl_rng_free (ran);
 		
@@ -975,6 +977,8 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
+	
+	free(BF21fun);
 		
 	gsl_rng_free (ran);
 		
@@ -1450,6 +1454,8 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
 	gsl_vector_free(meanhatbetap);
+	
+	free(BF21fun);
 		
 	gsl_rng_free (ran);
 		
@@ -1925,6 +1931,8 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			gsl_vector_free(dimension_prob);
 			gsl_vector_free(hatbetap);
 			gsl_vector_free(meanhatbetap);
+			
+			free(BF21fun);
 		
 			gsl_rng_free (ran);
 		
@@ -2406,6 +2414,8 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			gsl_vector_free(dimension_prob);
 			gsl_vector_free(hatbetap);
 			gsl_vector_free(meanhatbetap);
+			
+			free(BF21fun);
 		
 			gsl_rng_free (ran);
 		
