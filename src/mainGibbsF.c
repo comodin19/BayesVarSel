@@ -480,10 +480,7 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	fclose(fJointInclusion);
 	fclose(fbetahat);
 	fclose(fAllModels);
-	fclose(fAllBF);
-	fclose(fpositions);
-	fclose(fpositionsx);
-	
+	fclose(fAllBF);	
 
 	
 	gsl_vector_free (y);
@@ -970,8 +967,6 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	fclose(fbetahat);
 	fclose(fAllModels);
 	fclose(fAllBF);
-	fclose(fpositions);
-	fclose(fpositionsx);
 	
 
 	
@@ -1454,9 +1449,6 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	fclose(fbetahat);
 	fclose(fAllModels);
 	fclose(fAllBF);
-	fclose(fpositions);
-	fclose(fpositionsx);
-	
 
 	
 	gsl_vector_free (y);
@@ -1938,9 +1930,6 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			fclose(fbetahat);
 			fclose(fAllModels);
 			fclose(fAllBF);
-			fclose(fpositions);
-			fclose(fpositionsx);
-	
 
 	
 			gsl_vector_free (y);
@@ -2428,9 +2417,6 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			fclose(fbetahat);
 			fclose(fAllModels);
 			fclose(fAllBF);
-			fclose(fpositions);
-			fclose(fpositionsx);
-	
 
 	
 			gsl_vector_free (y);
