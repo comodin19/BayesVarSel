@@ -490,6 +490,13 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
+	gsl_vector_free(positionsx);
+	gsl_vector_free(levels);
+	gsl_vector_free(isfactor);
+	gsl_vector_free(indexfr);
+	gsl_matrix_free(positions);
+	
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
@@ -972,6 +979,13 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
+	gsl_vector_free(positionsx);
+	gsl_vector_free(levels);
+	gsl_vector_free(isfactor);
+	gsl_vector_free(indexfr);
+	gsl_matrix_free(positions);
+	
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
@@ -1449,6 +1463,13 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
+	gsl_vector_free(positionsx);
+	gsl_vector_free(levels);
+	gsl_vector_free(isfactor);
+	gsl_vector_free(indexfr);
+	gsl_matrix_free(positions);
+	
+	
 	gsl_vector_free(incl_prob);
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
@@ -1925,6 +1946,13 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			gsl_vector_free (y);
 			gsl_matrix_free (X);	
 			gsl_vector_free (index);
+			
+			gsl_vector_free(positionsx);
+			gsl_vector_free(levels);
+			gsl_vector_free(isfactor);
+			gsl_vector_free(indexfr);
+			gsl_matrix_free(positions);
+			
 	
 			gsl_vector_free(incl_prob);
 			gsl_matrix_free(joint_incl_prob);
@@ -2408,6 +2436,13 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			gsl_vector_free (y);
 			gsl_matrix_free (X);	
 			gsl_vector_free (index);
+			
+			gsl_vector_free(positionsx);
+			gsl_vector_free(levels);
+			gsl_vector_free(isfactor);
+			gsl_vector_free(indexfr);
+			gsl_matrix_free(positions);
+			
 	
 			gsl_vector_free(incl_prob);
 			gsl_matrix_free(joint_incl_prob);
