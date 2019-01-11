@@ -92,8 +92,7 @@ resamplingSB<- function(modelslBF, positions){
 	#returning a matrix of the same size with the resampled models
 	levelsfull<- rowSums(positions)
 	levelsf<- levelsfull[levelsfull>1]
-	#ff contains the matrix with the count of models of each rank for each combination of levels
-	ff<- rank.levels2(pmax(levelsfull,2))
+
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	if (kplusp==1)
@@ -101,7 +100,7 @@ resamplingSB<- function(modelslBF, positions){
 	else
 		m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
-	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2, levelsfull=levelsfull, levelsf=levelsf, ff=ff))
+	allmodelsprior2<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB2, levelsfull=levelsfull, levelsf=levelsf))
 	#for each sampled model obtain the SBSB1 prior prob:
 	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB1, levelsfull=levelsfull))
 	#now the resampling:
@@ -155,7 +154,7 @@ priorSBSB2<- function(act.levels, levelsfull, levelsf, kplusp){
 	if (sum(act.levelsf)==0) return(-log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0)))
 	
 	#Obtain the vector with the number of models of each rank:
-	numberof<- rank.levels(levelsfull[act.levelsf>0])
+	numberof<- BayesVarSel:::rank.levels(levelsfull[act.levelsf>0])
 	
 	#if the model is not saturated nor oversaturated
 	if (sum(act.levelsf >= (levelsf-1)) == 0){
