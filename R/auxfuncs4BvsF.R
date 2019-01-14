@@ -160,7 +160,7 @@ priorSBSB2<- function(act.levels, levelsfull, levelsf, kplusp){
 	#if the model is not saturated nor oversaturated
 	if (sum(act.levelsf >= (levelsf-1)) == 0){
 		aux<- sum(act.levelsf)
-		l2prMgamma<- -log(as.character(numberof[as.character(aux)]))-
+		l2prMgamma<- -log(numberof[as.character(aux)])-
 								log(sum(levelsf[act.levelsf>0])-2*length(levelsf[act.levelsf]>0)+1)-
 								log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0))	
 		return(l2prMgamma)	

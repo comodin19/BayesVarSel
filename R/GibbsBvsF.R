@@ -332,12 +332,13 @@ GibbsBvsF <-
     #Log(BF) for every model
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
-	
-		if (prior.models == "SBSB2"){modelslBF<- BayesVarSel:::resamplingSBSB(modelslBF, positions)}
-		if (prior.models == "ConstConst2"){modelslBF<- BayesVarSel:::resamplingConstConst(modelslBF, positions)}
-		if (prior.models == "SB2"){modelslBF<- BayesVarSel:::resamplingSB(modelslBF, positions)}
-		if (prior.models == "Const2"){modelslBF<- BayesVarSel:::resamplingConst(modelslBF, positions)}
-		if (prior.models == "SBConst2"){modelslBF<- BayesVarSel:::resamplingSBConst(modelslBF, positions)}
+		
+		#Resampling removing the saturated models (keeping the oversaturated)	
+		if (prior.models == "SBSB2"){modelslBFwR<- BayesVarSel:::resamplingSBSB(modelslBF, positions)}
+		if (prior.models == "ConstConst2"){modelslBFwR<- BayesVarSel:::resamplingConstConst(modelslBF, positions)}
+		if (prior.models == "SB2"){modelslBFwR<- BayesVarSel:::resamplingSB(modelslBF, positions)}
+		if (prior.models == "Const2"){modelslBFwR<- BayesVarSel:::resamplingConst(modelslBF, positions)}
+		if (prior.models == "SBConst2"){modelslBFwR<- BayesVarSel:::resamplingSBConst(modelslBF, positions)}
 
     #Highest probability model
     mod.mat <- as.data.frame(t(models))
@@ -423,27 +424,32 @@ GibbsBvsF <-
 	    astMPM <- matrix(" ", ncol = 1, nrow = p)
 	    astHPM[HPM == 1] <- "*"
 	    astMPM[MPM == 1] <- "*"
-
-	    incl.prob <- z$inclprob
 			
 			incl.prob.factors<- colMeans((object$modelslogBF[,-(object$p+1)]%*%t(object$positions))>0)
+			incl.prob.factorswR<- colMeans((object$modelslogBFwR[,-(object$p+1)]%*%t(object$positions))>0)			
 			
-			incl.prob.M<- t(apply(z$positions, FUN=function(x, v){x*v}, v=incl.prob, MARGIN=1))
-			
-	    summ.Bvs <- as.data.frame(cbind(round(incl.prob ,digits = 4), astHPM, astMPM))
-	    dimnames(summ.Bvs) <- list(z$variables, c("Incl.prob.", "HPM", "MPM"))
+	    #summ.Bvs <- as.data.frame(cbind(round(incl.prob ,digits = 4), astHPM, astMPM))
+	    #dimnames(summ.Bvs) <- list(z$variables, c("Incl.prob.", "HPM", "MPM"))
 			
 			summ.BvsF<- as.data.frame(round(incl.prob.factors, digits=4))
 			colnames(summ.BvsF)<- "Incl.prob."
+			summ.BvsFwR<- as.data.frame(round(incl.prob.factorswR, digits=4))
+			colnames(summ.BvsFwR)<- "Incl.prob."
 			
-			summ.BvsLcF<- list()
-			for (i in 1:dim(z$positions)[1]){
-				summ.BvsLcF[[i]]<- round(incl.prob.M[i,z$positions[i,]==1]/incl.prob.factors[i], digits=4)				
-			}
+			
+			#Probably wrong as it uses inclusion probs over not resampled models:
+			#summ.BvsLcF<- list()
+	    #incl.prob <- z$inclprob			
+			#incl.prob.M<- t(apply(z$positions, FUN=function(x, v){x*v}, v=incl.prob, MARGIN=1))			
+			#for (i in 1:dim(z$positions)[1]){
+			#	summ.BvsLcF[[i]]<- round(incl.prob.M[i,z$positions[i,]==1]/incl.prob.factors[i], digits=4)				
+			#}
 
-	    ans$summary <- summ.Bvs
+	    #ans$summary <- summ.Bvs
 			ans$summaryF<- summ.BvsF
-			ans$summ.BvsLcF<- summ.BvsLcF
+			ans$summaryFwR<- summ.BvsFwR
+			
+			#ans$summ.BvsLcF<- summ.BvsLcF
 	    ans$method <- z$method
 	    ans$call <- z$call
 
@@ -457,9 +463,14 @@ GibbsBvsF <-
 			cat("Inclusion Probabilities of factors:\n")
 			print(ans$summaryF)
 	    cat("---\n")
-			cat("Inclusion Probabilities of levels of factors (Conditional on the factor is included):\n")
-			print(ans$summ.BvsLcF)
 	    cat("---\n")
+			cat("Inclusion Probabilities of factors after resampling:\n")
+			print(ans$summaryF)
+	    cat("---\n")
+			
+			#cat("Inclusion Probabilities of levels of factors (Conditional on the factor is included):\n")
+			#print(ans$summ.BvsLcF)
+	    #cat("---\n")
 			
 			
 	    cat("Code: HPM stands for Highest posterior Probability Model and\n MPM for Median Probability Model.\n ")
