@@ -467,7 +467,7 @@ GibbsBvsF <-
 	    cat("---\n")
 	    cat("---\n")
 			cat("Inclusion Probabilities of factors after resampling:\n")
-			print(ans$summaryF)
+			print(ans$summaryFwR)
 	    cat("---\n")
 			
 			#cat("Inclusion Probabilities of levels of factors (Conditional on the factor is included):\n")
