@@ -361,7 +361,9 @@ GibbsBvsF <-
     result$HPMbin <- models#The binary code for the HPM model
     names(result$HPMbin) <- namesx
     #result$modelsprob <- mod.mat
-    result$modelslogBF <-modelslBF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
+    result$modelslogBF <- modelslBF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
+    result$modelslogBFwR <- modelslBFwR #Same but after resampling
+		
     result$inclprob <- inclusion #inclusion probability for each variable
     names(result$inclprob) <- namesx
 
