@@ -427,6 +427,9 @@ GibbsBvsF <-
 	    astHPM[HPM == 1] <- "*"
 	    astMPM[MPM == 1] <- "*"
 			
+			incl.prob<- colMeans(object$modelslogBF[,-(object$p+1)])
+			incl.probwR<- colMeans(object$modelslogBFwR[,-(object$p+1)])			
+			
 			incl.prob.factors<- colMeans((object$modelslogBF[,-(object$p+1)]%*%t(object$positions))>0)
 			incl.prob.factorswR<- colMeans((object$modelslogBFwR[,-(object$p+1)]%*%t(object$positions))>0)			
 			
@@ -447,7 +450,9 @@ GibbsBvsF <-
 			#	summ.BvsLcF[[i]]<- round(incl.prob.M[i,z$positions[i,]==1]/incl.prob.factors[i], digits=4)				
 			#}
 
-	    #ans$summary <- summ.Bvs
+	    ans$summary <- incl.prob
+	    ans$summarywR <- incl.probwR
+			
 			ans$summaryF<- summ.BvsF
 			ans$summaryFwR<- summ.BvsFwR
 			
