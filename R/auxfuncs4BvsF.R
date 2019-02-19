@@ -155,7 +155,7 @@ priorSBSB2<- function(act.levels, levelsfull, levelsf, kplusp){
 	if (sum(act.levelsf)==0) return(-log(kplusp+1)-lchoose(kplusp, sum(act.levels!=0)))
 	
 	#Obtain the vector with the number of models of each rank:
-	numberof<- rank.levels(levelsfull[act.levelsf>0])
+	numberof<- rank.levels(levelsfull[levelsfull>1][act.levelsf>0])
 	
 	#if the model is not saturated nor oversaturated
 	if (sum(act.levelsf >= (levelsf-1)) == 0){
