@@ -131,8 +131,10 @@ GibbsBvsF <-
 		positions<- matrix(0, ncol=p, nrow=length(depvars))
 		for (i in 1:length(depvars)){positions[i,]<- grepl(depvars[i], colnames(X), fixed=T)}
 		#positionsX is a vector of the same length as columns has X
+
 		#with 1 in the position with a numeric variable:
-		positionsx<- as.numeric(!grepl("factor(", colnames(X), fixed=T))
+		positionsx<- as.numeric(colSums(positions%*%t(positions))==1)
+
 		write(positionsx, ncolumns=1, file = paste(wd, "/positionsx.txt", sep = ""))
     write(t(positions),
           ncolumns = p,
@@ -182,26 +184,26 @@ GibbsBvsF <-
 
     #Info:
     cat("Info. . . .\n")
-    cat("Most complex model has", p + knull, "covariates\n")
+    cat("Most complex model has", dim(positions)[1] + knull, "numerical covariates and factors\n")
     if (!is.null(fixed.cov)) {
       if (knull > 1) {
         cat("From those",
             knull,
             "are fixed and we should select from the remaining",
-            p,
+            dim(positions)[1],
             "\n")
       }
       if (knull == 1) {
         cat("From those",
             knull,
-            "is fixed and we should select from the remaining",
-            p,
+            "is fixed (the intercept) and we should select from the remaining",
+            dim(positions)[1],
             "\n")
       }
-      cat(paste(paste(
-        namesx, collapse = ", ", sep = ""
-      ), "\n", sep = ""))
-    }
+			cat(" Covariates (numerical variables):\n", depvars[positionsx==1], "\n",
+			    "Factors:\n", depvars[positionsx==0], "\n\n")
+		
+	    }
     cat("The problem has a total of", 2 ^ (p), "competing models\n")
     iter <- n.iter
     cat("Of these,", n.burnin + n.iter, "are sampled with replacement\n")
@@ -328,10 +330,14 @@ GibbsBvsF <-
     allmodels<- as.matrix(read.table(paste(wd,"/AllModels",sep=""),colClasses="numeric"))
     allBF<- as.vector(t(read.table(paste(wd,"/AllBF",sep=""),colClasses="numeric")))
 
-
     #Log(BF) for every model
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
+		
+		############
+		#Specific to factors:
+		#
+		#Recall now that the number of vars (either numerical or factors) is dim(positions)[1]
 		
 		#Resampling removing the saturated models (keeping the oversaturated)	
 		if (prior.models == "SBSB2"){modelslBFwR<- BayesVarSel:::resamplingSBSB(modelslBF, positions)}
@@ -339,13 +345,36 @@ GibbsBvsF <-
 		if (prior.models == "SB2"){modelslBFwR<- BayesVarSel:::resamplingSB(modelslBF, positions)}
 		if (prior.models == "Const2"){modelslBFwR<- BayesVarSel:::resamplingConst(modelslBF, positions)}
 		if (prior.models == "SBConst2"){modelslBFwR<- BayesVarSel:::resamplingSBConst(modelslBF, positions)}
+		
+		#Now we convert the sampled models to vars and factors:
+		modelslBFF<- t(apply(modelslBFwR[,-(p+1)], MARGIN=1, FUN=function(x,M){as.numeric(x%*%M>0)}, M=t(positions)))
+		
+    #Inclusion probabilities:
+		inclusion <- colMeans(modelslBFF)
+		names(inclusion)<- depvars
+		
+		#HPM with factors:
+		HPMFbin<- modelslBFF[which(allBF==max(allBF))[1], ]
+		names(HPMFbin)<- depvars
+		
+		#joint inclusion probs:
+		jointinclprob<- matrix(0, ncol=dim(positions)[1], nrow=dim(positions)[1])
 
-    #Highest probability model
-    mod.mat <- as.data.frame(t(models))
-
-
-    inclusion <- incl
-    names(inclusion) <- namesx
+		for (i in 1:dim(modelslBFF)[1]){
+			jointinclprob<- jointinclprob + matrix(modelslBFF[i,], nc=1)%*%matrix(modelslBFF[i,], nr=1)
+		}
+			jointinclprob<- jointinclprob/dim(modelslBFF)[1]
+		colnames(jointinclprob)<- depvars; rownames(jointinclprob)<- depvars
+		
+		#Dimension of the true model:
+		dimenF<- c(rowSums(modelslBFF), 0:dim(positions)[1])
+		dimenF<- (table(dimenF)-1)/dim(modelslBFF)[1]
+		names(dimenF)<- (0:dim(positions)[1])+knull
+		
+		#Attach the column with the log(BF)
+		modelslBFF<- cbind(modelslBFF, log(allBF))
+		colnames(modelslBFF)<- c(depvars, "logBFi0")
+		
     result <- list()
     #
     result$time <- time #The time it took the programm to finish
@@ -354,137 +383,34 @@ GibbsBvsF <-
       result$lmnull <- lmnull # The lm object for the null model
     }
 
-    result$variables <- namesx #The name of the competing variables
+    result$variables <- depvars #The name of the competing variables
     result$n <- n #number of observations
-    result$p <- p #number of competing variables
+    result$p <- length(depvars) #number of competing variables
     result$k <- knull#number of fixed covariates
-    result$HPMbin <- models#The binary code for the HPM model
-    names(result$HPMbin) <- namesx
-    #result$modelsprob <- mod.mat
-    result$modelslogBF <- modelslBF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
-    result$modelslogBFwR <- modelslBFwR #Same but after resampling
+    result$HPMbin <- (HPMFbin)#The binary code for the HPM model
+
+    result$modelslogBF <- modelslBFF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
 		
     result$inclprob <- inclusion #inclusion probability for each variable
-    names(result$inclprob) <- namesx
 
-    result$jointinclprob <- data.frame(joint[1:p,1:p],row.names=namesx)#data.frame for the joint inclusion probabilities
-    names(result$jointinclprob) <- namesx
+    result$jointinclprob <- data.frame(jointinclprob) #data.frame for the joint inclusion probabilities
     #
-    result$postprobdim <- dimen #vector with the dimension probabilities.
-    names(result$postprobdim) <- (0:p)+knull #dimension of the true model
+    result$postprobdim <- dimenF #vector with the dimension probabilities.
 		
 		result$positions<- positions
 		result$positionsx<- positionsx
 		
-    #
-    #result$betahat <- betahat
-    #rownames(result$betahat)<-namesx
-    #names(result$betahat) <- "BetaHat"
-    result$call <- match.call()
+		#
+		#
+		#####################
+		
 
     result$priorprobs <- "En obras"
-    result$method <- "gibbs"
-    class(result)<- "BvsF"
+    result$method <- "gibbsWithFactors"
+    class(result)<- "Bvs"
     result
 
 
   }
 	
-	#' Summary of an object of class \code{BvsF}
-	#'
-	#' Summary of an object of class \code{BvsF}, providing inclusion probabilities and a representation of
-	#' the Median Probability Model and the Highest Posterior probability Model.
-	#'
-	#' @export
-	#' @param object An object of class \code{BvsF}
-	#' @param ... Additional parameters to be passed
-	#' @author Gonzalo Garcia-Donato and Anabel Forte
-	#'
-	#'   Maintainer: <anabel.forte@@uv.es>
-	#' @seealso See \code{\link[BayesVarSel]{Bvs}},
-	#'   \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
-	#'   \code{Bvs}.
-	#' @examples
-	#'
-	#'
-	
-	summary.BvsF <-
-	  function(object,...){
 
-	    #we use object because it is requiered by S3 methods
-	    z <- object
-	    p <- z$p
-	    if (!inherits(object, "BvsF"))
-	      warning("calling summary.Bvs(<fake-Bvs-x>) ...")
-	    ans <- list()
-	    #ans$coefficients <- z$betahat
-	    #dimnames(ans$coefficients) <- list(names(z$lm$coefficients),"Estimate")
-
-	    HPM <- z$HPMbin
-	    MPM <- as.numeric(z$inclprob >= 0.5)
-	    astHPM <- matrix(" ", ncol = 1, nrow = p)
-	    astMPM <- matrix(" ", ncol = 1, nrow = p)
-	    astHPM[HPM == 1] <- "*"
-	    astMPM[MPM == 1] <- "*"
-			
-			incl.prob<- colMeans(object$modelslogBF[,-(object$p+1)])
-			incl.probwR<- colMeans(object$modelslogBFwR[,-(object$p+1)])			
-			
-			incl.prob.factors<- colMeans((object$modelslogBF[,-(object$p+1)]%*%t(object$positions))>0)
-			incl.prob.factorswR<- colMeans((object$modelslogBFwR[,-(object$p+1)]%*%t(object$positions))>0)			
-			
-	    #summ.Bvs <- as.data.frame(cbind(round(incl.prob ,digits = 4), astHPM, astMPM))
-	    #dimnames(summ.Bvs) <- list(z$variables, c("Incl.prob.", "HPM", "MPM"))
-			
-			summ.BvsF<- as.data.frame(round(incl.prob.factors, digits=4))
-			colnames(summ.BvsF)<- "Incl.prob."
-			summ.BvsFwR<- as.data.frame(round(incl.prob.factorswR, digits=4))
-			colnames(summ.BvsFwR)<- "Incl.prob."
-			
-			
-			#Probably wrong as it uses inclusion probs over not resampled models:
-			#summ.BvsLcF<- list()
-	    #incl.prob <- z$inclprob			
-			#incl.prob.M<- t(apply(z$positions, FUN=function(x, v){x*v}, v=incl.prob, MARGIN=1))			
-			#for (i in 1:dim(z$positions)[1]){
-			#	summ.BvsLcF[[i]]<- round(incl.prob.M[i,z$positions[i,]==1]/incl.prob.factors[i], digits=4)				
-			#}
-
-	    ans$summary <- incl.prob
-	    ans$summarywR <- incl.probwR
-			
-			ans$summaryF<- summ.BvsF
-			ans$summaryFwR<- summ.BvsFwR
-			
-			#ans$summ.BvsLcF<- summ.BvsLcF
-	    ans$method <- z$method
-	    ans$call <- z$call
-
-	    cat("\n")
-	    cat("Call:\n")
-	    print(ans$call)
-	    #cat("\n")
-	    #cat("Inclusion Probabilities:\n")
-	    #print(ans$summary)
-	    cat("---\n")
-			cat("Inclusion Probabilities of factors:\n")
-			print(ans$summaryF)
-	    cat("---\n")
-	    cat("---\n")
-			cat("Inclusion Probabilities of factors after resampling:\n")
-			print(ans$summaryFwR)
-	    cat("---\n")
-			
-			#cat("Inclusion Probabilities of levels of factors (Conditional on the factor is included):\n")
-			#print(ans$summ.BvsLcF)
-	    #cat("---\n")
-			
-			
-	    cat("Code: HPM stands for Highest posterior Probability Model and\n MPM for Median Probability Model.\n ")
-	    if (ans$method == "gibbs") {
-	      cat("Results are estimates based on the visited models.\n")
-	    }
-	    class(ans) <- "summary.Bvs"
-	    return(invisible(ans))
-	  }
-	
