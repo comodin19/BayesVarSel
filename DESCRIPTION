@@ -18,8 +18,9 @@ BugReports: https://github.com/comodin19/BayesVarSel/issues
 Depends:
     MASS (>= 7.3-45),
     mvtnorm (>= 1.0-5),
-    parallel (>= 3.3.0),
-    R (>= 3.3.0)
+    parallel (>= 3.3.2),
+    R (>= 3.3.2),
+		lmerTest (>= 3.0)
 License: GPL-2
 NeedsCompilation: yes
 RoxygenNote: 6.1.1

@@ -130,6 +130,11 @@ Similarly, \code{prior.models} = "ScottBerger" is equivalent to the
 combination \code{prior.models}= "User" and \code{priorprobs} =
 \code{1/choose(p,0:p)}.
 
+The case where n<p is handled assigning to the Bayes factors of models with k regressors
+with n<k a value of 1. This should be interpreted as a generalization of the
+null predictive matching in Bayarri et al (2012). Use \code{\link[BayesVarSel]{GibbsBvs}} for cases where
+p>>n.
+
 Limitations: the error "A Bayes factor is infinite.". Bayes factors can be
 extremely big numbers if i) the sample size is even moderately large or if
 ii) a model is much better (in terms of fit) than the model taken as the

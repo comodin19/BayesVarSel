@@ -38,6 +38,12 @@ extern void ZSBF(void *, void *, void *, void *, void *);
 extern void ZSConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsFSBSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsFSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsFConstConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsFConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsFSBConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+
 
 static const R_CMethodDef CEntries[] = {
     {"flsBF",            (DL_FUNC) &flsBF,             6},
@@ -75,7 +81,12 @@ static const R_CMethodDef CEntries[] = {
     {"ZSConst",          (DL_FUNC) &ZSConst,           9},
     {"ZSSB",             (DL_FUNC) &ZSSB,              9},
     {"ZSUser",           (DL_FUNC) &ZSUser,            9},
-    {NULL, NULL, 0}
+    {"GibbsFSBSB", (DL_FUNC) &GibbsFSBSB, 10},
+    {"GibbsFSB",   (DL_FUNC) &GibbsFSB, 10},		
+    {"GibbsFConstConst", (DL_FUNC) &GibbsFConstConst, 10},
+    {"GibbsFSBConst", (DL_FUNC) &GibbsFSBConst, 10},			
+    {"GibbsFConst",(DL_FUNC) &GibbsFConst, 10},		
+		{NULL, NULL, 0}
 };
 
 void R_init_BayesVarSel(DllInfo *dll)

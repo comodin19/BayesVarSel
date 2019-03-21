@@ -50,6 +50,7 @@ double Gibbsstatistics(int p, int n, double SSEnull, gsl_matrix * X,
         }
         otrocont++;
     }
+		
     /*
      for (i=0; i<p; i++)
 	{
@@ -69,18 +70,14 @@ double Gibbsstatistics(int p, int n, double SSEnull, gsl_matrix * X,
 	gsl_vector * tau = gsl_vector_calloc(*k2);
 	gsl_linalg_QR_decomp(Xindex, tau); //Notice that now Xindex contains the QR decomposition
 
-    gsl_vector * residual=gsl_vector_alloc(n);
-    gsl_vector_memcpy (residual, y);
+  gsl_vector * residual=gsl_vector_alloc(n);
+	gsl_vector * hatbeta=gsl_vector_calloc(*k2);
+	gsl_linalg_QR_lssolve(Xindex, tau, y, hatbeta, residual);
+  
+	gsl_vector_view wres = gsl_vector_subvector(residual, 0, n);
     
-    gsl_linalg_QR_QTvec(Xindex, tau, residual);
-    
-	
-    
-	//gsl_linalg_QR_lssolve (Xindex, tau, y, hatbeta, residual);
-	//gsl_vector_view wres = gsl_vector_subvector(residual, 0, n);
-    
-	gsl_vector_view wres = gsl_vector_subvector(residual, *k2, n-(*k2));
-    gsl_blas_ddot(&wres.vector, &wres.vector, &SSE);
+	//gsl_vector_view wres = gsl_vector_subvector(residual, *k2, n-(*k2));
+  gsl_blas_ddot(&wres.vector, &wres.vector, &SSE);
 	
 	//To compute the hatbetap
 	//gsl_blas_dgemv(CblasNoTrans, 1.0, L, hatbeta, 0.0, hatbetap);
@@ -96,6 +93,59 @@ double Gibbsstatistics(int p, int n, double SSEnull, gsl_matrix * X,
 	gsl_vector_free(residual);
 	
 	return(Q);
+}
+
+
+//A function to print a matrix with dimension nrowXncol
+void PrintMatrix (gsl_matrix * A, int nrow, int ncol)
+{
+int i,j;
+	for (i=0; i<nrow; i++)
+		{
+		for (j=0; j<ncol; j++)
+			{
+		printf ("%g ", gsl_matrix_get(A,i,j));
+			}
+		printf ("\n");
+		}
+}
+
+
+//A function to print a vector with n components
+void PrintVector (gsl_vector * v, int n)
+{
+int i;
+	for (i=0; i<n; i++)
+		{
+		printf ("%.5f ", gsl_vector_get(v,i));
+		}
+		printf ("\n");
+}
+
+//A function to print a matrix with dimension nrowXncol
+void PrintIntMatrix (gsl_matrix_int * A, int nrow, int ncol)
+{
+int i,j;
+	for (i=0; i<nrow; i++)
+		{
+		for (j=0; j<ncol; j++)
+			{
+		printf ("%d ", gsl_matrix_int_get(A,i,j));
+			}
+		printf ("\n");
+		}
+}
+
+
+//A function to print a vector with n components
+void PrintIntVector (gsl_vector_int * v, int n)
+{
+int i;
+	for (i=0; i<n; i++)
+		{
+		printf ("%d ", gsl_vector_int_get(v,i));
+		}
+		printf ("\n");
 }
 
 

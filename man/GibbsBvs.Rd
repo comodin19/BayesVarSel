@@ -87,6 +87,9 @@ Gibbs sampling algorithm to explore the model space and frequency of
 This is a heuristic approximation to the function
 \code{\link[BayesVarSel]{Bvs}} so the details there apply also here.
 
+For cases where p>>n consider using the correction \code{\link[BayesVarSel]{pltltn}}
+to account for the limitation of MCMC techniques in these extremely large model spaces.
+
 The algorithm implemented is a Gibbs sampling-based searching algorithm
 originally proposed by George and McCulloch (1997). Garcia-Donato and
 Martinez-Beneito (2013) have shown that this simple sampling strategy in
@@ -140,7 +143,8 @@ selection. Statistica Sinica, 7, 339:372.
 \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-predictions.
+predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
+situation where p>>n.
 
 \code{\link[BayesVarSel]{Bvs}} for exact
 version obtained enumerating all entertained models (recommended when
