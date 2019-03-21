@@ -4,10 +4,10 @@
 \alias{Bvs}
 \title{Bayesian Variable Selection for linear regression models}
 \usage{
-Bvs(formula, data, null.model = paste(as.formula(formula)[[2]], " ~ 1", sep =
-  ""), prior.betas = "Robust", prior.models = "ScottBerger", n.keep = 10,
-  time.test = TRUE, priorprobs = NULL, parallel = FALSE,
-  n.nodes = detectCores())
+Bvs(formula, data, null.model = paste(as.formula(formula)[[2]], " ~ 1",
+  sep = ""), prior.betas = "Robust", prior.models = "ScottBerger",
+  n.keep = 10, time.test = TRUE, priorprobs = NULL,
+  parallel = FALSE, n.nodes = detectCores())
 }
 \arguments{
 \item{formula}{Formula defining the most complex (full) regression model in the

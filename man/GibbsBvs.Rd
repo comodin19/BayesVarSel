@@ -5,10 +5,11 @@
 \title{Bayesian Variable Selection for linear regression models using Gibbs
 sampling.}
 \usage{
-GibbsBvs(formula, data, null.model = paste(as.formula(formula)[[2]], " ~ 1",
-  sep = ""), prior.betas = "Robust", prior.models = "ScottBerger",
-  n.iter = 10000, init.model = "Full", n.burnin = 500, n.thin = 1,
-  time.test = TRUE, priorprobs = NULL, seed = runif(1, 0, 16091956))
+GibbsBvs(formula, data, null.model = paste(as.formula(formula)[[2]],
+  " ~ 1", sep = ""), prior.betas = "Robust",
+  prior.models = "ScottBerger", n.iter = 10000, init.model = "Full",
+  n.burnin = 500, n.thin = 1, time.test = TRUE, priorprobs = NULL,
+  seed = runif(1, 0, 16091956))
 }
 \arguments{
 \item{formula}{Formula defining the most complex regression model in the
@@ -73,7 +74,7 @@ of posterior probabilities of the dimension of the true model.}
 visited models after the burning period and the Bayes factor (log scale) of
 that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
-function.} 
+function.}
 \item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
 \item{method }{\code{gibbs}}
 }

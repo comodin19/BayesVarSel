@@ -1,3 +1,7 @@
+# BayesVarSel 1.8.2
+
+* Added a vignette based on the R Journal article https://journal.r-project.org/archive/2018/RJ-2018-021/index.html.
+
 # BayesVarSel 1.8.1
 
 * Added the calculation of the normalizing constant.

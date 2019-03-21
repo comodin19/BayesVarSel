@@ -66,7 +66,7 @@
 #' visited models after the burning period and the Bayes factor (log scale) of
 #' that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 #' to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
-#' function.} 
+#' function.}
 #' \item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
 #' \item{method }{\code{gibbs}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
@@ -864,9 +864,9 @@ GibbsBvs <-
     if (pfms == "c" ) priorprobs <- rep(1, p + 1)
     if (pfms == "s" ) priorprobs <- 1/choose(p,0:p)
     result$priorprobs <- priorprobs
-		
+
 		result$C<- calculaC(modelslBF, priorprobs, p)
-		
+
     result$method <- "gibbs"
     class(result)<- "Bvs"
     result
@@ -881,10 +881,10 @@ GibbsBvs <-
 #not to be exported as is expected to be used only within the GibbsBvs
 calculaC<- function(modelslBF, priorprobs, p){
 	n<- dim(modelslBF)[1]
-	#The method of George&McCulloch uses to sets. Here these are obtained as 
+	#The method of George&McCulloch uses to sets. Here these are obtained as
 	#subsets of the MCMC sample of length K
 	K<- round(n/2)
-	Aset<- sample(x=1:n, size=K, rep=F)
+	Aset<- sample(x=1:n, size=K, replace=F)
 	Bset<- (1:n)[-Aset]
 	#log-Bayes factors of the models in A
 	lBFAset<- modelslBF[Aset, "logBFi0"]

@@ -1,0 +1,20 @@
+citHeader("To cite BayesVarSel in publications use:")
+
+citEntry(
+    entry       = "Article",
+    title       = "Bayesian Testing, Variable Selection and Model Averaging in Linear Models using {R} with {BayesVarSel}",
+    author      = personList(as.person("Gonzalo Garcia-Donato"), as.person("Anabel Forte")),
+    journal     = "The R Journal",
+    year        = "2018",
+    volume      = {10},
+    number      = {1},
+    pages       = {155--174},
+    url         = {"https://journal.r-project.org/archive/2018/RJ-2018-021/index.html"},
+    textVersion = paste(
+        "Garcia-Donato, G., & Forte, A. (2018).",
+        "Bayesian Testing, Variable Selection and Model",
+        "Averaging in Linear Models using R with BayesVarSel.",
+        "The R Journal, 10(1), 155–174. Retrieved from",
+        "https://journal.r-project.org/archive/2018/RJ-2018-021/index.html")
+)
+ 

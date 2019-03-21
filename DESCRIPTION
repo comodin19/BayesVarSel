@@ -2,8 +2,8 @@ Package: BayesVarSel
 Type: Package
 Title: Bayes Factors, Model Choice and Variable Selection in Linear
         Models
-Version: 1.8.1
-Date: 2018-10-29
+Version: 1.8.2
+Date: 2018-12-12
 Authors@R: c(
     person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
     person("Anabel", "Forte",             email = "anabel.forte@uv.es",   role = c("aut", "cre")),
@@ -23,5 +23,6 @@ Depends:
 		lmerTest (>= 3.0)
 License: GPL-2
 NeedsCompilation: yes
-RoxygenNote: 6.0.1
-
+RoxygenNote: 6.1.1
+Suggests: knitr
+VignetteBuilder: knitr
