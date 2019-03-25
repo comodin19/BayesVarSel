@@ -3,7 +3,7 @@ Type: Package
 Title: Bayes Factors, Model Choice and Variable Selection in Linear
         Models
 Version: 1.9.0
-Date: 2018-12-12
+Date: 2019-03-25
 Authors@R: c(
     person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
     person("Anabel", "Forte",             email = "anabel.forte@uv.es",   role = c("aut", "cre")),
