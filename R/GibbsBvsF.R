@@ -459,8 +459,7 @@ GibbsBvsF <-
 		names(inclusion)<- depvars
 		
 		#HPM with factors:
-		HPMFbin<- modelslBFF[which(modelslBFwR[,"logBFi0"]==max(modelslBFwR[,"logBFi0"]))[1], ]
-		names(HPMFbin)<- depvars
+		HPMFbin<- models%*%t(positions)
 		
 		#joint inclusion probs:
 		jointinclprob<- matrix(0, ncol=dim(positions)[1], nrow=dim(positions)[1])

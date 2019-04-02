@@ -1135,8 +1135,6 @@ print.Bvs <-
     print(x$call)
     #cat("\nThis is the result for a model selection problem with ")
     #cat(x$p-1)
-    pp<-2^x$p-1
-    n.keep<-dim(x$modelsprob)[1]
     #cat(" covariates and ")
     #cat(x$n)
     #cat(" observations\n")
@@ -1148,7 +1146,7 @@ print.Bvs <-
     #  cat(" seconds.\n")
     #}
 
-    if(x$method=="gibbs"){
+    if(x$method=="gibbs" | x$method="gibbsWithFactors"){
       p <- x$p
       n.iter <- dim(x$modelslogBF)[1]
       dimmodels<- rowSums(x$modelslogBF[,1:p])+1
@@ -1171,6 +1169,7 @@ print.Bvs <-
 
 
     if(x$method!="gibbs"){
+	    n.keep<-dim(x$modelsprob)[1]
       if(n.keep<=10){
         cat(paste("\nThe",n.keep,"most probable models and their probabilities are:\n",sep=" "))
         print(x$modelsprob)
