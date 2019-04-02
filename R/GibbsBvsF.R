@@ -459,7 +459,7 @@ GibbsBvsF <-
 		names(inclusion)<- depvars
 		
 		#HPM with factors:
-		HPMFbin<- modelslBFF[which(allBF==max(allBF))[1], ]
+		HPMFbin<- modelslBFF[which(modelslBFwR[,"logBFi0"]==max(modelslBFwR[,"logBFi0"]))[1], ]
 		names(HPMFbin)<- depvars
 		
 		#joint inclusion probs:
@@ -477,7 +477,7 @@ GibbsBvsF <-
 		names(dimenF)<- (0:dim(positions)[1])+knull
 		
 		#Attach the column with the log(BF)
-		modelslBFF<- cbind(modelslBFF, log(allBF))
+		modelslBFF<- cbind(modelslBFF, modelslBFwR[,"logBFi0"])
 		colnames(modelslBFF)<- c(depvars, "logBFi0")
 		
     result <- list()
