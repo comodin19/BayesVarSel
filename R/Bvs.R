@@ -1163,8 +1163,11 @@ print.Bvs <-
 
       }
 
+	  if(x$method=="gibbsWithFactors"){
+			cat("Printing objects with factors still not implemented\n")
+		}
 
-    if(x$method!="gibbs"){
+    if(x$method=="full" | x$method=="parallel"){
 	    n.keep<-dim(x$modelsprob)[1]
       if(n.keep<=10){
         cat(paste("\nThe",n.keep,"most probable models and their probabilities are:\n",sep=" "))
