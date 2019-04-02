@@ -48,10 +48,10 @@
 #' defined the probability of the most complex model (that defined by
 #' \code{formula}. That is
 #'
-#' \code{priorprobs}[j]=C*Pr(M_i such that M_i has j-1+k explanatory variables)
+#' \code{priorprobs}[j]=Cprior*Pr(M_i such that M_i has j-1+k explanatory variables)
 #'
-#' where C is the normalizing constant, i.e
-#' \code{C=1/sum(priorprobs*choose(p,0:p)}.
+#' where Cprior is the normalizing constant for the prior, i.e
+#' \code{Cprior=1/sum(priorprobs*choose(p,0:p)}.
 #'
 #' Note that \code{prior.models}="Constant" is equivalent to the combination
 #' \code{prior.models}="User" and \code{priorprobs=rep(1,(p+1))} but the
@@ -1133,37 +1133,33 @@ print.Bvs <-
     cat("\n")
     cat("Call:\n")
     print(x$call)
-    #cat("\nThis is the result for a model selection problem with ")
-    #cat(x$p-1)
-    #cat(" covariates and ")
-    #cat(x$n)
-    #cat(" observations\n")
-    #cat("The potential covariates are:\n")
-    #cat(x$variables[-1])
-    #if(!is.null(x$time)){
-    #  cat("\nComputational time: ")
-    #  cat(x$time)
-    #  cat(" seconds.\n")
-    #}
 
-    if(x$method=="gibbs" | x$method="gibbsWithFactors"){
-      p <- x$p
-      n.iter <- dim(x$modelslogBF)[1]
-      dimmodels<- rowSums(x$modelslogBF[,1:p])+1
-      Lpostprob<- x$modelslogBF[, (p+1)] + log(x$priorprobs[dimmodels])
+    if(x$method=="gibbs"){
+       p <- x$p
+       n.iter <- dim(x$modelslogBF)[1]
+       dimmodels<- rowSums(x$modelslogBF[,1:p])+1
+       logpostprob<- x$modelslogBF[, (p+1)] + log(x$priorprobs[dimmodels])-log(x$C)-log(sum(x$priorprobs*choose(p,0:p)))
+ 
+       ordenado <- x$modelslogBF[order(logpostprob,decreasing = T),]
+       ordenado<- cbind(x$modelslogBF, logpostprob)
+       ordenado <- ordenado[order(logpostprob,decreasing = T),]
+       models<- ordenado[!duplicated(ordenado),]
+ 
+			ten<- min(10, dim(models)[1])
+      #mod.mat <- as.data.frame(models[1:ten,1:p])
+      mod.mat <- as.data.frame(models[1:ten,])
 
-      ordenado <- x$modelslogBF[order(Lpostprob,decreasing = T),]
-
-      models <- ordenado[!duplicated(ordenado),]
-      mod.mat <- as.data.frame(models[1:10,1:p])
-
-      for (i in 1:10) {
+      for (i in 1:ten) {
         varnames.aux <- rep("", p)
         varnames.aux[models[i,1:p] == 1] <- "*"
-        mod.mat[i,] <- varnames.aux
+        mod.mat[i,1:p] <- varnames.aux
       }
-      cat("\nThe 10 most probable models among the visited ones are:\n")
+      cat("\nThe ", ten, " most probable models among the visited ones are:\n")
       print(mod.mat)
+			cat("---\n")
+			cat("Code: Column logBFi0 is the log of Bayes factor and\n")
+			cat("column logpostprob is an estimation of posterior probabilities (log-scale)\n")
+			cat("based on the normalizing constant.")
 
       }
 
@@ -1179,7 +1175,7 @@ print.Bvs <-
         cat("\n(The remanining", n.keep - 10, "models are kept but omitted in this print)")
       }
     }
-    cat("\n")
+    cat("\n\n")
 
   }
 
@@ -1244,9 +1240,10 @@ summary.Bvs <-
     ans$call <- z$call
 
     cat("\n")
-    cat("Call:\n")
-    print(ans$call)
-    cat("\n")
+    #cat("Call:\n")
+    #print(ans$call)
+    #cat("\n")
+		print.Bvs(z)
     cat("Inclusion Probabilities:\n")
     print(ans$summary)
     cat("---\n")
