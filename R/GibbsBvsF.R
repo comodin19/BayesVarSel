@@ -1,16 +1,35 @@
 #' Bayesian Variable Selection with Factors for linear regression models using Gibbs
 #' sampling.
 #'
-#' Wersion of \code{\link[BayesVarSel]{GibbsBvs}} when the competing
+#' Version of \code{\link[BayesVarSel]{GibbsBvs}} when the competing
 #' variables contain factors. Results are presented as if the factors were
 #' just another variable (independendtly on the number of levels) altough 
 #' internally their treatment is quite more complex.
 #' 
-#' In statistics, a factor with l levels (or categories) is represented using (l-1) dummy 
-#' variables in a way controlled, in R, by
-#' functions like \code{\link[stats]{contr.treatment}}. The methodology implemented
-#' in \code{GibbsBvsF} was proposed in Garcia-Donato and Paulo (2019) and
-#' is independent on the  The work \code{GibbsBvsF}
+#' The methodology implemented in \code{GibbsBvsF} 
+#' has been proposed in Garcia-Donato and Paulo (2019). Internally, a rank defficient representation
+#' of factors using dummies is used and the number of competing models considered is 
+#'
+#' 2^(pnum+sum_j l_j),
+#'
+#' where pnum is the number of numerical variables and l_j is the number of levels in factor j. This
+#' method leads to results that do not depend on how the factors are
+#' coded (eg. via \code{\link[stats]{contr.treatment}}).
+#' 
+#' A main difference with \code{Bvs} and \code{GibbsBvs} concerns the prior
+#' probabilities on the model space. In the presence of factors, this assignment
+#' should take into account the "grouped" nature of the dummy variables representing
+#' each factor. 
+#'
+#' The options \code{prior.models="SBSB"} and \code{prior.models="ConstConst"} use a two stage
+#' prior. The first stage corresponds to factors and numerical variables and (conditional on these) a second
+#' part of the prior specifies how probablities are apportioned over the different submodels defined
+#' by the dummies. The default option is "SBSB" which uses in both stages an assignment
+#' 'a la' Scott-Berger so inversely proportional to the number of models of the same dimension. The
+#' option "ConstConst" implements a uniform prior for both stages. The options \code{prior.models="Const"} and 
+#' \code{prior.models="SB"} do not have a staged structure and "Const" apportions the prior probabilities
+#' uniformly over all possible models (2^(p+sum_j l_j)) and in "SB" the probability
+#' is inversely proportional to the number of any model of the same dimension.
 #' @export
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.
@@ -19,13 +38,11 @@
 #' It should be nested in the full model. It is compulsory that the null model
 #' contains the intercept and by default, the null model is defined
 #' to be the one with just the intercept 
-#' XXXXXXXXXXXXXXXX
-#' XXX: what is below to be revised:.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
-#' "ZellnerSiow" and "FLS" (see details).
+#' and "ZellnerSiow" (see details).
 #' @param prior.models Prior distribution over the model space. Possible
-#' choices are "Constant", "ScottBerger" and "User" (see details).
+#' choices (see details) are "Const", "SB", "ConstConst", "SBConst" and "SBSB" (the default).
 #' @param n.iter The total number of iterations performed after the burn in
 #' process.
 #' @param init.model The model at which the simulation process starts. Options
@@ -49,12 +66,15 @@
 #' @return \code{GibbsBvs} returns an object of class \code{Bvs} with the
 #' following elements: \item{time }{The internal time consumed in solving the
 #' problem} \item{lmfull }{The \code{lm} class object that results when the
-#' model defined by \code{formula} is fitted by \code{lm}} \item{lmnull }{The
+#' model defined by \code{formula} is fitted by \code{lm}} 
+#' \item{lmnull }{The
 #' \code{lm} class object that results when the model defined by
-#' \code{fixed.cov} is fitted by \code{lm}} \item{variables }{The name of all
-#' the potential explanatory variables} \item{n }{Number of observations}
-#' \item{p }{Number of explanatory variables to select from} \item{k }{Number
-#' of fixed variables} \item{HPMbin }{The binary expression of the most
+#' \code{fixed.cov} is fitted by \code{lm}} 
+#' \item{variables }{The name of all the potential explanatory variables (numerical or factors)} 
+#' \item{n }{Number of observations}
+#' \item{p }{Number of explanatory variables (both numerical and factors) to select from} \item{k }{Number
+#' of fixed variables} 
+#' \item{HPMbin }{The binary expression of the most
 #' probable model found.} \item{inclprob }{A \code{data.frame} with the
 #' estimates of the inclusion probabilities of all the variables.}
 #' \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
@@ -122,7 +142,7 @@ GibbsBvsF <-
            data,
            null.model = paste(as.formula(formula)[[2]], " ~ 1", sep=""),					 
            prior.betas = "Robust",
-           prior.models = "SBSB2",
+           prior.models = "SBSB",
            n.iter = 10000,
            init.model = "Full",
            n.burnin = 500,
@@ -335,7 +355,7 @@ GibbsBvsF <-
 		#Factors:
 		#here the added index "2" makes reference of the hierarchical corresponding prior but only keeping
 		#a model of the same class (copies are removed and only the full within each class is kept)
-		if (prior.models!="SBSB2" & prior.models!="ConstConst2" & prior.models!="SB2" & prior.models!="Const2" & prior.models!="SBConst2")
+		if (prior.models!="SBSB" & prior.models!="ConstConst" & prior.models!="SB" & prior.models!="Const" & prior.models!="SBConst")
 			{stop("Prior over the model space not supported\n")}
 		
 		
@@ -349,11 +369,11 @@ GibbsBvsF <-
 		if (prior.betas != "Unitary" & prior.betas != "Robust" & prior.betas != "Liangetal" & 
 		    prior.betas != "gZellner" & prior.betas != "ZellnerSiow" & prior.betas != "FLS") {stop("Dont recognize the prior for betas\n")}	
 		
-		if (prior.models=="SBSB2"){method<- "rSBSB"}
-		if (prior.models=="ConstConst2"){method<- "rConstConst"}
-		if (prior.models=="SBConst2"){method<- "rSBConst"}	
-		if (prior.models=="SB2"){method<- "rSB"}
-		if (prior.models=="Const2"){method<- "rConst"}
+		if (prior.models=="SBSB"){method<- "rSBSB"}
+		if (prior.models=="ConstConst"){method<- "rConstConst"}
+		if (prior.models=="SBConst"){method<- "rSBConst"}	
+		if (prior.models=="SB"){method<- "rSB"}
+		if (prior.models=="Const"){method<- "rConst"}
 		
     estim.time <- 0
 		
@@ -448,11 +468,11 @@ GibbsBvsF <-
 		#Recall now that the number of vars (either numerical or factors) is dim(positions)[1]
 		
 		#Resampling removing the saturated models (keeping the oversaturated)	
-		if (prior.models == "SBSB2"){modelslBFwR<- BayesVarSel:::resamplingSBSB(modelslBF, positions)}
-		if (prior.models == "ConstConst2"){modelslBFwR<- BayesVarSel:::resamplingConstConst(modelslBF, positions)}
-		if (prior.models == "SB2"){modelslBFwR<- BayesVarSel:::resamplingSB(modelslBF, positions)}
-		if (prior.models == "Const2"){modelslBFwR<- BayesVarSel:::resamplingConst(modelslBF, positions)}
-		if (prior.models == "SBConst2"){modelslBFwR<- BayesVarSel:::resamplingSBConst(modelslBF, positions)}
+		if (prior.models == "SBSB"){modelslBFwR<- BayesVarSel:::resamplingSBSB(modelslBF, positions)}
+		if (prior.models == "ConstConst"){modelslBFwR<- BayesVarSel:::resamplingConstConst(modelslBF, positions)}
+		if (prior.models == "SB"){modelslBFwR<- BayesVarSel:::resamplingSB(modelslBF, positions)}
+		if (prior.models == "Const"){modelslBFwR<- BayesVarSel:::resamplingConst(modelslBF, positions)}
+		if (prior.models == "SBConst"){modelslBFwR<- BayesVarSel:::resamplingSBConst(modelslBF, positions)}
 		
 		#Now we convert the sampled models to vars and factors:
 		modelslBFF<- t(apply(modelslBFwR[,-(p+1)], MARGIN=1, FUN=function(x,M){as.numeric(x%*%M>0)}, M=t(positions)))

@@ -20,7 +20,8 @@ Depends:
     mvtnorm (>= 1.0-5),
     parallel (>= 3.3.2),
     R (>= 3.3.2),
-		lmerTest (>= 3.0)
+    lmerTest (>= 3.0),
+    faraway (>= 1.0) 
 License: GPL-2
 NeedsCompilation: yes
 RoxygenNote: 6.1.1
