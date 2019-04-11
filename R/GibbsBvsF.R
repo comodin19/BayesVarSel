@@ -1,21 +1,16 @@
-#' Bayesian Variable and Factor Selection for linear regression models using Gibbs
+#' Bayesian Variable Selection with Factors for linear regression models using Gibbs
 #' sampling.
 #'
-#' Approximate computation of summaries of the posterior distribution using a
-#' Gibbs sampling algorithm to explore the model space and frequency of
-#' "visits" to construct the estimates.
-#'
-#' This is a heuristic approximation to the function
-#' \code{\link[BayesVarSel]{Bvs}} so the details there apply also here.
-#'
-#' For cases where p>>n consider using the correction \code{\link[BayesVarSel]{pltltn}}
-#' to account for the limitation of MCMC techniques in these extremely large model spaces.
-#'
-#' The algorithm implemented is a Gibbs sampling-based searching algorithm
-#' originally proposed by George and McCulloch (1997). Garcia-Donato and
-#' Martinez-Beneito (2013) have shown that this simple sampling strategy in
-#' combination with estimates based on frequency of visits (the one here
-#' implemented) provides very reliable results.
+#' Wersion of \code{\link[BayesVarSel]{GibbsBvs}} when the competing
+#' variables contain factors. Results are presented as if the factors were
+#' just another variable (independendtly on the number of levels) altough 
+#' internally their treatment is quite more complex.
+#' 
+#' In statistics, a factor with l levels (or categories) is represented using (l-1) dummy 
+#' variables in a way controlled, in R, by
+#' functions like \code{\link[stats]{contr.treatment}}. The methodology implemented
+#' in \code{GibbsBvsF} was proposed in Garcia-Donato and Paulo (2019) and
+#' is independent on the  The work \code{GibbsBvsF}
 #' @export
 #' @param formula Formula defining the most complex regression model in the
 #' analysis. See details.
@@ -70,7 +65,7 @@
 #' that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 #' to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
 #' function.}
-#' \item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+#' \item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
 #' \item{method }{\code{gibbs}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
@@ -174,6 +169,9 @@ GibbsBvsF <-
       "%notin%" <- function(x, table) match(x, table, nomatch = 0) == 0
 						
 			#check that the null model contains the intercept:
+			if (is.null(namesnull))
+				stop("The null model should contain the intercept\n")
+				
 			if (sum(namesnull=="Intercept")==0 & sum(namesnull=="(Intercept)")==0)
 				stop("The null model should contain the intercept\n")
 						
@@ -232,6 +230,11 @@ GibbsBvsF <-
 		#this regressor is a factor)
 		#Works with only intercept, but not with other null models: depvars<- attr(lmfull$terms, "term.labels")
 		depvars<- setdiff(attr(lmfull$terms, "term.labels"), attr(lmnull$terms, "term.labels"))
+				
+    #Check if, among the competing variables, there are factors
+		if (sum(attr(lmfull$terms, "dataClasses")[depvars]=="factor")==0){
+			stop("No Factors found among the competing variables. Use GibbsBvs() instead\n")
+		}
 		
 		positions<- matrix(0, ncol=p, nrow=length(depvars))
 		for (i in 1:length(depvars)){positions[i,]<- grepl(depvars[i], colnames(X), fixed=T)}
@@ -508,6 +511,7 @@ GibbsBvsF <-
 		#
 		#####################
 		
+    result$call <- match.call()
 
     result$priorprobs <- "En obras"
     result$method <- "gibbsWithFactors"
