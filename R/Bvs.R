@@ -114,7 +114,7 @@
 #' binary expression of the Highest Posterior Probability model}
 #' \item{modelsprob }{A \code{data.frame} which summaries the \code{n.keep}
 #' most probable, a posteriori models, and their associated probability.}
-#' \item{inclprob }{A \code{data.frame} with the inclusion probabilities of all
+#' \item{inclprob }{A named vector with the inclusion probabilities of all
 #' the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 #' inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 #' probabilities of the dimension of the true model} \item{call }{The
@@ -1189,7 +1189,7 @@ print.Bvs <-
       }
 
 	  if(x$method=="gibbsWithFactors"){
-			cat("Printing objects with factors still not implemented\n")
+			summary(x)
 		}
 
     if(x$method=="full" | x$method=="parallel"){

@@ -1,37 +1,44 @@
 #' Bayesian Variable Selection with Factors for linear regression models using Gibbs
 #' sampling.
 #'
-#' Version of \code{\link[BayesVarSel]{GibbsBvs}} when the competing
-#' variables contain factors. Results are presented as if the factors were
-#' just another variable (independendtly on the number of levels) altough 
-#' internally their treatment is quite more complex.
-#' 
-#' The methodology implemented in \code{GibbsBvsF} 
-#' has been proposed in Garcia-Donato and Paulo (2019). Internally, a rank defficient representation
-#' of factors using dummies is used and the number of competing models considered is 
+#' Numerical and factor variable selection from a Bayesian perspective. The posterior distribution is approximated
+#' with Gibbs sampling
 #'
-#' 2^(pnum+sum_j l_j),
-#'
-#' where pnum is the number of numerical variables and l_j is the number of levels in factor j. This
-#' method leads to results that do not depend on how the factors are
+#' In practical terms, \code{GibbsBvsF} can be understood as a version of \code{\link[BayesVarSel]{GibbsBvs}} in the presence of factors.
+#' The methodology implemented in \code{GibbsBvsF} to handle variable selection problems with factors
+#' has been proposed in Garcia-Donato and Paulo (2018) leading to a method
+#' for which results  do not depend on how the factors are
 #' coded (eg. via \code{\link[stats]{contr.treatment}}).
 #' 
-#' A main difference with \code{Bvs} and \code{GibbsBvs} concerns the prior
-#' probabilities on the model space. In the presence of factors, this assignment
-#' should take into account the "grouped" nature of the dummy variables representing
-#' each factor. 
+#' Internally, a rank defficient representation
+#' of factors using dummies is used and the number of competing models considered is 
 #'
-#' The options \code{prior.models="SBSB"} and \code{prior.models="ConstConst"} use a two stage
-#' prior. The first stage corresponds to factors and numerical variables and (conditional on these) a second
-#' part of the prior specifies how probablities are apportioned over the different submodels defined
+#' 2^(pnum+sum_j L_j),
+#'
+#' where pnum is the number of numerical variables and L_j is the number of levels in factor j. 
+#'
+#' A main difference with \code{Bvs} and \code{GibbsBvs} (due to the presence of factors) concerns the prior
+#' probabilities on the model space:
+#'
+#' The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"} 
+#' acknowledge the "grouped" nature of the dummy variables representing
+#' factors through the use of two stage
+#' priors described in Garcia-Donato and Paulo (2018). In the first stage probabilities over factors and numerical 
+#' variables are specified and (conditional on these) within the second stage 
+#' the probablities are apportioned over the different submodels defined
 #' by the dummies. The default option is "SBSB" which uses in both stages an assignment
-#' 'a la' Scott-Berger so inversely proportional to the number of models of the same dimension. The
-#' option "ConstConst" implements a uniform prior for both stages. The options \code{prior.models="Const"} and 
+#' of the type Scott-Berger so inversely proportional to the number of models of the same dimension. The
+#' option "ConstConst" implements a uniform prior for both stages while "SBConst" uses a Scott-Berger prior
+#' in the first stage and it is uniform in the second stage. Within all these priors, the prior inclusion probabilities
+#' of factors and numerical variables are 1/2.
+#'
+#' The options \code{prior.models="Const"} and 
 #' \code{prior.models="SB"} do not have a staged structure and "Const" apportions the prior probabilities
-#' uniformly over all possible models (2^(p+sum_j l_j)) and in "SB" the probability
-#' is inversely proportional to the number of any model of the same dimension.
+#' uniformly over all possible models (2^(pnum+sum_j L_j)) and in "SB" the probability
+#' is inversely proportional to the number of any model of the same dimension. In these cases, prior inclusion probabilities
+#' of factors and numerical variables depend on the number of levels of factors and, in general, are not 1/2.
 #' @export
-#' @param formula Formula defining the most complex regression model in the
+#' @param formula Formula defining the most complex linear model in the
 #' analysis. See details.
 #' @param data data frame containing the data.
 #' @param null.model A formula defining which is the simplest (null) model.
@@ -40,7 +47,7 @@
 #' to be the one with just the intercept 
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
-#' and "ZellnerSiow" (see details).
+#' and "ZellnerSiow" (see details in \code{\link[BayesVarSel]{Bvs}}).
 #' @param prior.models Prior distribution over the model space. Possible
 #' choices (see details) are "Const", "SB", "ConstConst", "SBConst" and "SBSB" (the default).
 #' @param n.iter The total number of iterations performed after the burn in
@@ -48,8 +55,7 @@
 #' @param init.model The model at which the simulation process starts. Options
 #' include "Null" (the model only with the covariates specified in
 #' \code{fixed.cov}), "Full" (the model defined by \code{formula}), "Random" (a
-#' randomly selected model) and a vector with p (the number of covariates to
-#' select from) zeros and ones defining a model.
+#' randomly selected model) and a vector with (pnum+sum_j L_j) zeros and ones defining a model.
 #' @param n.burnin Length of burn in, i.e. number of iterations to discard at
 #' the beginning.
 #' @param n.thin Thinning rate. Must be a positive integer.  Set 'n.thin' > 1
@@ -59,48 +65,55 @@
 #' value for 'n.thin' can reduce the precision of the results
 #' @param time.test If TRUE and the number of variables is large (>=21) a
 #' preliminary test to estimate computational time is performed.
-#' @param priorprobs A p+1 dimensional vector defining the prior probabilities
-#' Pr(M_i) (should be used in the case where \code{prior.models}="User"; see
-#' the details in \code{\link[BayesVarSel]{Bvs}}.)
 #' @param seed A seed to initialize the random number generator
-#' @return \code{GibbsBvs} returns an object of class \code{Bvs} with the
+#' @return \code{GibbsBvsF} returns an object of class \code{Bvs} with the
 #' following elements: \item{time }{The internal time consumed in solving the
 #' problem} \item{lmfull }{The \code{lm} class object that results when the
 #' model defined by \code{formula} is fitted by \code{lm}} 
 #' \item{lmnull }{The
-#' \code{lm} class object that results when the model defined by
+#' \code{lm } class object that results when the model defined by
 #' \code{fixed.cov} is fitted by \code{lm}} 
 #' \item{variables }{The name of all the potential explanatory variables (numerical or factors)} 
 #' \item{n }{Number of observations}
-#' \item{p }{Number of explanatory variables (both numerical and factors) to select from} \item{k }{Number
-#' of fixed variables} 
+#' \item{p }{Number of explanatory variables (both numerical and factors) to select from} 
+#' \item{k }{Number of fixed variables} 
 #' \item{HPMbin }{The binary expression of the most
-#' probable model found.} \item{inclprob }{A \code{data.frame} with the
+#' probable model found.} 
+#' \item{inclprob }{A named vector with the
 #' estimates of the inclusion probabilities of all the variables.}
 #' \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
-#' inclusion probabilities of all the variables.} \item{postprobdim }{Estimates
-#' of posterior probabilities of the dimension of the true model.}
-#' \item{modelslogBF}{A matrix with both the binary representation of the
-#' visited models after the burning period and the Bayes factor (log scale) of
-#' that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
-#' to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
+#' inclusion probabilities of all the variables.} 
+#' \item{postprobdim }{Estimates
+#' of posterior probabilities of the number of active variables in the true model (hence ranking from 
+#' \code{k } to \code{k+p}).}
+#' \item{modelslogBF }{A matrix with both the binary representation of the
+#' active variables in the MCMC after the burning period and the Bayes factor (log scale) of
+#' that model to the null model.}
+#' \item{modelswllogBF }{A matrix with both the binary representation of the
+#' active variables (at the level of the levels in the factors) in the MCMC after the burning period and the Bayes factor (log scale) of
+#' that model to the null model.}
+#' \item{call }{The \code{call} to the
 #' function.}
-#' \item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
-#' \item{method }{\code{gibbs}}
+#' \item{C }{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
+#' \item{positions }{A binary matrix with \code{p} rows and (pnum+sum_j L_j) columns. The 1's identify, for each variable (row) the position (column)
+#' of dummies (in case of factor) or of the numerical variable grouped on that variable. (Its use is conceived for internal purposes).}
+#' \item{positionsx }{A \code{p} dimensional binary vector, stating which of the competing variables is a numerical variable. (Its use is conceived for internal purposes).}
+#' \item{method }{\code{gibbsWithFactors}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
-#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
-#' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
+#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result
+#' Under construction: \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
 #' predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
 #' situation where p>>n.
 #'
-#' \code{\link[BayesVarSel]{Bvs}} for exact
-#' version obtained enumerating all entertained models (recommended when
-#' p<20).
+#' See \code{\link[BayesVarSel]{Bvs}} and \code{\link[BayesVarSel]{Bvs}} when no factors are involved.
 #' @references Garcia-Donato, G. and Martinez-Beneito, M.A.
 #' (2013)<DOI:10.1080/01621459.2012.742443> On sampling strategies in Bayesian
 #' variable selection problems with large model spaces. Journal of the American
 #' Statistical Association, 108: 340-352.
+#'
+#' Garcia-Donato, G. and Paulo, R. (2018) Including factors in Bayesian variable selection
+#' problems. arXiv:1709.07238.
 #'
 #' George E. and McCulloch R. (1997) Approaches for Bayesian variable
 #' selection. Statistica Sinica, 7, 339:372.
@@ -119,13 +132,14 @@
 #' diabetesVS<- GibbsBvsF(formula= glyhb ~ ., data=diabetes2, n.iter=100000, n.burnin=5000)
 #'
 #' summary(diabetesVS)
-#' #A plot of the dimension of the true model, meaning:
-#' #=number of fixed vars+number of factors+number of numerical variables
+#'
+#' #A plot of the dimension of the true model,
 #' plot(diabetesVS, option="dimension")
+#'
 #' #A joint inclusion plot
 #' plot(diabetesVS, option="joint")
 #'
-#' #Now with fixed variables:
+#' #Now a similar exercise but with fixed variables:
 #' diabetesVS2<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu, 
 #' 		                   data=diabetes2, n.iter=100000, n.burnin=5000)
 #' 											 
@@ -148,8 +162,7 @@ GibbsBvsF <-
            n.burnin = 500,
            n.thin = 1,
            time.test = TRUE,
-           priorprobs = NULL,
-           seed = runif(1, 0, 16091956)) {
+					 seed = runif(1, 0, 16091956)) {
 
     formula <- as.formula(formula)
 		
@@ -178,9 +191,13 @@ GibbsBvsF <-
                   data = data,
                   y = TRUE,
                   x = TRUE)
+			
+			#Variables or factors that are a linear function of the others:
+			if (lmfull$rank!=dim(lmfull$x)[2])
+				stop("Some of the explanatory variables are a linear function of others\n")						
 			#Factors:
 			#before:X.full <- lmfull$x
-    	X.full<- lmerTest:::get_rdX(lmfull) #rank defficient paramet
+    	X.full<- get_rdX(lmfull) #rank defficient paramet
 
       namesx <- dimnames(X.full)[[2]]
     
@@ -468,15 +485,15 @@ GibbsBvsF <-
 		#Recall now that the number of vars (either numerical or factors) is dim(positions)[1]
 		
 		#Resampling removing the saturated models (keeping the oversaturated)	
-		if (prior.models == "SBSB"){modelslBFwR<- BayesVarSel:::resamplingSBSB(modelslBF, positions)}
-		if (prior.models == "ConstConst"){modelslBFwR<- BayesVarSel:::resamplingConstConst(modelslBF, positions)}
-		if (prior.models == "SB"){modelslBFwR<- BayesVarSel:::resamplingSB(modelslBF, positions)}
-		if (prior.models == "Const"){modelslBFwR<- BayesVarSel:::resamplingConst(modelslBF, positions)}
-		if (prior.models == "SBConst"){modelslBFwR<- BayesVarSel:::resamplingSBConst(modelslBF, positions)}
+		if (prior.models == "SBSB"){modelslBFwR<- resamplingSBSB(modelslBF, positions)}
+		if (prior.models == "ConstConst"){modelslBFwR<- resamplingConstConst(modelslBF, positions)}
+		if (prior.models == "SB"){modelslBFwR<- resamplingSB(modelslBF, positions)}
+		if (prior.models == "Const"){modelslBFwR<- resamplingConst(modelslBF, positions)}
+		if (prior.models == "SBConst"){modelslBFwR<- resamplingSBConst(modelslBF, positions)}
 		
 		#Now we convert the sampled models to vars and factors:
 		modelslBFF<- t(apply(modelslBFwR[,-(p+1)], MARGIN=1, FUN=function(x,M){as.numeric(x%*%M>0)}, M=t(positions)))
-		
+				
     #Inclusion probabilities:
 		inclusion <- colMeans(modelslBFF)
 		names(inclusion)<- depvars
@@ -488,7 +505,7 @@ GibbsBvsF <-
 		jointinclprob<- matrix(0, ncol=dim(positions)[1], nrow=dim(positions)[1])
 
 		for (i in 1:dim(modelslBFF)[1]){
-			jointinclprob<- jointinclprob + matrix(modelslBFF[i,], nc=1)%*%matrix(modelslBFF[i,], nr=1)
+			jointinclprob<- jointinclprob + matrix(modelslBFF[i,], ncol=1)%*%matrix(modelslBFF[i,], nrow=1)
 		}
 			jointinclprob<- jointinclprob/dim(modelslBFF)[1]
 		colnames(jointinclprob)<- depvars; rownames(jointinclprob)<- depvars
@@ -518,6 +535,9 @@ GibbsBvsF <-
 
     result$modelslogBF <- modelslBFF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
 		
+		#Keep the visited models at the level of levels for posterior analyses
+		result$modelswllogBF<- modelslBFwR
+		
     result$inclprob <- inclusion #inclusion probability for each variable
 
     result$jointinclprob <- data.frame(jointinclprob) #data.frame for the joint inclusion probabilities
@@ -533,7 +553,6 @@ GibbsBvsF <-
 		
     result$call <- match.call()
 
-    result$priorprobs <- "En obras"
     result$method <- "gibbsWithFactors"
     class(result)<- "Bvs"
     result

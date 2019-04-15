@@ -14,7 +14,7 @@ resamplingSBSB<- function(modelslBF, positions){
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	if (kplusp==1)
-		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), nc=1)
+		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), ncol=1)
 	else
 		m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
@@ -22,7 +22,7 @@ resamplingSBSB<- function(modelslBF, positions){
 	#for each sampled model obtain the SBSB1 prior prob:
 	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBSB1, levelsfull=levelsfull, kplusp=kplusp))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], replace=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -41,7 +41,7 @@ resamplingConstConst<- function(modelslBF, positions){
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	if (kplusp==1)
-		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), nc=1)
+		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), ncol=1)
 	else
 		m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the ConstConst2 prior prob:
@@ -49,7 +49,7 @@ resamplingConstConst<- function(modelslBF, positions){
 	#for each sampled model obtain the SBSB1 prior prob:
 	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConstConst1, kplusp=kplusp, levelsfull=levelsfull))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], replace=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -69,7 +69,7 @@ resamplingSBConst<- function(modelslBF, positions){
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	if (kplusp==1)
-		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), nc=1)
+		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), ncol=1)
 	else
 		m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the ConstConst2 prior prob:
@@ -77,7 +77,7 @@ resamplingSBConst<- function(modelslBF, positions){
 	#for each sampled model obtain the SBSB1 prior prob:
 	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSBConst1, kplusp=kplusp, levelsfull=levelsfull, levelsf=levelsf))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], replace=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -97,7 +97,7 @@ resamplingSB<- function(modelslBF, positions){
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	if (kplusp==1)
-		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), nc=1)
+		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), ncol=1)
 	else
 		m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
@@ -105,7 +105,7 @@ resamplingSB<- function(modelslBF, positions){
 	#for each sampled model obtain the SBSB1 prior prob:
 	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorSB1, levelsfull=levelsfull))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], replace=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -124,7 +124,7 @@ resamplingConst<- function(modelslBF, positions){
 	kplusp<- dim(positions)[1]
 	#A matrix containing, for each sampled models, the number of active "levels" for each regressor:
 	if (kplusp==1)
-		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), nc=1)
+		m.actlevels<- matrix(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}), ncol=1)
 	else
 		m.actlevels<- t(apply(modelslBF[,-dim(modelslBF)[2]], MARGIN=1, FUN=function(x){positions%*%x}))
 	#for each sampled model obtain the SBSB2 prior prob:
@@ -132,7 +132,7 @@ resamplingConst<- function(modelslBF, positions){
 	#for each sampled model obtain the SBSB1 prior prob:
 	allmodelsprior1<- t(apply(m.actlevels, MARGIN=1, FUN=priorConst1, levelsfull=levelsfull))
 	#now the resampling:
-	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], rep=T, prob=exp(allmodelsprior2-allmodelsprior1))
+	resamp<- sample(x=1:dim(modelslBF)[1], size=dim(modelslBF)[1], replace=T, prob=exp(allmodelsprior2-allmodelsprior1))
 	return(modelslBF[resamp,])	
 }
 
@@ -333,7 +333,7 @@ matrix.rank.levels<- function(all.levelsf){
 		#with 2 and 4 levels respectively)	
 	#
 	#
-	mmm<- matrix(0, nr=2^length(all.levelsf)-1, ncol=sum(all.levelsf)-length(all.levelsf))
+	mmm<- matrix(0, nrow=2^length(all.levelsf)-1, ncol=sum(all.levelsf)-length(all.levelsf))
 	rownames(mmm)<- 1:(2^length(all.levelsf)-1)
 	for (i in 1:(2^length(all.levelsf)-1)){
 		whichactive<- integer.base.b_C(i, length(all.levelsf))==1
@@ -530,5 +530,37 @@ integer.base.b_C <- function(x, k) {
     }
     return(c(res, rep(0, k - ndigits)))
   }
+}
+
+#Acknowledgements of the following function. It has been
+#taken from package 3.1-0 lmerTest (distributed under GPL-2, GPL-3)
+#by Alexandra Kuznetsova, Per Bruun Brockhoff  and Rune Haubo Bojesen Christensen.
+#Not exported from that package and that's why I am copying it here
+get_rdX<- function (model, do.warn = TRUE) 
+{
+    Terms <- terms(model, fixed.only = TRUE)
+    term_names <- attr(Terms, "term.labels")
+    df <- model.frame(model)
+    rdXi <- if (length(term_names)) 
+        lapply(term_names, function(trm) {
+            form <- as.formula(paste0("~ 0 + ", trm))
+            model.matrix(form, data = df)
+        })
+    else list(model.matrix(~1, data = df)[, -1, drop = FALSE])
+    rdX <- do.call(cbind, rdXi)
+    param_names <- unlist(lapply(rdXi, colnames))
+    has_intercept <- attr(Terms, "intercept") != 0
+    if (has_intercept) {
+        rdX <- cbind(`(Intercept)` = rep(1, nrow(rdX)), rdX)
+        param_names <- c("(Intercept)", param_names)
+    }
+    colnames(rdX) <- param_names
+    is_zero <- which(colSums(rdX) == 0)
+    if (do.warn && length(is_zero)) {
+        txt <- sprintf("Missing cells for: %s. ", paste(param_names[is_zero], 
+            collapse = ", "))
+        message(paste(txt, "\nInterpret type III hypotheses with care."))
+    }
+    rdX
 }
 

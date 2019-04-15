@@ -6,12 +6,12 @@
 sampling.}
 \usage{
 GibbsBvsF(formula, data, null.model = paste(as.formula(formula)[[2]],
-  " ~ 1", sep = ""), prior.betas = "Robust", prior.models = "SBSB2",
+  " ~ 1", sep = ""), prior.betas = "Robust", prior.models = "SBSB",
   n.iter = 10000, init.model = "Full", n.burnin = 500, n.thin = 1,
-  time.test = TRUE, priorprobs = NULL, seed = runif(1, 0, 16091956))
+  time.test = TRUE, seed = runif(1, 0, 16091956))
 }
 \arguments{
-\item{formula}{Formula defining the most complex regression model in the
+\item{formula}{Formula defining the most complex linear model in the
 analysis. See details.}
 
 \item{data}{data frame containing the data.}
@@ -23,10 +23,10 @@ to be the one with just the intercept}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
 model. Possible choices include "Robust", "Liangetal", "gZellner",
-and "ZellnerSiow" (see details).}
+and "ZellnerSiow" (see details in \code{\link[BayesVarSel]{Bvs}}).}
 
 \item{prior.models}{Prior distribution over the model space. Possible
-choices (see details) are "Const", "SB", "ConstConst" and "SBSB" (the default).}
+choices (see details) are "Const", "SB", "ConstConst", "SBConst" and "SBSB" (the default).}
 
 \item{n.iter}{The total number of iterations performed after the burn in
 process.}
@@ -34,8 +34,7 @@ process.}
 \item{init.model}{The model at which the simulation process starts. Options
 include "Null" (the model only with the covariates specified in
 \code{fixed.cov}), "Full" (the model defined by \code{formula}), "Random" (a
-randomly selected model) and a vector with p (the number of covariates to
-select from) zeros and ones defining a model.}
+randomly selected model) and a vector with (pnum+sum_j L_j) zeros and ones defining a model.}
 
 \item{n.burnin}{Length of burn in, i.e. number of iterations to discard at
 the beginning.}
@@ -49,66 +48,76 @@ value for 'n.thin' can reduce the precision of the results}
 \item{time.test}{If TRUE and the number of variables is large (>=21) a
 preliminary test to estimate computational time is performed.}
 
-\item{priorprobs}{A p+1 dimensional vector defining the prior probabilities
-Pr(M_i) (should be used in the case where \code{prior.models}="User"; see
-the details in \code{\link[BayesVarSel]{Bvs}}.)}
-
 \item{seed}{A seed to initialize the random number generator}
 }
 \value{
-\code{GibbsBvs} returns an object of class \code{Bvs} with the
+\code{GibbsBvsF} returns an object of class \code{Bvs} with the
 following elements: \item{time }{The internal time consumed in solving the
 problem} \item{lmfull }{The \code{lm} class object that results when the
-model defined by \code{formula} is fitted by \code{lm}} \item{lmnull }{The
-\code{lm} class object that results when the model defined by
-\code{fixed.cov} is fitted by \code{lm}} \item{variables }{The name of all
-the potential explanatory variables} \item{n }{Number of observations}
-\item{p }{Number of explanatory variables (both numerical and factors) to select from} \item{k }{Number
-of fixed variables} \item{HPMbin }{The binary expression of the most
-probable model found.} \item{inclprob }{A \code{data.frame} with the
+model defined by \code{formula} is fitted by \code{lm}} 
+\item{lmnull }{The
+\code{lm } class object that results when the model defined by
+\code{fixed.cov} is fitted by \code{lm}} 
+\item{variables }{The name of all the potential explanatory variables (numerical or factors)} 
+\item{n }{Number of observations}
+\item{p }{Number of explanatory variables (both numerical and factors) to select from} 
+\item{k }{Number of fixed variables} 
+\item{HPMbin }{The binary expression of the most
+probable model found.} 
+\item{inclprob }{A named vector with the
 estimates of the inclusion probabilities of all the variables.}
 \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
-inclusion probabilities of all the variables.} \item{postprobdim }{Estimates
-of posterior probabilities of the dimension of the true model.}
-\item{modelslogBF}{A matrix with both the binary representation of the
-visited models after the burning period and the Bayes factor (log scale) of
-that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
-to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
+inclusion probabilities of all the variables.} 
+\item{postprobdim }{Estimates
+of posterior probabilities of the number of active variables in the true model (hence ranking from 
+\code{k } to \code{k+p}).}
+\item{modelslogBF }{A matrix with both the binary representation of the
+active variables in the MCMC after the burning period and the Bayes factor (log scale) of
+that model to the null model.}
+\item{call }{The \code{call} to the
 function.}
-\item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
-\item{method }{\code{gibbs}}
+\item{C }{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
+\item{positions }{A binary matrix with \code{p} rows and (pnum+sum_j L_j) columns. The 1's identify, for each variable (row) the position (column)
+of dummies (in case of factor) or of the numerical variable grouped on that variable. (Its use is conceived for internal purposes).}
+\item{positionsx }{A \code{p} dimensional binary vector, stating which of the competing variables is a numerical variable. (Its use is conceived for internal purposes).}
+\item{method }{\code{gibbsWithFactors}}
 }
 \description{
-Wersion of \code{\link[BayesVarSel]{GibbsBvs}} when the competing
-variables contain factors. Results are presented as if the factors were
-just another variable (independendtly on the number of levels) altough 
-internally their treatment is quite more complex.
+Numerical and factor variable selection from a Bayesian perspective. The posterior distribution is approximated
+with Gibbs sampling
 }
 \details{
-The methodology implemented in \code{GibbsBvsF} 
+In practical terms, \code{GibbsBvsF} can be understood as a version of \code{\link[BayesVarSel]{GibbsBvs}} in the presence of factors.
+The methodology implemented in \code{GibbsBvsF} to handle variable selection problems with factors
 has been proposed in Garcia-Donato and Paulo (2019). Internally, a rank defficient representation
 of factors using dummies is used and the number of competing models considered is
 
-2^(pnum+sum_j l_j),
+2^(pnum+sum_j L_j),
 
-where pnum is the number of numerical variables and l_j is the number of levels in factor j. This
+where pnum is the number of numerical variables and L_j is the number of levels in factor j. This
 method leads to results that do not depend on how the factors are
 coded (eg. via \code{\link[stats]{contr.treatment}}).
 
 A main difference with \code{Bvs} and \code{GibbsBvs} concerns the prior
-probabilities on the model space. In the presence of factors, this assignment
-should take into account the "grouped" nature of the dummy variables representing
-each factor.
+probabilities on the model space:
 
-The options \code{prior.models="SBSB"} and \code{prior.models="ConstConst"} use a two stage
-prior. The first stage corresponds to factors and numerical variables and (conditional on these) a second
-part of the prior specifies how probablities are apportioned over the different submodels defined
+The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"} 
+acknowledge the "grouped" nature of the dummy variables representing
+factors through the use of two stage
+priors described in Garcia-Donato and Paulo (2019). In the first stage probabilities over factors and numerical 
+variables are specified and (conditional on these) within the second stage 
+the probablities are apportioned over the different submodels defined
 by the dummies. The default option is "SBSB" which uses in both stages an assignment
-'a la' Scott-Berger so inversely proportional to the number of models of the same dimension. The
-option "ConstConst" implements a uniform prior for both stages. The options \code{prior.models="Const"} and 
+of the type Scott-Berger so inversely proportional to the number of models of the same dimension. The
+option "ConstConst" implements a uniform prior for both stages while "SBConst" uses a Scott-Berger prior
+in the first stage and it is uniform in the second stage. Within all these priors, the prior inclusion probabilities
+of factors and numerical variables are 1/2.
+
+The options \code{prior.models="Const"} and 
 \code{prior.models="SB"} do not have a staged structure and "Const" apportions the prior probabilities
-uniformly over all possible models (2^(p+sum_j l_j)) and in "SB" the probability
-is inversely proportional to the number of any model of the same dimension.
+uniformly over all possible models (2^(pnum+sum_j L_j)) and in "SB" the probability
+is inversely proportional to the number of any model of the same dimension. In these cases, prior inclusion probabilities
+of factors and numerical variables depend on the number of levels of factors and, in general, are not 1/2.
 }
 \examples{
 

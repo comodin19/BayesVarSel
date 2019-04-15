@@ -5,6 +5,8 @@
 #' @importFrom graphics axis barplot image layout par plot hist text
 #' @importFrom stats as.formula lm rbinom runif density quantile
 #' @importFrom utils read.table write.table
+#' @importFrom stats model.frame model.matrix terms
+
 NULL
 
 

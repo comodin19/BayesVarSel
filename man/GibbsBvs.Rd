@@ -65,7 +65,7 @@ model defined by \code{formula} is fitted by \code{lm}} \item{lmnull }{The
 the potential explanatory variables} \item{n }{Number of observations}
 \item{p }{Number of explanatory variables to select from} \item{k }{Number
 of fixed variables} \item{HPMbin }{The binary expression of the most
-probable model found.} \item{inclprob }{A \code{data.frame} with the
+probable model found.} \item{inclprob }{A named vector with the
 estimates of the inclusion probabilities of all the variables.}
 \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
 inclusion probabilities of all the variables.} \item{postprobdim }{Estimates

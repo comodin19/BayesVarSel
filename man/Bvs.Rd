@@ -57,7 +57,7 @@ to select from} \item{k }{Number of fixed variables} \item{HPMbin }{The
 binary expression of the Highest Posterior Probability model}
 \item{modelsprob }{A \code{data.frame} which summaries the \code{n.keep}
 most probable, a posteriori models, and their associated probability.}
-\item{inclprob }{A \code{data.frame} with the inclusion probabilities of all
+\item{inclprob }{A named vector with the inclusion probabilities of all
 the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 probabilities of the dimension of the true model} \item{call }{The
