@@ -91,6 +91,18 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
 
   #results are given as a matrix rpredictions
   rpredictions <- matrix(0, nrow = n.sim, ncol = dim(newdata)[1])
+  
+  #Only for factors:
+  #If the newdata is not estimable, there could be potential problems
+  #since then predictions in rank defficient models do not make sense
+  #for the moment, we do not allow predictions in this case:
+  #this tests if newdata is in the space spanned by X (so it is estimable)
+  
+  if (x$method == "gibbsWithFactors"){
+  	X<- get_rdX(x$lmfull)
+	if (sum(colnames(X)=="(Intercept)") > 0) colnames(X)[colnames(X)=="(Intercept)"]<- "Intercept"
+  	if (qr(rbind(newdata, X))$rank != qr(X)$rank) stop("newdata is not contained in the subspace of the original data.")
+	}
 
   #differentiate if method="full" (enumeration) or method="Gibbs"
   if (x$method == "full" | x$method == "parallel") {
@@ -185,7 +197,10 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
     }
 
   }
-  if (x$method == "gibbs") {
+  if (x$method == "gibbs" | x$method == "gibbsWithFactors") {
+	  
+	if (x$method == "gibbsWithFactors")  x$modelslogBF<- x$modelswllogBF; x$lmfull$x<- X
+		
     cat("\n")
     cat("Simulations obtained using the ",
         dim(x$modelslogBF)[1],
@@ -206,6 +221,7 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
 
 
     for (iter in 1:length(t.models)) {
+		cat(iter,"\n")
       #rMD is model drawn (a number between 1 and n.keep)
       rMD <-
         as.numeric(names(t.models)[iter])
@@ -235,6 +251,8 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
         )
 
       #corresponding new design for that model:
+	  #sometimes, internally R adds ' that destroys the construction
+  	  names(fitrMD$coefficients)<- gsub(pattern="`", replacement="", x=names(fitrMD$coefficients))	  
       newdataMD <- newdata[, names(fitrMD$coefficients)]
 
       #compute scales (one for each configuration)
