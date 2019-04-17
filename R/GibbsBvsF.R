@@ -492,8 +492,10 @@ GibbsBvsF <-
 		if (prior.models == "SBConst"){modelslBFwR<- resamplingSBConst(modelslBF, positions)}
 		
 		#Now we convert the sampled models to vars and factors:
-		modelslBFF<- t(apply(modelslBFwR[,-(p+1)], MARGIN=1, FUN=function(x,M){as.numeric(x%*%M>0)}, M=t(positions)))
-				
+		if (p>1)
+			modelslBFF<- t(apply(modelslBFwR[,-(p+1)], MARGIN=1, FUN=function(x,M){as.numeric(x%*%M>0)}, M=t(positions)))
+		else
+			modelslBFF<- 	modelslBFwR[,-(p+1)]%*%t(positions)	
     #Inclusion probabilities:
 		inclusion <- colMeans(modelslBFF)
 		names(inclusion)<- depvars
