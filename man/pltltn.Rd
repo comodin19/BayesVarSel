@@ -10,17 +10,17 @@ pltltn(object)
 \item{object}{An object of class \code{Bvs} obtained with \code{GibbsBvs}}
 }
 \description{
-In cases where p>>n and the true model is expected to be sparse, it is very unlikely that the Gibbs sampling
-will not sample models in the singular set of the model space (models with k>n). Nevertheless, depending on
-how large is p/n and the strenght of the signal, this part of the model space could be very influential in the
-final response.
-}
-\details{
-This function provides an estimation of the posterior probability of models with k>n which is a measure of the 
+This function provides an estimation of the posterior probability of the set of models with k>n which is a measure of the 
 importance of these models. In summary, if this probability is large, implies that the n is not large enough to beat
 such large p.
 Additionally, \code{pltltn} gives corrections of the posterior inclusion probabilities and posterior probabilities 
 of dimension of the true model.
+}
+\details{
+In cases where p>>n and the true model is expected to be sparse, it is very unlikely that the Gibbs sampling
+will sample models in the singular set of the model space (models with k>n). Nevertheless, depending on
+how large is p/n and the strenght of the signal, this part of the model space could be very influential in the
+final response.  
 }
 \examples{
 
