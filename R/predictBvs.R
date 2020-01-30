@@ -91,6 +91,18 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
 
   #results are given as a matrix rpredictions
   rpredictions <- matrix(0, nrow = n.sim, ncol = dim(newdata)[1])
+  
+  #Only for factors:
+  #If the newdata is not estimable, there could be potential problems
+  #since then predictions in rank defficient models do not make sense
+  #for the moment, we do not allow predictions in this case:
+  #this tests if newdata is in the space spanned by X (so it is estimable)
+  
+  if (x$method == "gibbsWithFactors"){
+  	X<- get_rdX(x$lmfull)
+	if (sum(colnames(X)=="(Intercept)") > 0) colnames(X)[colnames(X)=="(Intercept)"]<- "Intercept"
+  	if (qr(rbind(newdata, X))$rank != qr(X)$rank) stop("newdata is not contained in the subspace of the original data.")
+	}
 
   #differentiate if method="full" (enumeration) or method="Gibbs"
   if (x$method == "full" | x$method == "parallel") {
@@ -186,6 +198,7 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
 
   }
   if (x$method == "gibbs") {
+		
     cat("\n")
     cat("Simulations obtained using the ",
         dim(x$modelslogBF)[1],
@@ -206,6 +219,7 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
 
 
     for (iter in 1:length(t.models)) {
+		cat(iter,"\n")
       #rMD is model drawn (a number between 1 and n.keep)
       rMD <-
         as.numeric(names(t.models)[iter])
@@ -235,6 +249,8 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
         )
 
       #corresponding new design for that model:
+	  #sometimes, internally R adds ' that destroys the construction
+  	  names(fitrMD$coefficients)<- gsub(pattern="`", replacement="", x=names(fitrMD$coefficients))	  
       newdataMD <- newdata[, names(fitrMD$coefficients)]
 
       #compute scales (one for each configuration)
@@ -269,6 +285,93 @@ predict.Bvs <- function(object, newdata, n.sim = 10000, ...) {
           delta = means,
           sigma = sigmaM,
           df = fitrMD$df,
+          type = "shifted"
+        )
+
+    }
+  }
+
+  if (x$method == "gibbsWithFactors") {
+		
+    cat("\n")
+    cat("Simulations obtained using the ",
+        dim(x$modelslogBF)[1],
+        " sampled models.\n")
+    cat("Their frequencies are taken as the true posterior probabilities\n")
+
+    #draw n.sim models with replacement (weights are implicitly proportional
+    #to their posterior prob since repetitions are included in the sample):
+    models <-
+      sample(x = dim(x$modelswllogBF)[1],
+             size = n.sim,
+             replace = TRUE)
+    #table of these models
+    t.models <- table(models)
+    cs.tmodels <- cumsum(t.models)
+
+
+    for (iter in 1:length(t.models)) {
+      #rMD is model drawn (a number between 1 and n.keep)
+      rMD <-
+        as.numeric(names(t.models)[iter])
+      howmany <- t.models[iter]
+
+      #covs in that model rMD (apart from the fixed ones)
+      covsrMD <- names(x$modelswllogBF[rMD, ])[x$modelswllogBF[rMD, ] == "1"]
+      #the data in model drawn (dependent variable in first column)
+      datarMD <-
+        as.data.frame(cbind(x$lmfull$model[, name.y], X[, covsrMD]))
+
+      colnames(datarMD) <- c(name.y, covsrMD)
+      #now add the fixed.cov if any
+      if (!is.null(x$lmnull)) {
+        datarMD <- cbind(datarMD, x$lmnull$x)
+      }
+			
+			DM<- as.matrix(datarMD[,-1])
+			newdataMD <- newdata[, colnames(DM)]
+			n<- dim(DM)[1]
+
+      #Xstar <- rbind(DM, as.matrix(newdataMD))
+ 			#iXstartXstar<- ginv(t(Xstar)%*%Xstar, tol=1e-10)
+      #fnx<- 1 - as.matrix(newdataMD) %*% iXstartXstar %*% t(as.matrix(newdataMD))
+
+			fnx <- apply(
+			  X = as.matrix(newdataMD),
+			  MARGIN = 1,
+			  FUN = function(x, DM) {
+			  Xstar <- rbind(DM, x)
+				iXstartXstar<- ginv(t(Xstar)%*%Xstar, tol=1e-10)
+			  1 - t(x) %*% iXstartXstar %*% x
+			  },
+				DM=DM
+				)
+			
+			
+			iXtX<- ginv(t(DM)%*%DM)
+			SSE<- t(datarMD[,1])%*%(diag(n)-DM%*%iXtX%*%t(DM))%*%datarMD[,1]
+			SSE<- SSE[1,1]
+			
+			df<- n-qr(DM)$rank
+
+
+      sigmas <- SSE / (fnx * df)
+      #compute means:
+      means <- as.matrix(newdataMD) %*% iXtX %*% t(DM) %*% datarMD[,1]
+
+      #simulated value for the new y's:
+      if (dim(newdata)[1] == 1) {
+        sigmaM <- as.matrix(sigmas, nr = 1, nc = 1)
+      }
+      if (dim(newdata)[1] > 1) {
+        sigmaM <- diag(sigmas)
+      }
+      rpredictions[(max(cs.tmodels[iter - 1], 0) + 1):cs.tmodels[iter], ] <-
+        rmvt(
+          n = howmany,
+          delta = means,
+          sigma = sigmaM,
+          df = df,
           type = "shifted"
         )
 

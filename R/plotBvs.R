@@ -16,7 +16,7 @@
 #'
 #' @export
 #' @param x An object of class \code{Bvs}
-#' @param option One of "dimension", "joint", "conditional" or "not"
+#' @param option One of "dimension", "joint", "conditional", "not" or "trace"
 #' @param ... Additional graphical parameters to be passed
 #' @return If \code{option}="joint", "conditional" or "not" \code{plot} also
 #' returns an object of class \code{matrix} with the numeric values of the

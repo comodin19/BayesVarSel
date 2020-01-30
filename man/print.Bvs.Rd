@@ -13,7 +13,8 @@
 }
 \description{
 Print an object of class \code{Bvs}. The ten most probable models (among the visited ones if the object was created with
-GibbsBvs) are shown.
+GibbsBvs) are shown jointly with their Bayes factors and an estimation of their posterior probability based on the estimation
+of the normalizing constant.
 }
 \examples{
 

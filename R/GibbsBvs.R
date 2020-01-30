@@ -8,9 +8,6 @@
 #' This is a heuristic approximation to the function
 #' \code{\link[BayesVarSel]{Bvs}} so the details there apply also here.
 #'
-#' For cases where p>>n consider using the correction \code{\link[BayesVarSel]{pltltn}}
-#' to account for the limitation of MCMC techniques in these extremely large model spaces.
-#'
 #' The algorithm implemented is a Gibbs sampling-based searching algorithm
 #' originally proposed by George and McCulloch (1997). Garcia-Donato and
 #' Martinez-Beneito (2013) have shown that this simple sampling strategy in
@@ -57,7 +54,7 @@
 #' the potential explanatory variables} \item{n }{Number of observations}
 #' \item{p }{Number of explanatory variables to select from} \item{k }{Number
 #' of fixed variables} \item{HPMbin }{The binary expression of the most
-#' probable model found.} \item{inclprob }{A \code{data.frame} with the
+#' probable model found.} \item{inclprob }{A named vector with the
 #' estimates of the inclusion probabilities of all the variables.}
 #' \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
 #' inclusion probabilities of all the variables.} \item{postprobdim }{Estimates
@@ -67,16 +64,19 @@
 #' that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 #' to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
 #' function.}
-#' \item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+#' \item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
 #' \item{method }{\code{gibbs}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-#' predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
+#' predictions. 
+#' 
+#' See \code{\link[BayesVarSel]{GibbsBvsF}} if there are factors among the explanatory variables and
+#' \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
 #' situation where p>>n.
 #'
-#' \code{\link[BayesVarSel]{Bvs}} for exact
+#' Consider \code{\link[BayesVarSel]{Bvs}} for exact
 #' version obtained enumerating all entertained models (recommended when
 #' p<20).
 #' @references Garcia-Donato, G. and Martinez-Beneito, M.A.
@@ -240,6 +240,25 @@ GibbsBvs <-
       n <- dim(X)[1]
       #check if the number of models to save is correct
     }
+
+    #Check if, among the competing variables, there are factors
+		if (sum(attr(lmfull$terms, "dataClasses")=="factor") & sum(attr(lmfull$terms, "dataClasses")=="factor")-sum(attr(lmnull$terms, "dataClasses")=="factor")>0){
+			cat("--------------\n")
+			cat("The competing variables contain factors, a situation for which we recommend using\n")
+			cat("GibbsBvsF()\n")
+      ANSWER <-
+        readline("Do you want to continue with GibbsBvs()?(y/n) then press enter.\n")
+      while (substr(ANSWER, 1, 1) != "n" &
+             substr(ANSWER, 1, 1) != "y") {
+        ANSWER <- readline("")
+      }
+
+      if (substr(ANSWER, 1, 1) == "n")
+      {
+        return(NULL)
+      }        
+		}
+
 
     #write the data files in the working directory
     write(Y,

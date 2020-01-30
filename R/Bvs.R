@@ -48,10 +48,10 @@
 #' defined the probability of the most complex model (that defined by
 #' \code{formula}. That is
 #'
-#' \code{priorprobs}[j]=C*Pr(M_i such that M_i has j-1+k explanatory variables)
+#' \code{priorprobs}[j]=Cprior*Pr(M_i such that M_i has j-1+k explanatory variables)
 #'
-#' where C is the normalizing constant, i.e
-#' \code{C=1/sum(priorprobs*choose(p,0:p)}.
+#' where Cprior is the normalizing constant for the prior, i.e
+#' \code{Cprior=1/sum(priorprobs*choose(p,0:p)}.
 #'
 #' Note that \code{prior.models}="Constant" is equivalent to the combination
 #' \code{prior.models}="User" and \code{priorprobs=rep(1,(p+1))} but the
@@ -74,7 +74,7 @@
 #' functions to handle these problems. In the meanwhile you could try using the
 #' g-Zellner prior (which is the most simple one and results, in these cases,
 #' should not vary much with the prior) and/or using more accurate definitions
-#' of the simplest model (via the \code{fixed.cov} argument).
+#' of the simplest model (via the \code{null.model} argument).
 #'
 #'
 #' @export
@@ -114,7 +114,7 @@
 #' binary expression of the Highest Posterior Probability model}
 #' \item{modelsprob }{A \code{data.frame} which summaries the \code{n.keep}
 #' most probable, a posteriori models, and their associated probability.}
-#' \item{inclprob }{A \code{data.frame} with the inclusion probabilities of all
+#' \item{inclprob }{A named vector with the inclusion probabilities of all
 #' the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 #' inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 #' probabilities of the dimension of the true model} \item{call }{The
@@ -125,13 +125,19 @@
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
-#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
+#' @seealso Use \code{\link[BayesVarSel]{print.Bvs}} for the best visited models and an 
+#' estimation of their posterior probabilities and  \code{\link[BayesVarSel]{summary.Bvs}} for
+#' summaries of the posterior distribution.
+#' 
+#' \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
 #' predictions.
 #'
 #' \code{\link[BayesVarSel]{GibbsBvs}} for a heuristic approximation based on
 #' Gibbs sampling (recommended when p>20, no other possibilities when p>31).
+#' 
+#' See \code{\link[BayesVarSel]{GibbsBvsF}} if there are factors among the explanatory variables
 #' @references Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G.
 #' (2012)<DOI:10.1214/12-aos1013> Criteria for Bayesian Model choice with
 #' Application to Variable Selection. The Annals of Statistics. 40: 1550-1557.
@@ -285,6 +291,24 @@ Bvs <-
         namesx[1] <-
           "Intercept" #namesx contains the name of variables including the intercept
       }
+			
+	    #Check if, among the competing variables, there are factors
+			if (sum(attr(lmfull$terms, "dataClasses")=="factor") & sum(attr(lmfull$terms, "dataClasses")=="factor")-sum(attr(lmnull$terms, "dataClasses")=="factor")>0){
+				cat("--------------\n")
+				cat("The competing variables contain factors, a situation for which we recommend using\n")
+				cat("GibbsBvsF()\n")
+	      ANSWER <-
+	        readline("Do you want to continue with Bvs()?(y/n) then press enter.\n")
+	      while (substr(ANSWER, 1, 1) != "n" &
+	             substr(ANSWER, 1, 1) != "y") {
+	        ANSWER <- readline("")
+	      }
+
+	      if (substr(ANSWER, 1, 1) == "n")
+	      {
+	        return(NULL)
+	      }        
+			}
 
       p <- dim(X)[2] #Number of covariates to select from
 
@@ -1101,7 +1125,8 @@ Bvs <-
 #' Print an object of class \code{Bvs}
 #'
 #' Print an object of class \code{Bvs}. The ten most probable models (among the visited ones if the object was created with
-#' GibbsBvs) are shown.
+#' GibbsBvs) are shown jointly with their Bayes factors and an estimation of their posterior probability based on the estimation
+#' of the normalizing constant.
 #'
 #' @export
 #' @param x An object of class \code{Bvs}
@@ -1133,44 +1158,42 @@ print.Bvs <-
     cat("\n")
     cat("Call:\n")
     print(x$call)
-    #cat("\nThis is the result for a model selection problem with ")
-    #cat(x$p-1)
-    pp<-2^x$p-1
-    n.keep<-dim(x$modelsprob)[1]
-    #cat(" covariates and ")
-    #cat(x$n)
-    #cat(" observations\n")
-    #cat("The potential covariates are:\n")
-    #cat(x$variables[-1])
-    #if(!is.null(x$time)){
-    #  cat("\nComputational time: ")
-    #  cat(x$time)
-    #  cat(" seconds.\n")
-    #}
 
     if(x$method=="gibbs"){
-      p <- x$p
-      n.iter <- dim(x$modelslogBF)[1]
-      dimmodels<- rowSums(x$modelslogBF[,1:p])+1
-      Lpostprob<- x$modelslogBF[, (p+1)] + log(x$priorprobs[dimmodels])
+       p <- x$p
+       n.iter <- dim(x$modelslogBF)[1]
+       dimmodels<- rowSums(x$modelslogBF[,1:p])+1
+       logpostprob<- x$modelslogBF[, (p+1)] + log(x$priorprobs[dimmodels])-log(x$C)-log(sum(x$priorprobs*choose(p,0:p)))
+ 
+       ordenado <- x$modelslogBF[order(logpostprob,decreasing = T),]
+       ordenado<- cbind(x$modelslogBF, logpostprob)
+       ordenado <- ordenado[order(logpostprob,decreasing = T),]
+       models<- ordenado[!duplicated(ordenado),]
+ 
+			ten<- min(10, dim(models)[1])
+      #mod.mat <- as.data.frame(models[1:ten,1:p])
+      mod.mat <- as.data.frame(models[1:ten,])
 
-      ordenado <- x$modelslogBF[order(Lpostprob,decreasing = T),]
-
-      models <- ordenado[!duplicated(ordenado),]
-      mod.mat <- as.data.frame(models[1:10,1:p])
-
-      for (i in 1:10) {
+      for (i in 1:ten) {
         varnames.aux <- rep("", p)
         varnames.aux[models[i,1:p] == 1] <- "*"
-        mod.mat[i,] <- varnames.aux
+        mod.mat[i,1:p] <- varnames.aux
       }
-      cat("\nThe 10 most probable models among the visited ones are:\n")
+      cat("\nThe ", ten, " most probable models among the visited ones are:\n")
       print(mod.mat)
+			cat("---\n")
+			cat("Code: Column logBFi0 is the log of Bayes factor and\n")
+			cat("column logpostprob is an estimation of posterior probabilities (log-scale)\n")
+			cat("based on the normalizing constant.")
 
       }
 
+	  if(x$method=="gibbsWithFactors"){
+			summary(x)
+		}
 
-    if(x$method!="gibbs"){
+    if(x$method=="full" | x$method=="parallel"){
+	    n.keep<-dim(x$modelsprob)[1]
       if(n.keep<=10){
         cat(paste("\nThe",n.keep,"most probable models and their probabilities are:\n",sep=" "))
         print(x$modelsprob)
@@ -1180,7 +1203,7 @@ print.Bvs <-
         cat("\n(The remanining", n.keep - 10, "models are kept but omitted in this print)")
       }
     }
-    cat("\n")
+    cat("\n\n")
 
   }
 
@@ -1245,9 +1268,10 @@ summary.Bvs <-
     ans$call <- z$call
 
     cat("\n")
-    cat("Call:\n")
-    print(ans$call)
-    cat("\n")
+    #cat("Call:\n")
+    #print(ans$call)
+    #cat("\n")
+
     cat("Inclusion Probabilities:\n")
     print(ans$summary)
     cat("---\n")

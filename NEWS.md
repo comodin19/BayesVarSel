@@ -1,3 +1,8 @@
+# BayesVarSel 1.9.0
+
+* Added en estimation of posterior probabilities of models based on the normalizing constant. 
+(it goes with the print function)
+
 # BayesVarSel 1.8.2
 
 * Added a vignette based on the R Journal article https://journal.r-project.org/archive/2018/RJ-2018-021/index.html.

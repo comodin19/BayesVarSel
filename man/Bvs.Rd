@@ -57,7 +57,7 @@ to select from} \item{k }{Number of fixed variables} \item{HPMbin }{The
 binary expression of the Highest Posterior Probability model}
 \item{modelsprob }{A \code{data.frame} which summaries the \code{n.keep}
 most probable, a posteriori models, and their associated probability.}
-\item{inclprob }{A \code{data.frame} with the inclusion probabilities of all
+\item{inclprob }{A named vector with the inclusion probabilities of all
 the variables.} \item{jointinclprob }{A \code{data.frame} with the joint
 inclusion probabilities of all the variables.} \item{postprobdim }{Posterior
 probabilities of the dimension of the true model} \item{call }{The
@@ -116,10 +116,10 @@ covariates and so on. Finally, the p+1 component in \code{priorprobs}
 defined the probability of the most complex model (that defined by
 \code{formula}. That is
 
-\code{priorprobs}[j]=C*Pr(M_i such that M_i has j-1+k explanatory variables)
+\code{priorprobs}[j]=Cprior*Pr(M_i such that M_i has j-1+k explanatory variables)
 
-where C is the normalizing constant, i.e
-\code{C=1/sum(priorprobs*choose(p,0:p)}.
+where Cprior is the normalizing constant for the prior, i.e
+\code{Cprior=1/sum(priorprobs*choose(p,0:p)}.
 
 Note that \code{prior.models}="Constant" is equivalent to the combination
 \code{prior.models}="User" and \code{priorprobs=rep(1,(p+1))} but the
@@ -142,7 +142,7 @@ null model. We are currently working on more robust implementations of the
 functions to handle these problems. In the meanwhile you could try using the
 g-Zellner prior (which is the most simple one and results, in these cases,
 should not vary much with the prior) and/or using more accurate definitions
-of the simplest model (via the \code{fixed.cov} argument).
+of the simplest model (via the \code{null.model} argument).
 }
 \examples{
 
@@ -206,6 +206,10 @@ Inference and Decision techniques: Essays in Honor of Bruno de Finetti (A.
 Zellner, ed.) 389-399. Edward Elgar Publishing Limited.
 }
 \seealso{
+Use \code{\link[BayesVarSel]{print.Bvs}} for the best visited models and an 
+estimation of their posterior probabilities and  \code{\link[BayesVarSel]{summary.Bvs}} for
+summaries of the posterior distribution.
+
 \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
@@ -213,6 +217,8 @@ predictions.
 
 \code{\link[BayesVarSel]{GibbsBvs}} for a heuristic approximation based on
 Gibbs sampling (recommended when p>20, no other possibilities when p>31).
+
+See \code{\link[BayesVarSel]{GibbsBvsF}} if there are factors among the explanatory variables
 }
 \author{
 Gonzalo Garcia-Donato and Anabel Forte

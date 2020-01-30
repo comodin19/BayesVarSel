@@ -155,7 +155,6 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	NormConstantPrior+=Constpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
@@ -487,7 +486,6 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 	NormConstantPrior+=SBpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
@@ -819,7 +817,6 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	NormConstantPrior+=gsl_vector_get(priorvector,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
@@ -1151,7 +1148,6 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	NormConstantPrior+=Constpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
@@ -1483,7 +1479,6 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	NormConstantPrior+=SBpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
@@ -1815,7 +1810,6 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	NormConstantPrior+=gsl_vector_get(priorvector,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
@@ -2147,7 +2141,6 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	NormConstantPrior+=Constpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
@@ -2479,7 +2472,6 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	NormConstantPrior+=SBpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
@@ -2811,7 +2803,6 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	NormConstantPrior+=gsl_vector_get(priorvector,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
@@ -3143,7 +3134,6 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	NormConstantPrior+=Constpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
@@ -3475,7 +3465,6 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 	NormConstantPrior+=SBpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
@@ -3807,7 +3796,6 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	NormConstantPrior+=gsl_vector_get(priorvector,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
@@ -4139,7 +4127,6 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	NormConstantPrior+=Constpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
@@ -4471,7 +4458,6 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	NormConstantPrior+=SBpriorprob(p,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
@@ -4803,7 +4789,6 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	NormConstantPrior+=gsl_vector_get(priorvector,dimensionNull);
 
 	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
-	gsl_vector_set(incl_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
 	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));

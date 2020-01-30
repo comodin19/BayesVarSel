@@ -65,7 +65,7 @@ model defined by \code{formula} is fitted by \code{lm}} \item{lmnull }{The
 the potential explanatory variables} \item{n }{Number of observations}
 \item{p }{Number of explanatory variables to select from} \item{k }{Number
 of fixed variables} \item{HPMbin }{The binary expression of the most
-probable model found.} \item{inclprob }{A \code{data.frame} with the
+probable model found.} \item{inclprob }{A named vector with the
 estimates of the inclusion probabilities of all the variables.}
 \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
 inclusion probabilities of all the variables.} \item{postprobdim }{Estimates
@@ -75,7 +75,7 @@ visited models after the burning period and the Bayes factor (log scale) of
 that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
 to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
 function.}
-\item{C}{An estimation of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
+\item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
 \item{method }{\code{gibbs}}
 }
 \description{
@@ -86,9 +86,6 @@ Gibbs sampling algorithm to explore the model space and frequency of
 \details{
 This is a heuristic approximation to the function
 \code{\link[BayesVarSel]{Bvs}} so the details there apply also here.
-
-For cases where p>>n consider using the correction \code{\link[BayesVarSel]{pltltn}}
-to account for the limitation of MCMC techniques in these extremely large model spaces.
 
 The algorithm implemented is a Gibbs sampling-based searching algorithm
 originally proposed by George and McCulloch (1997). Garcia-Donato and
@@ -143,10 +140,13 @@ selection. Statistica Sinica, 7, 339:372.
 \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
+predictions. 
+
+See \code{\link[BayesVarSel]{GibbsBvsF}} if there are factors among the explanatory variables and
+\code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
 situation where p>>n.
 
-\code{\link[BayesVarSel]{Bvs}} for exact
+Consider \code{\link[BayesVarSel]{Bvs}} for exact
 version obtained enumerating all entertained models (recommended when
 p<20).
 }

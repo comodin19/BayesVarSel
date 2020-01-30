@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{An object of class \code{Bvs}}
 
-\item{option}{One of "dimension", "joint", "conditional" or "not"}
+\item{option}{One of "dimension", "joint", "conditional", "not" or "trace"}
 
 \item{...}{Additional graphical parameters to be passed}
 }

@@ -3,26 +3,27 @@ Type: Package
 Title: Bayes Factors, Model Choice and Variable Selection in Linear
         Models
 Version: 1.9.0
-Date: 2018-12-12
+Date: 2019-03-25
 Authors@R: c(
     person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
     person("Anabel", "Forte",             email = "anabel.forte@uv.es",   role = c("aut", "cre")),
     person("Carlos", "Vergara-Hernández", email = "carlos.vergara@uv.es", role = c("ctb"))
     )
 Maintainer: Anabel Forte <anabel.forte@uv.es>
-Description: Conceived to calculate Bayes factors in linear models and then to provide a formal Bayesian answer to testing and variable selection problems. From a theoretical side, the emphasis in this package is placed on the prior distributions and it allows a wide range of them: Jeffreys (1961); Zellner and Siow(1980)<DOI:10.1007/bf02888369>; Zellner and Siow(1984); Zellner (1986)<DOI:10.2307/2233941>; Fernandez et al. (2001)<DOI:10.1016/s0304-4076(00)00076-2>; Liang et al. (2008)<DOI:10.1198/016214507000001337>  and Bayarri et al. (2012)<DOI:10.1214/12-aos1013>. The interaction with the package is through a friendly interface that syntactically mimics the well-known lm() command of R. The resulting objects can be easily explored providing the user very valuable information (like marginal, joint and conditional inclusion probabilities of potential variables; the highest posterior probability model, HPM; the median probability model, MPM) about the structure of the true -data generating- model. Additionally, this package incorporates abilities to handle problems with a large number of potential explanatory variables through parallel and heuristic versions of the main commands, Garcia-Donato and Martinez-Beneito (2013)<DOI:10.1080/01621459.2012.742443>.
+Description: Conceived to calculate Bayes factors in Linear models and then to provide a formal Bayesian answer to testing and variable selection problems. From a theoretical side, the emphasis in this package is placed on the prior distributions and it allows a wide range of them: Jeffreys (1961); Zellner and Siow(1980)<DOI:10.1007/bf02888369>; Zellner and Siow(1984); Zellner (1986)<DOI:10.2307/2233941>; Fernandez et al. (2001)<DOI:10.1016/s0304-4076(00)00076-2>; Liang et al. (2008)<DOI:10.1198/016214507000001337>  and Bayarri et al. (2012)<DOI:10.1214/12-aos1013>. The interaction with the package is through a friendly interface that syntactically mimics the well-known lm() command of R. The resulting objects can be easily explored providing the user very valuable information (like marginal, joint and conditional inclusion probabilities of potential variables; the highest posterior probability model, HPM; the median probability model, MPM) about the structure of the true -data generating- model. Additionally, this package incorporates abilities to handle problems with a large number of potential explanatory variables through parallel and heuristic versions of the main commands, Garcia-Donato and Martinez-Beneito (2013)<DOI:10.1080/01621459.2012.742443>. Acknowledgements: from version 1.9.0 BayesVarSel uses the non-exported function get_rdX from package lmerTest (distributed under GPL-2, GPL-3) and authored by Alexandra Kuznetsova, Per Bruun Brockhoff  and Rune Haubo Bojesen Christensen.
 Encoding: UTF-8
 LazyData: TRUE
 URL: https://github.com/comodin19/BayesVarSel
 BugReports: https://github.com/comodin19/BayesVarSel/issues
+Imports:
+    lmerTest
 Depends:
     MASS (>= 7.3-45),
     mvtnorm (>= 1.0-5),
-    parallel (>= 3.3.2),
-    R (>= 3.3.2),
-		lmerTest (>= 3.0)
+    parallel (>= 3.3),
+    R (>= 3.3)
 License: GPL-2
 NeedsCompilation: yes
 RoxygenNote: 6.1.1
-Suggests: knitr
+Suggests: knitr, faraway
 VignetteBuilder: knitr
