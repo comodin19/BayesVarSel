@@ -16,7 +16,7 @@
 #' @param object An object of class \code{Bvs} obtained with \code{GibbsBvs}
 #' @return \code{pltltn} returns a list with the following elements: 
 #' \item{pS }{An estimation of the probability that the true model is irregular (k>n)} 
-#' \item{postprobdim }{A corrected estimation of the posterior probabilities over the dimensions
+#' \item{postprobdim }{A corrected estimation of the posterior probabilities over the dimensions}
 #' \item{inclprob }{A corrected estimation of the posterior inclusion probabilities}
 #' @author Gonzalo Garcia-Donato
 #'

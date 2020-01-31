@@ -4,8 +4,14 @@
 \alias{Btest}
 \title{Bayes factors and posterior probabilities for linear regression models}
 \usage{
-Btest(models, data, prior.betas = "Robust", prior.models = "Constant",
-  priorprobs = NULL, null.model = NULL)
+Btest(
+  models,
+  data,
+  prior.betas = "Robust",
+  prior.models = "Constant",
+  priorprobs = NULL,
+  null.model = NULL
+)
 }
 \arguments{
 \item{models}{A named list with the entertained models defined with their

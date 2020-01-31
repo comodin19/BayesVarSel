@@ -5,11 +5,20 @@
 \title{Bayesian Variable Selection for linear regression models using Gibbs
 sampling.}
 \usage{
-GibbsBvs(formula, data, null.model = paste(as.formula(formula)[[2]],
-  " ~ 1", sep = ""), prior.betas = "Robust",
-  prior.models = "ScottBerger", n.iter = 10000, init.model = "Full",
-  n.burnin = 500, n.thin = 1, time.test = TRUE, priorprobs = NULL,
-  seed = runif(1, 0, 16091956))
+GibbsBvs(
+  formula,
+  data,
+  null.model = paste(as.formula(formula)[[2]], " ~ 1", sep = ""),
+  prior.betas = "Robust",
+  prior.models = "ScottBerger",
+  n.iter = 10000,
+  init.model = "Full",
+  n.burnin = 500,
+  n.thin = 1,
+  time.test = TRUE,
+  priorprobs = NULL,
+  seed = runif(1, 0, 16091956)
+)
 }
 \arguments{
 \item{formula}{Formula defining the most complex regression model in the

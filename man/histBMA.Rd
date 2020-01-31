@@ -5,8 +5,14 @@
 \title{A function for histograms-like representations of objects of class
 \code{bma.coeffs}}
 \usage{
-histBMA(x, covariate, n.breaks = 100, text = TRUE, gray.0 = 0.6,
-  gray.no0 = 0.8)
+histBMA(
+  x,
+  covariate,
+  n.breaks = 100,
+  text = TRUE,
+  gray.0 = 0.6,
+  gray.no0 = 0.8
+)
 }
 \arguments{
 \item{x}{An object of class \code{bma.coeffs}}

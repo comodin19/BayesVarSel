@@ -5,10 +5,19 @@
 \title{Bayesian Variable Selection with Factors for linear regression models using Gibbs
 sampling.}
 \usage{
-GibbsBvsF(formula, data, null.model = paste(as.formula(formula)[[2]],
-  " ~ 1", sep = ""), prior.betas = "Robust", prior.models = "SBSB",
-  n.iter = 10000, init.model = "Full", n.burnin = 500, n.thin = 1,
-  time.test = TRUE, seed = runif(1, 0, 16091956))
+GibbsBvsF(
+  formula,
+  data,
+  null.model = paste(as.formula(formula)[[2]], " ~ 1", sep = ""),
+  prior.betas = "Robust",
+  prior.models = "SBSB",
+  n.iter = 10000,
+  init.model = "Full",
+  n.burnin = 500,
+  n.thin = 1,
+  time.test = TRUE,
+  seed = runif(1, 0, 16091956)
+)
 }
 \arguments{
 \item{formula}{Formula defining the most complex linear model in the
@@ -74,6 +83,9 @@ of posterior probabilities of the number of active variables in the true model (
 \item{modelslogBF }{A matrix with both the binary representation of the
 active variables in the MCMC after the burning period and the Bayes factor (log scale) of
 that model to the null model.}
+\item{modelswllogBF }{A matrix with both the binary representation of the
+active variables (at the level of the levels in the factors) in the MCMC after the burning period and the Bayes factor (log scale) of
+that model to the null model.}
 \item{call }{The \code{call} to the
 function.}
 \item{C }{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
@@ -89,22 +101,24 @@ with Gibbs sampling
 \details{
 In practical terms, \code{GibbsBvsF} can be understood as a version of \code{\link[BayesVarSel]{GibbsBvs}} in the presence of factors.
 The methodology implemented in \code{GibbsBvsF} to handle variable selection problems with factors
-has been proposed in Garcia-Donato and Paulo (2019). Internally, a rank defficient representation
-of factors using dummies is used and the number of competing models considered is
+has been proposed in Garcia-Donato and Paulo (2018) leading to a method
+for which results  do not depend on how the factors are
+coded (eg. via \code{\link[stats]{contr.treatment}}).
+
+Internally, a rank defficient representation
+of factors using dummies is used and the number of competing models considered is 
 
 2^(pnum+sum_j L_j),
 
-where pnum is the number of numerical variables and L_j is the number of levels in factor j. This
-method leads to results that do not depend on how the factors are
-coded (eg. via \code{\link[stats]{contr.treatment}}).
+where pnum is the number of numerical variables and L_j is the number of levels in factor j. 
 
-A main difference with \code{Bvs} and \code{GibbsBvs} concerns the prior
+A main difference with \code{Bvs} and \code{GibbsBvs} (due to the presence of factors) concerns the prior
 probabilities on the model space:
 
 The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"} 
 acknowledge the "grouped" nature of the dummy variables representing
 factors through the use of two stage
-priors described in Garcia-Donato and Paulo (2019). In the first stage probabilities over factors and numerical 
+priors described in Garcia-Donato and Paulo (2018). In the first stage probabilities over factors and numerical 
 variables are specified and (conditional on these) within the second stage 
 the probablities are apportioned over the different submodels defined
 by the dummies. The default option is "SBSB" which uses in both stages an assignment
@@ -133,13 +147,14 @@ set.seed(16091956)
 diabetesVS<- GibbsBvsF(formula= glyhb ~ ., data=diabetes2, n.iter=100000, n.burnin=5000)
 
 summary(diabetesVS)
-#A plot of the dimension of the true model, meaning:
-#=number of fixed vars+number of factors+number of numerical variables
+
+#A plot of the dimension of the true model,
 plot(diabetesVS, option="dimension")
+
 #A joint inclusion plot
 plot(diabetesVS, option="joint")
 
-#Now with fixed variables:
+#Now a similar exercise but with fixed variables:
 diabetesVS2<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu, 
 		                   data=diabetes2, n.iter=100000, n.burnin=5000)
 											 
@@ -158,19 +173,20 @@ Garcia-Donato, G. and Martinez-Beneito, M.A.
 variable selection problems with large model spaces. Journal of the American
 Statistical Association, 108: 340-352.
 
+Garcia-Donato, G. and Paulo, R. (2018) Including factors in Bayesian variable selection
+problems. arXiv:1709.07238.
+
 George E. and McCulloch R. (1997) Approaches for Bayesian variable
 selection. Statistica Sinica, 7, 339:372.
 }
 \seealso{
-\code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
-\code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
+\code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result
+Under construction: \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
 predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
 situation where p>>n.
 
-\code{\link[BayesVarSel]{Bvs}} for exact
-version obtained enumerating all entertained models (recommended when
-p<20).
+See \code{\link[BayesVarSel]{Bvs}} and \code{\link[BayesVarSel]{Bvs}} when no factors are involved.
 }
 \author{
 Gonzalo Garcia-Donato and Anabel Forte

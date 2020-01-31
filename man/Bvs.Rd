@@ -4,10 +4,18 @@
 \alias{Bvs}
 \title{Bayesian Variable Selection for linear regression models}
 \usage{
-Bvs(formula, data, null.model = paste(as.formula(formula)[[2]], " ~ 1",
-  sep = ""), prior.betas = "Robust", prior.models = "ScottBerger",
-  n.keep = 10, time.test = TRUE, priorprobs = NULL,
-  parallel = FALSE, n.nodes = detectCores())
+Bvs(
+  formula,
+  data,
+  null.model = paste(as.formula(formula)[[2]], " ~ 1", sep = ""),
+  prior.betas = "Robust",
+  prior.models = "ScottBerger",
+  n.keep = 10,
+  time.test = TRUE,
+  priorprobs = NULL,
+  parallel = FALSE,
+  n.nodes = detectCores()
+)
 }
 \arguments{
 \item{formula}{Formula defining the most complex (full) regression model in the
@@ -133,7 +141,7 @@ combination \code{prior.models}= "User" and \code{priorprobs} =
 The case where n<p is handled assigning to the Bayes factors of models with k regressors
 with n<k a value of 1. This should be interpreted as a generalization of the
 null predictive matching in Bayarri et al (2012). Use \code{\link[BayesVarSel]{GibbsBvs}} for cases where
-p>>n.
+p>>.
 
 Limitations: the error "A Bayes factor is infinite.". Bayes factors can be
 extremely big numbers if i) the sample size is even moderately large or if

@@ -100,13 +100,13 @@
 #' \item{positionsx }{A \code{p} dimensional binary vector, stating which of the competing variables is a numerical variable. (Its use is conceived for internal purposes).}
 #' \item{method }{\code{gibbsWithFactors}}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
-#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result
+#' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result.
+#'
 #' Under construction: \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 #' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-#' predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
-#' situation where p>>n.
+#' predictions.
 #'
-#' See \code{\link[BayesVarSel]{Bvs}} and \code{\link[BayesVarSel]{Bvs}} when no factors are involved.
+#' See \code{\link[BayesVarSel]{GibbsBvs}} and \code{\link[BayesVarSel]{Bvs}} when no factors are involved.
 #' @references Garcia-Donato, G. and Martinez-Beneito, M.A.
 #' (2013)<DOI:10.1080/01621459.2012.742443> On sampling strategies in Bayesian
 #' variable selection problems with large model spaces. Journal of the American

@@ -9,33 +9,30 @@ pltltn(object)
 \arguments{
 \item{object}{An object of class \code{Bvs} obtained with \code{GibbsBvs}}
 }
+\value{
+\code{pltltn} returns a list with the following elements: 
+\item{pS }{An estimation of the probability that the true model is irregular (k>n)} 
+\item{postprobdim }{A corrected estimation of the posterior probabilities over the dimensions}
+\item{inclprob }{A corrected estimation of the posterior inclusion probabilities}
+}
 \description{
-This function provides an estimation of the posterior probability of the set of models with k>n which is a measure of the 
-importance of these models. In summary, if this probability is large, implies that the n is not large enough to beat
+In cases where p>>n and the true model is expected to be sparse, it is very unlikely that the Gibbs sampling
+will sample models in the singular subset of the model space (models with k>n). Nevertheless, depending on
+how large is p/n and the strenght of the signal, this part of the model space could be very influential in the
+final response.
+}
+\details{
+From an object created with GibbsBvs and prior probabilities specified as Scott-Berger, 
+this function provides an estimation of the posterior probability of models with k>n which is a measure of the 
+importance of these models. In summary, when this probability is large,  the sample size is not large enough to beat
 such large p.
 Additionally, \code{pltltn} gives corrections of the posterior inclusion probabilities and posterior probabilities 
 of dimension of the true model.
 }
-\details{
-In cases where p>>n and the true model is expected to be sparse, it is very unlikely that the Gibbs sampling
-will sample models in the singular set of the model space (models with k>n). Nevertheless, depending on
-how large is p/n and the strenght of the signal, this part of the model space could be very influential in the
-final response.  
-}
 \examples{
 
 \dontrun{
-#Analysis of Crime Data
-#load data
-data(UScrime)
-
-#Default arguments are Robust prior for the regression parameters
-#and constant prior over the model space
-#Here we keep the 1000 most probable models a posteriori:
-crime.Bvs<- Bvs(formula= y ~ ., data=UScrime, n.keep=1000)
-
-#A look at the results:
-summary(crime.Bvs)
+#Analysis of
 }
 
 }
@@ -47,5 +44,5 @@ See
 \author{
 Gonzalo Garcia-Donato
 
-  Maintainer: <gonzalo.garciadonato@uclm.es>
+Maintainer: <gonzalo.garciadonato@uclm.es>
 }
