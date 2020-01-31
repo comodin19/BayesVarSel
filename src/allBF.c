@@ -212,12 +212,15 @@ double Robust2BF21fun(int n, int k2, int k0, double Q)
 	if (k2>=n) return 1.0;	
 
 	double T1=0.0, T2=0.0, T3=0.0;
-	double R1=0.0;
+	double R1=0.0, L=0.0, R2hat=0.0;
 	
-	T1=((n-k2)/2.0)*log((1.0+n)/k2);
-	T2=-((n-k0)/2.0)*log(1.0+((1.0+n)/k2-1.0)*Q)-log(2.0)-log(1.0-Q)-log(Q);
+	L = (1.0+n)/k2-1.0;
+	R2hat = (1.0-Q)/(1+L*Q);
+ 	T1=((n-k2)/2.0)*log((1.0+n)/k2);
+	T2=-((n-k0)/2.0)*log(1.0+L*Q)-log(2.0)-log(1.0-R2hat)-log(R2hat);
 	//T3=gsl_cdf_beta_P(1.0-Q, k2/2.0, (n-k2-1.0)/2.0)/gsl_ran_beta_pdf(1.0-Q, k2/2.0, (n-k2-1.0)/2.0);
-	T3=gsl_cdf_beta_P(1.0-Q, (n-k2-1.0)/2.0, k2/2.0)/gsl_ran_beta_pdf(1.0-Q, (n-k2-1.0)/2.0, k2/2.0);
+	//T3=gsl_cdf_beta_P(R2hat, (n-k2-1.0)/2.0, k2/2.0)/gsl_ran_beta_pdf(R2hat, (n-k2-1.0)/2.0, k2/2.0);
+	T3=gsl_cdf_beta_P(R2hat, k2/2.0, (n-k2-1.0)/2.0)/gsl_ran_beta_pdf(R2hat, k2/2.0, (n-k2-1.0)/2.0);
 		
 	R1=exp(T1+T2)*T3;
 	
