@@ -397,6 +397,9 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 		Rprintf("Bg0*PrMg=%.10f\n", oldPBF);
 		*/
 		
+		gsl_vector_memcpy(indexfr, index);
+		PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+
 		//update the summaries
 		//inclusion probs:
 		gsl_blas_daxpy(1.0, index, incl_prob);		
@@ -881,6 +884,9 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 		Rprintf("Bg0*PrMg=%.10f\n", oldPBF);
 		*/
 		
+		gsl_vector_memcpy(indexfr, index);
+		PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+
 		//update the summaries
 		//inclusion probs:
 		gsl_blas_daxpy(1.0, index, incl_prob);		
@@ -1361,6 +1367,9 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 			R_CheckUserInterrupt();
 		}
 		
+		gsl_vector_memcpy(indexfr, index);
+		PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+
 		//update the summaries
 		//inclusion probs:
 		gsl_blas_daxpy(1.0, index, incl_prob);		
@@ -1840,6 +1849,9 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 					R_CheckUserInterrupt();
 				}
 		
+				gsl_vector_memcpy(indexfr, index);
+		                PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+
 				//update the summaries
 				//inclusion probs:
 				gsl_blas_daxpy(1.0, index, incl_prob);		
@@ -2324,7 +2336,10 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 					cont++;
 					R_CheckUserInterrupt();
 				}
-		
+				
+		                gsl_vector_memcpy(indexfr, index);
+		                PrMg=SBSBpriorprob(indexfr, positionsx, positions, nofvars, levels, p, isfactor);
+
 				//update the summaries
 				//inclusion probs:
 				gsl_blas_daxpy(1.0, index, incl_prob);		
