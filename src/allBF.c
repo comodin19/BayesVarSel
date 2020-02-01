@@ -151,7 +151,7 @@ double RobustBF21fun(int n, int k2, int k0, double Q)
 	// Qaux means Q_0i
 	T1=log(Qaux)*((n-k0)/2.0);
 	//T1=pow(Qaux,(n-k0)/2.0);
-	T2=log(rho*(n+1))*(-((k2-k0))/2.0)-log(k2aux);
+	T2=log(rho*(n+1.0))*(-((k2-k0))/2.0)-log(k2aux);
 	//T2=pow(rho*(n+1),-((k2-k0)/2.0))*pow(k2aux,-1.0);
 	
 	
@@ -180,13 +180,13 @@ double RobustBF21fun(int n, int k2, int k0, double Q)
 		z=arg/(arg-1.0);
 		STATUS=gsl_sf_hyperg_2F1_e(1,(n-k0)/2.0, (k2aux/2.0)+1.0, z,&result);
 		  if (STATUS==0){ 
-		      T3=((k0-n)/2)*log(1.0-arg)+log(result.val);
+		      T3=((k0-n)/2.0)*log(1.0-arg)+log(result.val);
 		      //T3=pow((1.0-arg),(k0-n)/2)*result.val;
           //Rprintf("arg=%.20f,T3=%.20f \n",arg,T3);
         }//succed
 		else //gsl_hyper failed, then numerical approx of the log(2F1)
 		{
-		  T3=((k0-n)/2)*log(1.0-arg)+log(robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z));
+		  T3=((k0-n)/2.0)*log(1.0-arg)+log(robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z));
 		  //T3=pow((1.0-arg),(k0-n)/2)*robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z);
            //Rprintf("arg=%.20f,T3=%.20f \n",arg,T3);
         }
