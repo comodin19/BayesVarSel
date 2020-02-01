@@ -182,13 +182,13 @@ double RobustBF21fun(int n, int k2, int k0, double Q)
 		z=arg/(arg-1.0);
 		STATUS=gsl_sf_hyperg_2F1_e(1,(n-k0)/2.0, (k2aux/2.0)+1.0, z,&result);
 		  if (STATUS==0){ 
-		      T3=((k0-n)/2)*log(1.0-arg)+log(result.val);
+		      T3=((k0-n)/2.0)*log(1.0-arg)+log(result.val);
 		      //T3=pow((1.0-arg),(k0-n)/2)*result.val;
           //Rprintf("arg=%.20f,T3=%.20f \n",arg,T3);
         }//succed
 		else //gsl_hyper failed, then numerical approx of the log(2F1)
 		{
-		  T3=((k0-n)/2)*log(1.0-arg)+log(robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z));
+		  T3=((k0-n)/2.0)*log(1.0-arg)+log(robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z));
 		  //T3=pow((1.0-arg),(k0-n)/2)*robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z);
            //Rprintf("arg=%.20f,T3=%.20f \n",arg,T3);
         }
@@ -218,8 +218,6 @@ double Robust2BF21fun(int n, int k2, int k0, double Q)
 	R2hat = (1.0-Q)/(1+L*Q);
  	T1=((n-k2)/2.0)*log((1.0+n)/k2);
 	T2=-((n-k0)/2.0)*log(1.0+L*Q)-log(2.0)-log(1.0-R2hat)-log(R2hat);
-	//T3=gsl_cdf_beta_P(1.0-Q, k2/2.0, (n-k2-1.0)/2.0)/gsl_ran_beta_pdf(1.0-Q, k2/2.0, (n-k2-1.0)/2.0);
-	//T3=gsl_cdf_beta_P(R2hat, (n-k2-1.0)/2.0, k2/2.0)/gsl_ran_beta_pdf(R2hat, (n-k2-1.0)/2.0, k2/2.0);
 	T3=gsl_cdf_beta_P(R2hat, k2/2.0, (n-k2-1.0)/2.0)/gsl_ran_beta_pdf(R2hat, k2/2.0, (n-k2-1.0)/2.0);
 		
 	R1=exp(T1+T2)*T3;
