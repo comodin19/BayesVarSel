@@ -153,7 +153,7 @@ double RobustBF21fun(int n, int k2, int k0, double Q)
 	// Qaux means Q_0i
 	T1=log(Qaux)*((n-k0)/2.0);
 	//T1=pow(Qaux,(n-k0)/2.0);
-	T2=log(rho*(n+1))*(-((k2-k0))/2.0)-log(k2aux);
+	T2=log(rho*(n+1.0))*(-((k2-k0))/2.0)-log(k2aux);
 	//T2=pow(rho*(n+1),-((k2-k0)/2.0))*pow(k2aux,-1.0);
 	
 	
