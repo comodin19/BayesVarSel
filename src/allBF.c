@@ -17,6 +17,8 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_errno.h>
+#include <gsl/gsl_randist.h>
+#include <gsl/gsl_cdf.h>
 
 
 // Gonzalo Garcia-Donato and Anabel Forte, 2010
@@ -133,7 +135,7 @@ double RobustBF21fun(int n, int k2, int k0, double Q)
 {
 //k2, total number of covariates in the model 
 	
-	if (k2>=n) return 1.0;	
+	if (k2>=n) return 1.0;		
 
 	double  T1=0.0, T2=0.0, T3=0.0;
 	double arg=0.0;
@@ -197,6 +199,30 @@ double RobustBF21fun(int n, int k2, int k0, double Q)
 	//R1=T1*T2*T3;
 	
     if (!R_FINITE(R1)){error("A Bayes factor is infinite.");}
+	
+	return(R1);
+}
+
+/* Robust Bayes Factor of type 2 for main.c*/
+
+double Robust2BF21fun(int n, int k2, int k0, double Q)
+{
+//k2, total number of covariates in the model 
+	
+	if (k2>=n) return 1.0;	
+
+	double T1=0.0, T2=0.0, T3=0.0;
+	double R1=0.0, L=0.0, R2hat=0.0;
+	
+	L = (1.0+n)/k2-1.0;
+	R2hat = (1.0-Q)/(1+L*Q);
+ 	T1=((n-k2)/2.0)*log((1.0+n)/k2);
+	T2=-((n-k0)/2.0)*log(1.0+L*Q)-log(2.0)-log(1.0-R2hat)-log(R2hat);
+	T3=gsl_cdf_beta_P(R2hat, k2/2.0, (n-k2-1.0)/2.0)/gsl_ran_beta_pdf(R2hat, k2/2.0, (n-k2-1.0)/2.0);
+		
+	R1=exp(T1+T2)*T3;
+	
+  if (!R_FINITE(R1)){error("A Bayes factor is infinite.");}
 	
 	return(R1);
 }

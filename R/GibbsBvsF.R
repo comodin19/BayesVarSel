@@ -381,10 +381,13 @@ GibbsBvsF <-
     if (prior.betas == "Liangetal"){write(4, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
     if (prior.betas == "gZellner"){write(2, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
     if (prior.betas == "ZellnerSiow"){write(5, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+    if (prior.betas == "Robust2"){write(6, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+
 	  if (prior.betas == "FLS"){stop("Prior FLS not yet supported\n")}
 
 		if (prior.betas != "Unitary" & prior.betas != "Robust" & prior.betas != "Liangetal" & 
-		    prior.betas != "gZellner" & prior.betas != "ZellnerSiow" & prior.betas != "FLS") {stop("Dont recognize the prior for betas\n")}	
+			    prior.betas != "gZellner" & prior.betas != "ZellnerSiow" & prior.betas != "FLS" &
+					prior.betas != "Robust2") {stop("Dont recognize the prior for betas\n")}	
 		
 		if (prior.models=="SBSB"){method<- "rSBSB"}
 		if (prior.models=="ConstConst"){method<- "rConstConst"}
