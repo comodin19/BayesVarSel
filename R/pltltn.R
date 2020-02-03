@@ -40,9 +40,11 @@ pltltn<- function(object){
 	if (object$method != "gibbs") 
 		stop("This corrected estimates are for Gibbs sampling objects.")
 	
-	warning("Use this function only for problems with p>>n (not just p>n) and\n
-	         in combination with an object created with\n
-	         prior probabilities specified as Scott-Berger.\n")
+	if (object$priorprobs!="ScottBerger"){
+		stop("This function was conceived to be used in combination with Scott-Berger prior\n")
+	}
+	
+	cat("Info: Use this function only for problems with p>>n (not just p>n)\n")
 	
 	#The method weitghs results on Mr (provided by Gibbs sampling) with those in Ms (theoretical)
 	
@@ -54,7 +56,7 @@ pltltn<- function(object){
 	names(postprobdimMr)<- as.numeric(names(postprobdimMr))+length(object$lmnull$coefficients)
 		
 	#ratio of prior probabilities of Ms to Mr
-	qSR<- sum(object$priorprobs[(object$n+1):(object$p+1)]*choose(object$p, object$n:object$p))/sum(object$priorprobs[1:object$n]*choose(object$p, 0:(object$n-1)))
+	qSR<- (object$p-object$n)/(object$n+1)
 	#The posterior probabililty of Ms:
 	pS<- qSR/(qSR+object$C)
 	cat(paste("Estimate of the posterior probability of the\n model space with singular models is:", round(pS,3),"\n"))

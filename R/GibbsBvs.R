@@ -31,7 +31,9 @@
 #' include "Null" (the model only with the covariates specified in
 #' \code{fixed.cov}), "Full" (the model defined by \code{formula}), "Random" (a
 #' randomly selected model) and a vector with p (the number of covariates to
-#' select from) zeros and ones defining a model.
+#' select from) zeros and ones defining a model. When p>n the function forces
+#' the init.model to be "Null" (it would not make sense to start in a singular model plus
+#' you expect here a sparse true model).
 #' @param n.burnin Length of burn in, i.e. number of iterations to discard at
 #' the beginning.
 #' @param n.thin Thinning rate. Must be a positive integer.  Set 'n.thin' > 1
@@ -61,8 +63,7 @@
 #' of posterior probabilities of the dimension of the true model.}
 #' \item{modelslogBF}{A matrix with both the binary representation of the
 #' visited models after the burning period and the Bayes factor (log scale) of
-#' that model to the null model.}\item{priorprobs}{A p+1 dimensional vector containing values proportionals
-#' to the prior probability of a model of each dimension (from 0 to p)} \item{call }{The \code{call} to the
+#' that model to the null model.}\item{priorprobs}{If \code{prior.models}="User" then this vector is stored here. Else, the #' type of prior as defined in \code{prior.models}}\item{call }{The \code{call} to the
 #' function.}
 #' \item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
 #' \item{method }{\code{gibbs}}
@@ -72,8 +73,9 @@
 #' of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
 #' predictions. 
 #' 
-#' See \code{\link[BayesVarSel]{GibbsBvsF}} if there are factors among the explanatory variables and
-#' \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
+#' See \code{\link[BayesVarSel]{GibbsBvsF}} if there are factors among the explanatory variables.
+#' 
+#' See \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
 #' situation where p>>n.
 #'
 #' Consider \code{\link[BayesVarSel]{Bvs}} for exact
@@ -189,7 +191,8 @@ GibbsBvs <-
       n <- dim(data)[1]
 
 			#warning about n<p situation
-			if (n < dim(X.full)[2]) cat("In this dataset n<p and unitary Bayes factors are used for models with k>n.\n")
+			if (n < dim(X.full)[2]) {cat("In this dataset n<p and unitary Bayes factors are used for models with k>n.\n")
+				                       init.model="Null"}
 
 
       #the response variable for the C code
@@ -959,8 +962,8 @@ GibbsBvs <-
     #rownames(result$betahat)<-namesx
     #names(result$betahat) <- "BetaHat"
     result$call <- match.call()
-    if (pfms == "c" ) priorprobs <- rep(1, p + 1)
-    if (pfms == "s" ) priorprobs <- 1/choose(p,0:p)
+    if (pfms == "c" ) priorprobs <- "Constant"
+    if (pfms == "s" ) priorprobs <- "ScottBerger"
     result$priorprobs <- priorprobs
 
 		result$C<- calculaC(modelslBF, priorprobs, p)
@@ -993,11 +996,18 @@ calculaC<- function(modelslBF, priorprobs, p){
 	notdup<- !duplicated(lBFAset)
 	lBFAset<- unique(lBFAset)
 	dimAset<- dimAset[notdup]
-
+  
 	#Prior probabilities of the models in A (suming one is because the first position is occupied by dimension=0)
-	priorAset<- priorprobs[dimAset+1]/sum(priorprobs*choose(p, 0:p))
+	if (priorprobs=="ScottBerger") lpriorAset<- -log(p+1)-lchoose(p, dimAset)
+	if (priorprobs=="Constant") lpriorAset<- -p*log(2)
+	if (!is.character(priorprobs)) {
+		dimnotzero<- which(priorprobs>0)
+		priorAset<- priorprobs[dimAset+1]/sum(exp(log(priorprobs[dimnotzero])+lchoose(p, dimnotzero-1)))
+		lpriorAset<- log(priorAset)
+	}	
+
 	#The sum of Bi0*Pr(Mi) (g(A) in G&McC notation)
-	gAset<- sum(exp(lBFAset+log(priorAset)))
+	gAset<- sum(exp(lBFAset+lpriorAset))
 	#How many of the models in Bset are in A?
 	sumIA<- sum(modelslBF[Bset,"logBFi0"]%in%modelslBF[Aset,"logBFi0"])
 
