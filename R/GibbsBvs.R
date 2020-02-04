@@ -76,7 +76,8 @@
 #' See \code{\link[BayesVarSel]{GibbsBvsF}} if there are factors among the explanatory variables.
 #' 
 #' See \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
-#' situation where p>>n.
+#' situation where p>>n. See the help in  \code{\link[BayesVarSel]{pltltn}} for an application
+#' in this situation.
 #'
 #' Consider \code{\link[BayesVarSel]{Bvs}} for exact
 #' version obtained enumerating all entertained models (recommended when
