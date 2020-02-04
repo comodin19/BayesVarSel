@@ -24,10 +24,58 @@
 #' @seealso See 
 #'   \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 #'   \code{Bvs}.
+#'
+#' @references Berger, J.O., Garcia-Donato, G., Martínez-Beneito M.A. and Peña, V. (2016)
+#' Bayesian variable selection in high dimensional problems without assumptions on prior model probabilities.
+#' arXiv:1607.02993
+#'
 #' @examples
 #'
 #' \dontrun{
-#' #Analysis of
+#' data(riboflavin, package="hdi")
+#'
+#' set.seed(16091956)
+#'	#the following sentence took 37.3 minutes in a single core
+#'	#(a trick to see the evolution of the algorithm is to monitor
+#'	#the files created by the function.
+#'	#you can see the working directory running
+#'	#tempdir()
+#'	#copy this path in the clipboard. Then open another R session
+#'	#and from there (once the simulating process is running and the burnin has completed)
+#'	#write
+#'	#system("wc (path from clipboard)/AllBF")
+#'	#the number here appearing is the number of completed iterations
+#'	#
+#'	testRB<- GibbsBvs(formula=y~., data=riboflavin, prior.betas="Robust", init.model="null", time.test=F, n.iter=10000, n.burnin=1000)
+#'
+#'	set.seed(16091956)
+#'	system.time(
+#'	testRB<- GibbsBvs(formula=y~., data=riboflavin, prior.betas="Robust", init.model="null", time.test=F, n.iter=10000, n.burnin=1000)
+#'	)
+#'
+#'	#notice the large sparsity of the result since
+#'	#the great majority of covariates are not influential:
+#'	boxplot(testRB$inclprob)
+#'	testRB$inclprob[testRB$inclprob>.5]
+#'	#xYOAB_at xYXLE_at 
+#'	#  0.9661   0.6502 
+#'	#we can discharge all covariates except xYOAB_at and xYXLE_at
+#'	#the method does not reach to inform about xYXLE_at and its posterior
+#'	#probability is only slightly bigger than its prior probability
+#'
+#'	#We see that dimensions of visited models are small:
+#'	plot(testRB, option="d", xlim=c(0,100))
+#'	#so the part of the model space with singular models (k>n)
+#'	#has not been explored.
+#'	#To correct this issue we run:
+#'	corrected.testRB<- pltltn(testRB)
+#'	#Estimate of the posterior probability of the
+#'	# model space with singular models is: 0 
+#'	#Meaning that it is extremely unlikely that the true model is such that k>n
+#'	#The corrected inclusion probabilities can be accessed through
+#'	#corrected.testRB but, in this case, these are essentially the same as in the
+#'	#original object (due to the unimportance of the singular part of the model space)
+#'
 #' }
 #'
 pltltn<- function(object){
@@ -40,9 +88,11 @@ pltltn<- function(object){
 	if (object$method != "gibbs") 
 		stop("This corrected estimates are for Gibbs sampling objects.")
 	
-	warning("Use this function only for problems with p>>n (not just p>n) and\n
-	         in combination with an object created with\n
-	         prior probabilities specified as Scott-Berger.\n")
+	if (object$priorprobs!="ScottBerger"){
+		stop("This function was conceived to be used in combination with Scott-Berger prior\n")
+	}
+	
+	cat("Info: Use this function only for problems with p>>n (not just p>n)\n")
 	
 	#The method weitghs results on Mr (provided by Gibbs sampling) with those in Ms (theoretical)
 	
@@ -54,7 +104,7 @@ pltltn<- function(object){
 	names(postprobdimMr)<- as.numeric(names(postprobdimMr))+length(object$lmnull$coefficients)
 		
 	#ratio of prior probabilities of Ms to Mr
-	qSR<- sum(object$priorprobs[(object$n+1):(object$p+1)]*choose(object$p, object$n:object$p))/sum(object$priorprobs[1:object$n]*choose(object$p, 0:(object$n-1)))
+	qSR<- (object$p-object$n)/(object$n+1)
 	#The posterior probabililty of Ms:
 	pS<- qSR/(qSR+object$C)
 	cat(paste("Estimate of the posterior probability of the\n model space with singular models is:", round(pS,3),"\n"))
