@@ -37,7 +37,7 @@ can be installed using:
 You can track, download the latest version or contribute to the
 development of `BayesVarSel` at
 <https://github.com/comodin19/BayesVarSel>. To install the most recent
-version of the package (1.8.2) you should:
+version of the package (2.0.0) you should:
 
 1.  Install devtools from CRAN with `install.packages("devtools")`.
 2.  Install the development version of `BayesVarSel` from
@@ -60,6 +60,8 @@ the true -data generating- model. Additionally, `BayesVarSel`
 incorporates abilities to handle problems with a large number of
 potential explanatory variables through parallel and heuristic versions
 (Garcia-Donato and Martinez-Beneito, 2013) of the main commands.
+
+Since version 2.0.0 it allows to handle p>n, p>>n and factors.
 
 Usage
 =====
