@@ -1,3 +1,11 @@
+# BayesVarSel 2.0.0
+
+* Added new functionalities to handle the situation with p>n and p>>n
+
+* Added a new function to handle variable selection with factors that is independent on the parameterization (contrast) used to parameterize factors and that is able to control for multiplicity.
+
+* Corrected a numerical error in the computation of Robust Bayes factors.
+
 # BayesVarSel 1.9.0
 
 * Added en estimation of posterior probabilities of models based on the normalizing constant. 
