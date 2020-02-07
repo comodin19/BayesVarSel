@@ -180,13 +180,13 @@ George E. and McCulloch R. (1997) Approaches for Bayesian variable
 selection. Statistica Sinica, 7, 339:372.
 }
 \seealso{
-\code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result
+\code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result.
+
 Under construction: \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
 of regression coefficients and \code{\link[BayesVarSel]{predict.Bvs}} for
-predictions. \code{\link[BayesVarSel]{pltltn}} for corrections on estimations for the
-situation where p>>n.
+predictions.
 
-See \code{\link[BayesVarSel]{Bvs}} and \code{\link[BayesVarSel]{Bvs}} when no factors are involved.
+See \code{\link[BayesVarSel]{GibbsBvs}} and \code{\link[BayesVarSel]{Bvs}} when no factors are involved.
 }
 \author{
 Gonzalo Garcia-Donato and Anabel Forte
