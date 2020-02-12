@@ -10,8 +10,8 @@ pltltn(object)
 \item{object}{An object of class \code{Bvs} obtained with \code{GibbsBvs}}
 }
 \value{
-\code{pltltn} returns a list with the following elements: 
-\item{pS }{An estimation of the probability that the true model is irregular (k>n)} 
+\code{pltltn} returns a list with the following elements:
+\item{pS }{An estimation of the probability that the true model is irregular (k>n)}
 \item{postprobdim }{A corrected estimation of the posterior probabilities over the dimensions}
 \item{inclprob }{A corrected estimation of the posterior inclusion probabilities}
 }
@@ -22,11 +22,11 @@ how large is p/n and the strenght of the signal, this part of the model space co
 final response.
 }
 \details{
-From an object created with GibbsBvs and prior probabilities specified as Scott-Berger, 
-this function provides an estimation of the posterior probability of models with k>n which is a measure of the 
+From an object created with GibbsBvs and prior probabilities specified as Scott-Berger,
+this function provides an estimation of the posterior probability of models with k>n which is a measure of the
 importance of these models. In summary, when this probability is large,  the sample size is not large enough to beat
 such large p.
-Additionally, \code{pltltn} gives corrections of the posterior inclusion probabilities and posterior probabilities 
+Additionally, \code{pltltn} gives corrections of the posterior inclusion probabilities and posterior probabilities
 of dimension of the true model.
 }
 \examples{
@@ -46,19 +46,31 @@ set.seed(16091956)
 #system("wc (path from clipboard)/AllBF")
 #the number here appearing is the number of completed iterations
 #
-testRB<- GibbsBvs(formula=y~., data=riboflavin, prior.betas="Robust", init.model="null", time.test=F, n.iter=10000, n.burnin=1000)
+testRB<- GibbsBvs(formula=y~.,
+                  data=riboflavin,
+                  prior.betas="Robust",
+                  init.model="null",
+                  time.test=F,
+                  n.iter=10000,
+                  n.burnin=1000)
 
 set.seed(16091956)
 system.time(
-testRB<- GibbsBvs(formula=y~., data=riboflavin, prior.betas="Robust", init.model="null", time.test=F, n.iter=10000, n.burnin=1000)
+testRB<- GibbsBvs(formula=y~.,
+                  data=riboflavin,
+                  prior.betas="Robust",
+                  init.model="null",
+                  time.test=F,
+                  n.iter=10000,
+                  n.burnin=1000)
 )
 
 #notice the large sparsity of the result since
 #the great majority of covariates are not influential:
 boxplot(testRB$inclprob)
 testRB$inclprob[testRB$inclprob>.5]
-#xYOAB_at xYXLE_at 
-#  0.9661   0.6502 
+#xYOAB_at xYXLE_at
+#  0.9661   0.6502
 #we can discharge all covariates except xYOAB_at and xYXLE_at
 #the method does not reach to inform about xYXLE_at and its posterior
 #probability is only slightly bigger than its prior probability
@@ -70,7 +82,7 @@ plot(testRB, option="d", xlim=c(0,100))
 #To correct this issue we run:
 corrected.testRB<- pltltn(testRB)
 #Estimate of the posterior probability of the
-# model space with singular models is: 0 
+# model space with singular models is: 0
 #Meaning that it is extremely unlikely that the true model is such that k>n
 #The corrected inclusion probabilities can be accessed through
 #corrected.testRB but, in this case, these are essentially the same as in the
@@ -85,7 +97,7 @@ Bayesian variable selection in high dimensional problems without assumptions on 
 arXiv:1607.02993
 }
 \seealso{
-See 
+See
   \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
   \code{Bvs}.
 }

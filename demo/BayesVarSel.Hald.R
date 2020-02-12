@@ -1,5 +1,6 @@
 #read Hald data
 data(Hald)
+
 #run the main function: (in this small example we keep all models)
 hald.Bvs<- Bvs(formula="y~x1+x2+x3+x4", data=Hald, n.keep=16)
 

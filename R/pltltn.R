@@ -3,25 +3,25 @@
 #' In cases where p>>n and the true model is expected to be sparse, it is very unlikely that the Gibbs sampling
 #' will sample models in the singular subset of the model space (models with k>n). Nevertheless, depending on
 #' how large is p/n and the strenght of the signal, this part of the model space could be very influential in the
-#' final response. 
-#' 
-#' From an object created with GibbsBvs and prior probabilities specified as Scott-Berger, 
-#' this function provides an estimation of the posterior probability of models with k>n which is a measure of the 
+#' final response.
+#'
+#' From an object created with GibbsBvs and prior probabilities specified as Scott-Berger,
+#' this function provides an estimation of the posterior probability of models with k>n which is a measure of the
 #' importance of these models. In summary, when this probability is large,  the sample size is not large enough to beat
 #' such large p.
-#' Additionally, \code{pltltn} gives corrections of the posterior inclusion probabilities and posterior probabilities 
+#' Additionally, \code{pltltn} gives corrections of the posterior inclusion probabilities and posterior probabilities
 #' of dimension of the true model.
 #'
 #' @export
 #' @param object An object of class \code{Bvs} obtained with \code{GibbsBvs}
-#' @return \code{pltltn} returns a list with the following elements: 
-#' \item{pS }{An estimation of the probability that the true model is irregular (k>n)} 
+#' @return \code{pltltn} returns a list with the following elements:
+#' \item{pS }{An estimation of the probability that the true model is irregular (k>n)}
 #' \item{postprobdim }{A corrected estimation of the posterior probabilities over the dimensions}
 #' \item{inclprob }{A corrected estimation of the posterior inclusion probabilities}
 #' @author Gonzalo Garcia-Donato
 #'
 #' Maintainer: <gonzalo.garciadonato@uclm.es>
-#' @seealso See 
+#' @seealso See
 #'   \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
 #'   \code{Bvs}.
 #'
@@ -46,19 +46,31 @@
 #'	#system("wc (path from clipboard)/AllBF")
 #'	#the number here appearing is the number of completed iterations
 #'	#
-#'	testRB<- GibbsBvs(formula=y~., data=riboflavin, prior.betas="Robust", init.model="null", time.test=F, n.iter=10000, n.burnin=1000)
+#'	testRB<- GibbsBvs(formula=y~.,
+#'	                  data=riboflavin,
+#'	                  prior.betas="Robust",
+#'	                  init.model="null",
+#'	                  time.test=F,
+#'	                  n.iter=10000,
+#'	                  n.burnin=1000)
 #'
 #'	set.seed(16091956)
 #'	system.time(
-#'	testRB<- GibbsBvs(formula=y~., data=riboflavin, prior.betas="Robust", init.model="null", time.test=F, n.iter=10000, n.burnin=1000)
+#'	testRB<- GibbsBvs(formula=y~.,
+#'	                  data=riboflavin,
+#'	                  prior.betas="Robust",
+#'	                  init.model="null",
+#'	                  time.test=F,
+#'	                  n.iter=10000,
+#'	                  n.burnin=1000)
 #'	)
 #'
 #'	#notice the large sparsity of the result since
 #'	#the great majority of covariates are not influential:
 #'	boxplot(testRB$inclprob)
 #'	testRB$inclprob[testRB$inclprob>.5]
-#'	#xYOAB_at xYXLE_at 
-#'	#  0.9661   0.6502 
+#'	#xYOAB_at xYXLE_at
+#'	#  0.9661   0.6502
 #'	#we can discharge all covariates except xYOAB_at and xYXLE_at
 #'	#the method does not reach to inform about xYXLE_at and its posterior
 #'	#probability is only slightly bigger than its prior probability
@@ -70,7 +82,7 @@
 #'	#To correct this issue we run:
 #'	corrected.testRB<- pltltn(testRB)
 #'	#Estimate of the posterior probability of the
-#'	# model space with singular models is: 0 
+#'	# model space with singular models is: 0
 #'	#Meaning that it is extremely unlikely that the true model is such that k>n
 #'	#The corrected inclusion probabilities can be accessed through
 #'	#corrected.testRB but, in this case, these are essentially the same as in the
@@ -84,25 +96,25 @@ pltltn<- function(object){
 	#Ms=model space with singular models; Mr=model space with regular models
   if (!inherits(object, "Bvs"))
     stop("calling summary.Bvs(<fake-Bvs-x>) ...")
-	
-	if (object$method != "gibbs") 
+
+	if (object$method != "gibbs")
 		stop("This corrected estimates are for Gibbs sampling objects.")
-	
+
 	if (object$priorprobs!="ScottBerger"){
 		stop("This function was conceived to be used in combination with Scott-Berger prior\n")
 	}
-	
+
 	cat("Info: Use this function only for problems with p>>n (not just p>n)\n")
-	
+
 	#The method weitghs results on Mr (provided by Gibbs sampling) with those in Ms (theoretical)
-	
+
 	#first obtain the estimates conditionall on Mr
 	kgamma<- rowSums(object$modelslogBF[,1:object$p])
 	isMr<- kgamma < object$n-length(object$lmnull$coefficients)
 	inclprobMr<- colMeans(object$modelslogBF[isMr,1:object$p])
 	postprobdimMr<- table(kgamma[isMr])/sum(isMr)
 	names(postprobdimMr)<- as.numeric(names(postprobdimMr))+length(object$lmnull$coefficients)
-		
+
 	#ratio of prior probabilities of Ms to Mr
 	qSR<- (object$p-object$n)/(object$n+1)
 	#The posterior probabililty of Ms:
