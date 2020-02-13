@@ -33,6 +33,27 @@ double unitBF21fun(int n, int k2, int k0, double Q)
 	return(1.0);
 }
 
+//BIC:
+double BIC21fun(int n, int k2, int k0, double Q)
+{
+	if (k2>=n) return 1.0;
+	double BF21=0.0;
+  BF21 = exp(((k0-k2)/2.0)*log(n)-(n/2.0)*log(Q));
+  if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
+	return BF21;
+}
+
+//AIC:
+double AIC21fun(int n, int k2, int k0, double Q)
+{
+	if (k2>=n) return 1.0;
+	double BF21=0.0;
+  BF21 = exp((k0-k2)-(n/2.0)*log(Q));
+  if (!R_FINITE(BF21)){error("A Bayes factor is infinite.");}
+	return BF21;
+}
+
+
 /* -----g-prior-------*/
 
 // The Bayes factor obtained with the the g-prior (in favour of

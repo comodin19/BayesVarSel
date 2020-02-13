@@ -5,4 +5,6 @@ double RobustBF21fun(int n, int k2, int k0, double Q);
 double LiangBF21fun(int n, int k2, int k0, double Q);
 double ZSBF21fun(int n, int k2, int k0, double Q);
 double Robust2BF21fun(int n, int k2, int k0, double Q);
+double AIC21fun(int n, int k2, int k0, double Q);
+double BIC21fun(int n, int k2, int k0, double Q);
 
