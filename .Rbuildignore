@@ -2,3 +2,4 @@
 ^README-.*\.png$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^dev_commands\.R$
