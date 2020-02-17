@@ -166,7 +166,12 @@ priorSBSB2<- function(act.levels, levelsfull, levelsf, kplusp){
 		return(l2prMgamma)	
 			  }
   #if the model contains at least one level saturated then return -Inf:
-	if (sum(act.levelsf[act.levelsf>0] == (levelsf[act.levelsf>0]-1)) >= 1){
+	#if (sum(act.levelsf[act.levelsf>0] == (levelsf[act.levelsf>0]-1)) >= 1){
+	#	return(-Inf)
+	#}
+  #Modifcacion en la que nos quedamos solo modelos regulares:
+	#if the model contains at least one level oversaturated then return -Inf:
+	if (sum(act.levelsf[act.levelsf>0] == (levelsf[act.levelsf>0])) >= 1){
 		return(-Inf)
 	}
 	else { #keep the rest
