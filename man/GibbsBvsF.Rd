@@ -63,22 +63,22 @@ preliminary test to estimate computational time is performed.}
 \code{GibbsBvsF} returns an object of class \code{Bvs} with the
 following elements: \item{time }{The internal time consumed in solving the
 problem} \item{lmfull }{The \code{lm} class object that results when the
-model defined by \code{formula} is fitted by \code{lm}} 
+model defined by \code{formula} is fitted by \code{lm}}
 \item{lmnull }{The
 \code{lm } class object that results when the model defined by
-\code{fixed.cov} is fitted by \code{lm}} 
-\item{variables }{The name of all the potential explanatory variables (numerical or factors)} 
+\code{fixed.cov} is fitted by \code{lm}}
+\item{variables }{The name of all the potential explanatory variables (numerical or factors)}
 \item{n }{Number of observations}
-\item{p }{Number of explanatory variables (both numerical and factors) to select from} 
-\item{k }{Number of fixed variables} 
+\item{p }{Number of explanatory variables (both numerical and factors) to select from}
+\item{k }{Number of fixed variables}
 \item{HPMbin }{The binary expression of the most
-probable model found.} 
+probable model found.}
 \item{inclprob }{A named vector with the
 estimates of the inclusion probabilities of all the variables.}
 \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
-inclusion probabilities of all the variables.} 
+inclusion probabilities of all the variables.}
 \item{postprobdim }{Estimates
-of posterior probabilities of the number of active variables in the true model (hence ranking from 
+of posterior probabilities of the number of active variables in the true model (hence ranking from
 \code{k } to \code{k+p}).}
 \item{modelslogBF }{A matrix with both the binary representation of the
 active variables in the MCMC after the burning period and the Bayes factor (log scale) of
@@ -103,23 +103,23 @@ In practical terms, \code{GibbsBvsF} can be understood as a version of \code{\li
 The methodology implemented in \code{GibbsBvsF} to handle variable selection problems with factors
 has been proposed in Garcia-Donato and Paulo (2018) leading to a method
 for which results  do not depend on how the factors are
-coded (eg. via \code{\link[stats]{contr.treatment}}).
+coded (eg. via \code{\link[stats]{contrast}}).
 
 Internally, a rank defficient representation
-of factors using dummies is used and the number of competing models considered is 
+of factors using dummies is used and the number of competing models considered is
 
 2^(pnum+sum_j L_j),
 
-where pnum is the number of numerical variables and L_j is the number of levels in factor j. 
+where pnum is the number of numerical variables and L_j is the number of levels in factor j.
 
 A main difference with \code{Bvs} and \code{GibbsBvs} (due to the presence of factors) concerns the prior
 probabilities on the model space:
 
-The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"} 
+The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"}
 acknowledge the "grouped" nature of the dummy variables representing
 factors through the use of two stage
-priors described in Garcia-Donato and Paulo (2018). In the first stage probabilities over factors and numerical 
-variables are specified and (conditional on these) within the second stage 
+priors described in Garcia-Donato and Paulo (2018). In the first stage probabilities over factors and numerical
+variables are specified and (conditional on these) within the second stage
 the probablities are apportioned over the different submodels defined
 by the dummies. The default option is "SBSB" which uses in both stages an assignment
 of the type Scott-Berger so inversely proportional to the number of models of the same dimension. The
@@ -127,7 +127,7 @@ option "ConstConst" implements a uniform prior for both stages while "SBConst" u
 in the first stage and it is uniform in the second stage. Within all these priors, the prior inclusion probabilities
 of factors and numerical variables are 1/2.
 
-The options \code{prior.models="Const"} and 
+The options \code{prior.models="Const"} and
 \code{prior.models="SB"} do not have a staged structure and "Const" apportions the prior probabilities
 uniformly over all possible models (2^(pnum+sum_j L_j)) and in "SB" the probability
 is inversely proportional to the number of any model of the same dimension. In these cases, prior inclusion probabilities
@@ -155,12 +155,12 @@ plot(diabetesVS, option="dimension")
 plot(diabetesVS, option="joint")
 
 #Now a similar exercise but with fixed variables:
-diabetesVS2<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu, 
+diabetesVS2<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu,
 		                   data=diabetes2, n.iter=100000, n.burnin=5000)
-											 
-											 
+
+
 #and with fixed factors:
-diabetesVS3<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu+location, 
+diabetesVS3<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu+location,
 		                   data=diabetes2, n.iter=100000, n.burnin=5000)
 
 

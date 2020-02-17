@@ -1,3 +1,7 @@
+
+# BayesVarSel 2.0.1
+* Minor updates in order to pass CRAN checks.
+
 # BayesVarSel 2.0.0
 
 * Added new functionalities to handle the situation with p>n and p>>n

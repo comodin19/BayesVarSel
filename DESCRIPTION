@@ -2,8 +2,8 @@ Package: BayesVarSel
 Type: Package
 Title: Bayes Factors, Model Choice and Variable Selection in Linear
         Models
-Version: 2.0.0
-Date: 2020-02-04
+Version: 2.0.1
+Date: 2020-02-17
 Authors@R: c(
     person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
     person("Anabel", "Forte",             email = "anabel.forte@uv.es",   role = c("aut", "cre")),
@@ -16,8 +16,7 @@ Encoding: UTF-8
 LazyData: TRUE
 URL: https://github.com/comodin19/BayesVarSel
 BugReports: https://github.com/comodin19/BayesVarSel/issues
-Imports:
-    lmerTest
+SystemRequirements: GNU Scientific Library
 Depends:
     MASS (>= 7.3-45),
     mvtnorm (>= 1.0-5),

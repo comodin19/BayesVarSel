@@ -8,23 +8,23 @@
 #' The methodology implemented in \code{GibbsBvsF} to handle variable selection problems with factors
 #' has been proposed in Garcia-Donato and Paulo (2018) leading to a method
 #' for which results  do not depend on how the factors are
-#' coded (eg. via \code{\link[stats]{contr.treatment}}).
-#' 
+#' coded (eg. via \code{\link[stats]{contrast}}).
+#'
 #' Internally, a rank defficient representation
-#' of factors using dummies is used and the number of competing models considered is 
+#' of factors using dummies is used and the number of competing models considered is
 #'
 #' 2^(pnum+sum_j L_j),
 #'
-#' where pnum is the number of numerical variables and L_j is the number of levels in factor j. 
+#' where pnum is the number of numerical variables and L_j is the number of levels in factor j.
 #'
 #' A main difference with \code{Bvs} and \code{GibbsBvs} (due to the presence of factors) concerns the prior
 #' probabilities on the model space:
 #'
-#' The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"} 
+#' The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"}
 #' acknowledge the "grouped" nature of the dummy variables representing
 #' factors through the use of two stage
-#' priors described in Garcia-Donato and Paulo (2018). In the first stage probabilities over factors and numerical 
-#' variables are specified and (conditional on these) within the second stage 
+#' priors described in Garcia-Donato and Paulo (2018). In the first stage probabilities over factors and numerical
+#' variables are specified and (conditional on these) within the second stage
 #' the probablities are apportioned over the different submodels defined
 #' by the dummies. The default option is "SBSB" which uses in both stages an assignment
 #' of the type Scott-Berger so inversely proportional to the number of models of the same dimension. The
@@ -32,7 +32,7 @@
 #' in the first stage and it is uniform in the second stage. Within all these priors, the prior inclusion probabilities
 #' of factors and numerical variables are 1/2.
 #'
-#' The options \code{prior.models="Const"} and 
+#' The options \code{prior.models="Const"} and
 #' \code{prior.models="SB"} do not have a staged structure and "Const" apportions the prior probabilities
 #' uniformly over all possible models (2^(pnum+sum_j L_j)) and in "SB" the probability
 #' is inversely proportional to the number of any model of the same dimension. In these cases, prior inclusion probabilities
@@ -44,7 +44,7 @@
 #' @param null.model A formula defining which is the simplest (null) model.
 #' It should be nested in the full model. It is compulsory that the null model
 #' contains the intercept and by default, the null model is defined
-#' to be the one with just the intercept 
+#' to be the one with just the intercept
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
 #' and "ZellnerSiow" (see details in \code{\link[BayesVarSel]{Bvs}}).
@@ -69,22 +69,22 @@
 #' @return \code{GibbsBvsF} returns an object of class \code{Bvs} with the
 #' following elements: \item{time }{The internal time consumed in solving the
 #' problem} \item{lmfull }{The \code{lm} class object that results when the
-#' model defined by \code{formula} is fitted by \code{lm}} 
+#' model defined by \code{formula} is fitted by \code{lm}}
 #' \item{lmnull }{The
 #' \code{lm } class object that results when the model defined by
-#' \code{fixed.cov} is fitted by \code{lm}} 
-#' \item{variables }{The name of all the potential explanatory variables (numerical or factors)} 
+#' \code{fixed.cov} is fitted by \code{lm}}
+#' \item{variables }{The name of all the potential explanatory variables (numerical or factors)}
 #' \item{n }{Number of observations}
-#' \item{p }{Number of explanatory variables (both numerical and factors) to select from} 
-#' \item{k }{Number of fixed variables} 
+#' \item{p }{Number of explanatory variables (both numerical and factors) to select from}
+#' \item{k }{Number of fixed variables}
 #' \item{HPMbin }{The binary expression of the most
-#' probable model found.} 
+#' probable model found.}
 #' \item{inclprob }{A named vector with the
 #' estimates of the inclusion probabilities of all the variables.}
 #' \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
-#' inclusion probabilities of all the variables.} 
+#' inclusion probabilities of all the variables.}
 #' \item{postprobdim }{Estimates
-#' of posterior probabilities of the number of active variables in the true model (hence ranking from 
+#' of posterior probabilities of the number of active variables in the true model (hence ranking from
 #' \code{k } to \code{k+p}).}
 #' \item{modelslogBF }{A matrix with both the binary representation of the
 #' active variables in the MCMC after the burning period and the Bayes factor (log scale) of
@@ -122,7 +122,7 @@
 #'
 #' \dontrun{
 #' data(diabetes, package="faraway")
-#' 
+#'
 #' #remove NA's and the column with the id of samples:
 #' diabetes2<- na.omit(diabetes)[,-1]
 #'
@@ -140,21 +140,21 @@
 #' plot(diabetesVS, option="joint")
 #'
 #' #Now a similar exercise but with fixed variables:
-#' diabetesVS2<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu, 
+#' diabetesVS2<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu,
 #' 		                   data=diabetes2, n.iter=100000, n.burnin=5000)
-#' 											 
-#' 											 
+#'
+#'
 #' #and with fixed factors:
-#' diabetesVS3<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu+location, 
+#' diabetesVS3<- GibbsBvsF(formula= glyhb ~ ., null.model= glyhb ~ chol+stab.glu+location,
 #' 		                   data=diabetes2, n.iter=100000, n.burnin=5000)
-#' 
-#' 
+#'
+#'
 #' }
 #'
 GibbsBvsF <-
   function(formula,
            data,
-           null.model = paste(as.formula(formula)[[2]], " ~ 1", sep=""),					 
+           null.model = paste(as.formula(formula)[[2]], " ~ 1", sep=""),
            prior.betas = "Robust",
            prior.models = "SBSB",
            n.iter = 10000,
@@ -165,7 +165,7 @@ GibbsBvsF <-
 					 seed = runif(1, 0, 16091956)) {
 
     formula <- as.formula(formula)
-		
+
     null.model<- as.formula(null.model)
 
     #The response in the null model and in the full model must coincide
@@ -191,34 +191,34 @@ GibbsBvsF <-
                   data = data,
                   y = TRUE,
                   x = TRUE)
-			
+
 			#Variables or factors that are a linear function of the others:
 			if (lmfull$rank!=dim(lmfull$x)[2])
-				stop("Some of the explanatory variables are a linear function of others\n")						
+				stop("Some of the explanatory variables are a linear function of others\n")
 			#Factors:
 			#before:X.full <- lmfull$x
     	X.full<- get_rdX(lmfull) #rank defficient paramet
 
       namesx <- dimnames(X.full)[[2]]
-    
+
       #check if null model is contained in the full one:
       namesnull <- dimnames(lmnull$x)[[2]]
       "%notin%" <- function(x, table) match(x, table, nomatch = 0) == 0
-						
+
 			#check that the null model contains the intercept:
 			if (is.null(namesnull))
 				stop("The null model should contain the intercept\n")
-				
+
 			if (sum(namesnull=="Intercept")==0 & sum(namesnull=="(Intercept)")==0)
 				stop("The null model should contain the intercept\n")
-						
+
       for (i in 1:length(namesnull)){
         if (namesnull[i] %notin% namesx) {
           cat("Error in var: ", namesnull[i], "\n")
           stop("null model is not nested in full model\n")
         }
       }
-			
+
       #Is there any variable to select from?
       if (length(namesx) == length(namesnull)) {
         stop(
@@ -242,7 +242,7 @@ GibbsBvsF <-
       knull <- dim(X0)[2]
 
       #matrix containing the covariates from which we want to select
-			#Factors:						
+			#Factors:
       X1<- X.full[, -fixed.pos] #before:X1 <- lmfull$x[, -fixed.pos]
 
       if (dim(X1)[1] < n) {
@@ -267,12 +267,12 @@ GibbsBvsF <-
 		#this regressor is a factor)
 		#Works with only intercept, but not with other null models: depvars<- attr(lmfull$terms, "term.labels")
 		depvars<- setdiff(attr(lmfull$terms, "term.labels"), attr(lmnull$terms, "term.labels"))
-				
+
     #Check if, among the competing variables, there are factors
 		if (sum(attr(lmfull$terms, "dataClasses")[depvars]=="factor")==0){
 			stop("No Factors found among the competing variables. Use GibbsBvs() instead\n")
 		}
-		
+
 		positions<- matrix(0, ncol=p, nrow=length(depvars))
 		for (i in 1:length(depvars)){positions[i,]<- grepl(depvars[i], colnames(X), fixed=T)}
 		#positionsX is a vector of the same length as columns has X
@@ -347,7 +347,7 @@ GibbsBvsF <-
       }
 			cat(" Covariates (numerical variables):\n", depvars[positionsx==1], "\n",
 			    "Factors:\n", depvars[positionsx==0], "\n\n")
-		
+
 	    }
     cat("The problem has a total of", 2 ^ (p), "competing models\n")
     iter <- n.iter
@@ -374,8 +374,8 @@ GibbsBvsF <-
 		#a model of the same class (copies are removed and only the full within each class is kept)
 		if (prior.models!="SBSB" & prior.models!="ConstConst" & prior.models!="SB" & prior.models!="Const" & prior.models!="SBConst")
 			{stop("Prior over the model space not supported\n")}
-		
-		
+
+
     if (prior.betas == "Unitary"){write(0, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
     if (prior.betas == "Robust"){write(1, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
     if (prior.betas == "Liangetal"){write(4, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
@@ -385,18 +385,18 @@ GibbsBvsF <-
 
 	  if (prior.betas == "FLS"){stop("Prior FLS not yet supported\n")}
 
-		if (prior.betas != "Unitary" & prior.betas != "Robust" & prior.betas != "Liangetal" & 
+		if (prior.betas != "Unitary" & prior.betas != "Robust" & prior.betas != "Liangetal" &
 			    prior.betas != "gZellner" & prior.betas != "ZellnerSiow" & prior.betas != "FLS" &
-					prior.betas != "Robust2") {stop("Dont recognize the prior for betas\n")}	
-		
+					prior.betas != "Robust2") {stop("Dont recognize the prior for betas\n")}
+
 		if (prior.models=="SBSB"){method<- "rSBSB"}
 		if (prior.models=="ConstConst"){method<- "rConstConst"}
-		if (prior.models=="SBConst"){method<- "rSBConst"}	
+		if (prior.models=="SBConst"){method<- "rSBConst"}
 		if (prior.models=="SB"){method<- "rSB"}
 		if (prior.models=="Const"){method<- "rConst"}
-		
+
     estim.time <- 0
-		
+
     #Call the corresponding function:
     result <- switch(
       method,
@@ -481,34 +481,34 @@ GibbsBvsF <-
     #Log(BF) for every model
     modelslBF<- cbind(allmodels, log(allBF))
     colnames(modelslBF)<- c(namesx, "logBFi0")
-		
+
 		############
 		#Specific to factors:
 		#
 		#Recall now that the number of vars (either numerical or factors) is dim(positions)[1]
-		
-		#Resampling removing the saturated models (keeping the oversaturated)	
+
+		#Resampling removing the saturated models (keeping the oversaturated)
 		if (prior.models == "SBSB"){modelslBFwR<- resamplingSBSB(modelslBF, positions)}
 		if (prior.models == "ConstConst"){modelslBFwR<- resamplingConstConst(modelslBF, positions)}
 		if (prior.models == "SB"){modelslBFwR<- resamplingSB(modelslBF, positions)}
 		if (prior.models == "Const"){modelslBFwR<- resamplingConst(modelslBF, positions)}
 		if (prior.models == "SBConst"){modelslBFwR<- resamplingSBConst(modelslBF, positions)}
-		
+
 		#Now we convert the sampled models to vars and factors:
 		cat(dim(positions),"\n")
 		if (dim(positions)[1] > 1)
 			modelslBFF<- t(apply(modelslBFwR[,-(p+1)], MARGIN=1, FUN=function(x,M){as.numeric(x%*%M>0)}, M=t(positions)))
 		else
 			modelslBFF<- matrix(as.numeric(modelslBFwR[,-(p+1)]%*%t(positions)>0), ncol=1)
-		
+
         #Inclusion probabilities:
-		
+
 		inclusion <- colMeans(modelslBFF)
 		names(inclusion)<- depvars
-		
+
 		#HPM with factors:
 		HPMFbin<- models%*%t(positions)
-		
+
 		#joint inclusion probs:
 		jointinclprob<- matrix(0, ncol=dim(positions)[1], nrow=dim(positions)[1])
 
@@ -517,16 +517,16 @@ GibbsBvsF <-
 		}
 			jointinclprob<- jointinclprob/dim(modelslBFF)[1]
 		colnames(jointinclprob)<- depvars; rownames(jointinclprob)<- depvars
-		
+
 		#Dimension of the true model:
 		dimenF<- c(rowSums(modelslBFF), 0:dim(positions)[1])
 		dimenF<- (table(dimenF)-1)/dim(modelslBFF)[1]
 		names(dimenF)<- (0:dim(positions)[1])+knull
-		
+
 		#Attach the column with the log(BF)
 		modelslBFF<- cbind(modelslBFF, modelslBFwR[,"logBFi0"])
 		colnames(modelslBFF)<- c(depvars, "logBFi0")
-		
+
     result <- list()
     #
     result$time <- time #The time it took the programm to finish
@@ -542,23 +542,23 @@ GibbsBvsF <-
     result$HPMbin <- (HPMFbin)#The binary code for the HPM model
 
     result$modelslogBF <- modelslBFF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
-		
+
 		#Keep the visited models at the level of levels for posterior analyses
 		result$modelswllogBF<- modelslBFwR
-		
+
     result$inclprob <- inclusion #inclusion probability for each variable
 
     result$jointinclprob <- data.frame(jointinclprob) #data.frame for the joint inclusion probabilities
     #
     result$postprobdim <- dimenF #vector with the dimension probabilities.
-		
+
 		result$positions<- positions
 		result$positionsx<- positionsx
-		
+
 		#
 		#
 		#####################
-		
+
     result$call <- match.call()
 
     result$method <- "gibbsWithFactors"
@@ -567,5 +567,5 @@ GibbsBvsF <-
 
 
   }
-	
+
 

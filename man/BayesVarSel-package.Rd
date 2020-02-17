@@ -35,7 +35,7 @@ heuristic versions (Garcia-Donato and Martinez-Beneito 2013) of the main
 commands.
 
 \tabular{ll}{ Package: \tab BayesVarSel\cr Type: \tab Package\cr Version:
-\tab 1.8.0\cr Date: \tab 2017-12-03\cr License: \tab GPL-2\cr }
+\tab 2.0.1\cr Date: \tab 2020-02-17\cr License: \tab GPL-2\cr }
 }
 \examples{
 demo(BayesVarSel.Hald)
