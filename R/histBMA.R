@@ -154,7 +154,7 @@ histBMA <-
       color <-
         c(rep(gray(gray.no0), sum(as.numeric(cutoff) == 1) - 1), rep(gray(gray.0), 1), rep(gray(gray.no0), sum(as.numeric(cutoff) ==
                                                                                                                  3)))
-      plot(
+      plot( 
         h,
         col = color,
         freq = FALSE,
