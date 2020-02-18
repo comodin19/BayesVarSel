@@ -82,7 +82,7 @@ See \code{\link[BayesVarSel]{histBMA}} for a histogram-like
 representation of the columns in the object. See
 \code{\link[BayesVarSel]{Bvs}} and
 \code{\link[BayesVarSel]{GibbsBvs}} for creating objects of the class
-\code{Bvs}. See \code{\link[mvtnorm]{rmvnorm} for details about argument
+\code{Bvs}. See \code{\link[mvtnorm]{Mvnorm} for details about argument
 method.}
 }
 \author{
