@@ -281,7 +281,6 @@ BMAcoeff <- function(x, n.sim = 10000, method = "svd") {
     X <- x$lmfull$x
 
     for (iter in 1:length(t.models)) {
-			cat(iter,"\n")
       #rMD is model drawn (a number between 1 and n.keep)
       rMD <- as.numeric(names(t.models)[iter])
       howmany <- t.models[iter]
