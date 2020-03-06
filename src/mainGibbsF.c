@@ -285,8 +285,8 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	if (typeofBF==4) BF21fun=LiangBF21fun;
 	if (typeofBF==5) BF21fun=ZSBF21fun;
 	if (typeofBF==6) BF21fun=Robust2BF21fun;
-	
-	
+	if (typeofBF==7) BF21fun=BIC21fun;
+	if (typeofBF==8) BF21fun=AIC21fun;
 	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
@@ -773,6 +773,8 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	if (typeofBF==4) BF21fun=LiangBF21fun;
 	if (typeofBF==5) BF21fun=ZSBF21fun;
 	if (typeofBF==6) BF21fun=Robust2BF21fun;
+	if (typeofBF==7) BF21fun=BIC21fun;
+	if (typeofBF==8) BF21fun=AIC21fun;
 
 	
 	
@@ -1265,6 +1267,8 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	if (typeofBF==4) BF21fun=LiangBF21fun;
 	if (typeofBF==5) BF21fun=ZSBF21fun;
 	if (typeofBF==6) BF21fun=Robust2BF21fun;
+	if (typeofBF==7) BF21fun=BIC21fun;
+	if (typeofBF==8) BF21fun=AIC21fun;
 
 	
 	
@@ -1746,6 +1750,8 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			if (typeofBF==4) BF21fun=LiangBF21fun;
 			if (typeofBF==5) BF21fun=ZSBF21fun;
 			if (typeofBF==6) BF21fun=Robust2BF21fun;
+			if (typeofBF==7) BF21fun=BIC21fun;
+			if (typeofBF==8) BF21fun=AIC21fun;
 
 	
 			// //////////////////////////////////////////////
@@ -2229,6 +2235,8 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			if (typeofBF==4) BF21fun=LiangBF21fun;
 			if (typeofBF==5) BF21fun=ZSBF21fun;
 			if (typeofBF==6) BF21fun=Robust2BF21fun;
+			if (typeofBF==7) BF21fun=BIC21fun;
+			if (typeofBF==8) BF21fun=AIC21fun;
 
 			
 	

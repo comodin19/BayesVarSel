@@ -91,13 +91,12 @@ BMAcoeff <- function(x, n.sim = 10000, method = "svd") {
   #name of dep var
   name.y <- colnames(x$lmfull$model[1])
 
-
   #results are given as a matrix bma.coeffs
   bma.coeffs <-
     matrix(0, nrow = n.sim, ncol = length(x$lmfull$coefficients))
   colnames(bma.coeffs) <- colnames(x$lmfull$x)
 
-  #differentiate if method="full" (enumeration) or method="Gibbs"
+  #differentiate if method="full" (enumeration) or method="Gibbs" or method="gibbsWithFactors"
   if (x$method == "full" | x$method == "parallel") {
     cat("\n")
     cat("Simulations obtained using the best",
@@ -253,7 +252,91 @@ BMAcoeff <- function(x, n.sim = 10000, method = "svd") {
 
     }
   }
+  if (x$method == "gibbsWithFactors") {
+    cat("\n")
+    cat("Simulations obtained using the ",
+        dim(x$modelslogBF)[1],
+        " sampled models.\n")
+    cat("Their frequencies are taken as the true posterior probabilities\n")
+		
+  	Xf<- get_rdX(x$lmfull)
+		x$lmfull$coefficients<- rep(0, dim(Xf)[2])
+		x$lmfull$x<- Xf
+	  if (colnames(x$lmfull$x)[1] == "(Intercept)") {
+	    colnames(x$lmfull$x)[1] <- "Intercept"
+	  }
+		
+	  bma.coeffs <- matrix(0, nrow = n.sim, ncol = length(x$lmfull$coefficients))
+	  colnames(bma.coeffs) <- colnames(x$lmfull$x)
+    #draw n.sim models with replacement (weights are implicitly proportional
+    #to their posterior prob since repetitions are included in the sample):
+    models <-
+      sample(x = dim(x$modelslogBF)[1],
+             size = n.sim,
+             replace = TRUE)
+    #table of these models
+    t.models <- table(models)
+    cs.tmodels <- cumsum(t.models)
 
+    X <- x$lmfull$x
+
+    for (iter in 1:length(t.models)) {
+			cat(iter,"\n")
+      #rMD is model drawn (a number between 1 and n.keep)
+      rMD <- as.numeric(names(t.models)[iter])
+      howmany <- t.models[iter]
+
+      #covs in that model rMD (apart from the fixed ones)
+      covsrMD <- names(x$modelswllogBF[rMD, ])[x$modelswllogBF[rMD, ] == "1"]
+      #the data in model drawn (dependent variable in first column)
+      datarMD <- as.data.frame(cbind(x$lmfull$model[, name.y], X[, covsrMD]))
+
+      colnames(datarMD) <- c(name.y, covsrMD)
+      #now add the fixed.cov if any
+      if (!is.null(x$lmnull)) {
+        datarMD <- cbind(datarMD, x$lmnull$x)
+      }
+
+      #remove rare characters because a double application of lm command
+      #(happens for instance in covariates with ":")
+      colnames(datarMD) <- gsub("`", "", colnames(datarMD))
+      #formula for that model
+      formMD <- as.formula(paste(name.y, "~.-1", sep = ""))
+
+      #fit
+      fitrMD <-
+        lm(formula = formMD,
+           data = as.data.frame(datarMD),
+           qr = TRUE)
+
+      #simulated value for the beta:
+      #simple version
+      #rcoeff<- rmvnorm(n=howmany, mean=fitrMD$coefficients, sigma=vcov(fitrMD))
+      #exact version
+      Rinv <- qr.solve(qr.R(fitrMD$qr))
+      iXtX <- Rinv %*% t(Rinv)
+      Sigma <- sum(fitrMD$residuals * datarMD[, name.y]) * iXtX / fitrMD$df
+      rcoeff <-
+        rmvt(
+          n = howmany,
+          sigma = Sigma,
+          df = fitrMD$df,
+          delta = fitrMD$coefficients,
+          type = "shifted",
+          method = method
+        )
+      #      if(sum(names(fitrMD$coefficients)%in%colnames(bma.coeffs))!= length(names(fitrMD$coefficients))){
+      #        stop("The names of your covariates may contain a non-standar charater ($,',:,ect.). Please check and replace.")
+      #      }
+
+      bma.coeffs[(max(cs.tmodels[iter - 1], 0) + 1):cs.tmodels[iter], gsub("`", "", names(fitrMD$coefficients))] <-
+        rcoeff
+
+    }
+	
+  }
+	
+	
 
   class(bma.coeffs) <- "bma.coeffs"
     return(bma.coeffs)

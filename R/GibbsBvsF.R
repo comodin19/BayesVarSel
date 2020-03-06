@@ -382,13 +382,21 @@ GibbsBvsF <-
     if (prior.betas == "gZellner"){write(2, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
     if (prior.betas == "ZellnerSiow"){write(5, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
     if (prior.betas == "Robust2"){write(6, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+    if (prior.betas == "BIC"){write(7, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+    if (prior.betas == "AIC"){write(8, ncolumns=1, file=paste(wd, "/typeofBF.txt", sep = ""))}
+			
 
 	  if (prior.betas == "FLS"){stop("Prior FLS not yet supported\n")}
 
 		if (prior.betas != "Unitary" & prior.betas != "Robust" & prior.betas != "Liangetal" &
 			    prior.betas != "gZellner" & prior.betas != "ZellnerSiow" & prior.betas != "FLS" &
+<<<<<<< HEAD
 					prior.betas != "Robust2") {stop("Dont recognize the prior for betas\n")}
 
+=======
+					prior.betas != "Robust2" & prior.betas != "BIC" & prior.betas != "AIC") {stop("Dont recognize the prior for betas\n")}	
+		
+>>>>>>> 0fa440a161f4beb1dba24211f215747e88e1fa73
 		if (prior.models=="SBSB"){method<- "rSBSB"}
 		if (prior.models=="ConstConst"){method<- "rConstConst"}
 		if (prior.models=="SBConst"){method<- "rSBConst"}
