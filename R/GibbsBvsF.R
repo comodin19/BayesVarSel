@@ -390,13 +390,7 @@ GibbsBvsF <-
 
 		if (prior.betas != "Unitary" & prior.betas != "Robust" & prior.betas != "Liangetal" &
 			    prior.betas != "gZellner" & prior.betas != "ZellnerSiow" & prior.betas != "FLS" &
-<<<<<<< HEAD
-					prior.betas != "Robust2") {stop("Dont recognize the prior for betas\n")}
-
-=======
 					prior.betas != "Robust2" & prior.betas != "BIC" & prior.betas != "AIC") {stop("Dont recognize the prior for betas\n")}	
-		
->>>>>>> 0fa440a161f4beb1dba24211f215747e88e1fa73
 		if (prior.models=="SBSB"){method<- "rSBSB"}
 		if (prior.models=="ConstConst"){method<- "rConstConst"}
 		if (prior.models=="SBConst"){method<- "rSBConst"}
