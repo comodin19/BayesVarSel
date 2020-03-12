@@ -89,7 +89,7 @@ double Gibbsstatistics(int p, int n, double SSEnull, gsl_matrix * X,
 	//gsl_matrix_free(L);
 	gsl_matrix_free(Xindex);
 	gsl_vector_free(tau);
-	//gsl_vector_free(hatbeta);
+	gsl_vector_free(hatbeta);
 	gsl_vector_free(residual);
 
 	return(Q);
