@@ -67,6 +67,7 @@ double SBSBpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_matrix *
 	PrMg=exp(-PrMg);
 
 	//Rprintf("Prior probability is %.20f \n", PrMg);
+	gsl_vector_free(v);
 	return(PrMg);
 
 }
@@ -115,6 +116,7 @@ double ConstConstpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_ma
 	PrMg=exp(-PrMg);
 
 	//Rprintf("Prior probability is %.20f \n", PrMg);
+	gsl_vector_free(v);
 	return(PrMg);
 
 }
@@ -159,7 +161,8 @@ double SBConstpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_matri
 	}
 
 	PrMg=exp(-PrMg);
-
+	
+	gsl_vector_free(v);
 	return(PrMg);
 
 }
