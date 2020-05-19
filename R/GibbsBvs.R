@@ -31,9 +31,9 @@
 #' include "Null" (the model only with the covariates specified in
 #' \code{fixed.cov}), "Full" (the model defined by \code{formula}), "Random" (a
 #' randomly selected model) and a vector with p (the number of covariates to
-#' select from) zeros and ones defining a model. When p>n the function forces
-#' the init.model to be "Null" (it would not make sense to start in a singular model plus
-#' you expect here a sparse true model).
+#' select from) zeros and ones defining a model. When p>n the dimension of the
+#' init.model must be smaller than n. Otherwise the function produces
+#' an error.
 #' @param n.burnin Length of burn in, i.e. number of iterations to discard at
 #' the beginning.
 #' @param n.thin Thinning rate. Must be a positive integer.  Set 'n.thin' > 1
@@ -191,11 +191,6 @@ GibbsBvs <-
 
       n <- dim(data)[1]
 
-			#warning about n<p situation
-			if (n < dim(X.full)[2]) {cat("In this dataset n<p and unitary Bayes factors are used for models with k>n.\n")
-				                       init.model="Null"}
-
-
       #the response variable for the C code
       Y <- lmnull$residuals
 
@@ -297,6 +292,14 @@ GibbsBvs <-
         stop("Initial model with incorrect length\n")
       }
     }
+
+    #warning about n<p situation
+    if (n < dim(X.full)[2]) {cat("In this dataset n<p and unitary Bayes factors are used for models with k>n.\n")
+      if (sum(init.model)>n) {stop("The initial model is rank-defficient. Please specify one which is full rank (eg: Null model)")}
+    }
+
+
+
 
     write(
       init.model,
