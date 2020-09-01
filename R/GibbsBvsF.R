@@ -549,6 +549,9 @@ GibbsBvsF <-
 
 		#Keep the visited models at the level of levels for posterior analyses
 		result$modelswllogBF<- modelslBFwR
+		
+    result$HPMwlbin<- models
+    names(result$HPMwlbin)<- colnames(result$modelswllogBF[,-dim(result$modelswllogBF)[2]])	
 
     result$inclprob <- inclusion #inclusion probability for each variable
 
