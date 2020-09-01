@@ -542,6 +542,8 @@ GibbsBvsF <-
     result$p <- length(depvars) #number of competing variables
     result$k <- knull#number of fixed covariates
     result$HPMbin <- (HPMFbin)#The binary code for the HPM model
+    result$HPMwlbin <- models #The binary code for the HPM model at the levels of levels
+		
 
     result$modelslogBF <- modelslBFF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
 
