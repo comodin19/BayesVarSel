@@ -347,3 +347,88 @@ double ZSBF21fun(int n, int k2, int k0, double Q)
     return ZSBF21;
     
 }
+
+
+/*------Intrinsic-------*/
+// 26-11-20
+
+//The Bayes Factor with the intrinsic prior Moreno et al (2015)
+
+
+/*Structure for Parameters*/
+struct parint {
+	double a; //will be n
+	double b; //will be k2
+	double c; //will be k0
+	double z; //will be Q
+};
+
+
+/*auxiliar functions for integration */
+
+double intrinsicint_aux (double x, void *p){
+    /* pointer to a structure of type par. */
+	struct parint * params=(struct parint *)p;
+    
+    /*DDefine the parameters included at the structure*/
+	double a=(params->a);
+	double b=(params->b);
+	double c=(params->c);
+	double z=(params->z);
+	
+	/*return the argument for integration*/
+	double l=exp((b-c)*log(x)+0.5*(a-b)*log(a+(b-c+2)*pow(sin(x), 2))-(a-c)*log(n*z+(b-c+2)*pow(sin(x), 2)));
+	return l;
+}
+
+//robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z)
+//k2aux=k2-k0+1.0;//equivalently k2aux=ki+1
+
+/* Integrated functions the arguments will be n,k2,k0,Qi0 */
+double intrinsicint(double a, double b, double c,double z){
+	/*guardamos espacio de memoria para realizar la integracion, este 10000 es el que luego va en la función
+	 de integracion*/
+	gsl_integration_workspace * w=gsl_integration_workspace_alloc(10000);
+	
+	double result=0.0;
+	double error=0.0;
+	
+	/*Ponemos los parametros en la forma que necesitamos para la funcion*/
+	struct parint params={a,b,c,z};
+	
+	/*Definimos cual es la funcion que vamos a usar y le pasamos los parametros*/
+	gsl_function F;
+	F.function = &intrinsicint_aux;
+	F.params = &params;
+	
+	/*integramos y guardamos el resultado en result y el error en error*/
+	gsl_integration_qags(&F, 0.0, M_PI/2.0, 0, 1e-9, 10000, 5, w, &result, &error);
+	
+	
+	/*Liberamos el espacio de trabajo*/
+	gsl_integration_workspace_free (w);
+	
+	/*devolvemos el resultado*/
+	return result*2*exp(0.5*(b-c)*log(b-c+2.0))/M_PI;
+}
+
+
+/* Robust Bayes Factor for main.c*/
+
+double IntrinsicBF21fun(int n, int k2, int k0, double Q)
+{
+//k2, total number of covariates in the model 
+	
+	if (k2>=n) return 1.0;		
+	
+	double T3=0.0;
+	
+	T3 = intrinsicint(n, k2, k0, Q);
+
+  if (!R_FINITE(T3)){error("A Bayes factor is infinite.");}
+	
+	return(T3);
+}
+
+
+
