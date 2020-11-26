@@ -29,6 +29,7 @@ extern void GibbsZSSB(void *, void *, void *, void *, void *, void *, void *, vo
 extern void GibbsZSUser(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void gSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void gUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void intrinsicBF(void *, void *, void *, void *, void *);
 extern void LiangBF(void *, void *, void *, void *, void *);
 extern void LiangConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void LiangSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -67,14 +68,15 @@ static const R_CMethodDef CEntries[] = {
     {"GibbsRobustConst", (DL_FUNC) &GibbsRobustConst, 10},
     {"GibbsRobustSB",    (DL_FUNC) &GibbsRobustSB,    10},
     {"GibbsRobustUser",  (DL_FUNC) &GibbsRobustUser,  10},
-    {"GibbsRobust2Const", (DL_FUNC) &GibbsRobustConst, 10},
-    {"GibbsRobust2SB",    (DL_FUNC) &GibbsRobustSB,    10},
-    {"GibbsRobust2User",  (DL_FUNC) &GibbsRobustUser,  10},		
+    {"GibbsRobust2Const",(DL_FUNC) &GibbsRobustConst, 10},
+    {"GibbsRobust2SB",   (DL_FUNC) &GibbsRobustSB,    10},
+    {"GibbsRobust2User", (DL_FUNC) &GibbsRobustUser,  10},		
     {"GibbsZSConst",     (DL_FUNC) &GibbsZSConst,     10},
     {"GibbsZSSB",        (DL_FUNC) &GibbsZSSB,        10},
     {"GibbsZSUser",      (DL_FUNC) &GibbsZSUser,      10},
     {"gSB",              (DL_FUNC) &gSB,               9},
     {"gUser",            (DL_FUNC) &gUser,             9},
+    {"intrinsicBF",      (DL_FUNC) &intrinsicBF,       5},
     {"LiangBF",          (DL_FUNC) &LiangBF,           5},
     {"LiangConst",       (DL_FUNC) &LiangConst,        9},
     {"LiangSB",          (DL_FUNC) &LiangSB,           9},

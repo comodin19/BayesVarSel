@@ -183,7 +183,8 @@ Btest <-
         pfb != "r" &&
         pfb != "z" &&
         pfb != "l" &&
-        pfb != "f")
+        pfb != "f" &&
+				pfb != "i")
       stop("I am very sorry: prior for betas not valid\n")
 
 
@@ -298,7 +299,17 @@ Btest <-
             as.double(Qi0),
             as.double(0.0)
           )[5][[1]]
-
+	      if (pfb == "g")
+	        BFi0[i] <-
+	        .C(
+	          "intrinsicBF",
+	          as.integer(n),
+	          as.integer(Dim[i]),
+	          as.integer(Dim[nullmodel]),
+	          as.double(Qi0),
+	          as.double(0.0)
+	        )[5][[1]]
+  	
       }
     }
 

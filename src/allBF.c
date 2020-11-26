@@ -370,19 +370,17 @@ double intrinsicint_aux (double x, void *p){
     /* pointer to a structure of type par. */
 	struct parint * params=(struct parint *)p;
     
-    /*DDefine the parameters included at the structure*/
+	/*Defino los parametros que son los que estaran en la estructura que le pasamos*/
 	double a=(params->a);
-	double b=(params->b);
-	double c=(params->c);
+	double b=(params->b);/*it will be k2*/
+	double c=(params->c);	
 	double z=(params->z);
 	
 	/*return the argument for integration*/
-	double l=exp((b-c)*log(x)+0.5*(a-b)*log(a+(b-c+2)*pow(sin(x), 2))-(a-c)*log(n*z+(b-c+2)*pow(sin(x), 2)));
+	double l=exp((b-c)*log(x)+0.5*(a-b)*log(a+(b-c+2)*pow(sin(x), 2))-(a-c)*log(a*z+(b-c+2)*pow(sin(x), 2)));
 	return l;
 }
 
-//robint((n-k0)/2.0,1.0, (k2aux/2.0)+1.0, z)
-//k2aux=k2-k0+1.0;//equivalently k2aux=ki+1
 
 /* Integrated functions the arguments will be n,k2,k0,Qi0 */
 double intrinsicint(double a, double b, double c,double z){
@@ -392,9 +390,11 @@ double intrinsicint(double a, double b, double c,double z){
 	
 	double result=0.0;
 	double error=0.0;
+	/*set parameters in the appropiate structure*/
 	
 	/*Ponemos los parametros en la forma que necesitamos para la funcion*/
 	struct parint params={a,b,c,z};
+	
 	
 	/*Definimos cual es la funcion que vamos a usar y le pasamos los parametros*/
 	gsl_function F;
@@ -402,14 +402,14 @@ double intrinsicint(double a, double b, double c,double z){
 	F.params = &params;
 	
 	/*integramos y guardamos el resultado en result y el error en error*/
-	gsl_integration_qags(&F, 0.0, M_PI/2.0, 0, 1e-9, 10000, 5, w, &result, &error);
+	gsl_integration_qag(&F, 0.0, M_PI/2.0, 0, 1e-9, 10000, 5, w, &result, &error);
 	
 	
 	/*Liberamos el espacio de trabajo*/
 	gsl_integration_workspace_free (w);
 	
 	/*devolvemos el resultado*/
-	return result*2*exp(0.5*(b-c)*log(b-c+2.0))/M_PI;
+	return result*2.0*exp(0.5*(b-c)*log(b-c+2.0))/M_PI;
 }
 
 
