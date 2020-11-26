@@ -299,7 +299,7 @@ Btest <-
             as.double(Qi0),
             as.double(0.0)
           )[5][[1]]
-	      if (pfb == "g")
+	      if (pfb == "i")
 	        BFi0[i] <-
 	        .C(
 	          "intrinsicBF",

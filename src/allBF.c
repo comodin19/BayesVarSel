@@ -355,35 +355,26 @@ double ZSBF21fun(int n, int k2, int k0, double Q)
 //The Bayes Factor with the intrinsic prior Moreno et al (2015)
 
 
-/*Structure for Parameters*/
-struct parint {
-	double a; //will be n
-	double b; //will be k2
-	double c; //will be k0
-	double z; //will be Q
-};
-
-
 /*auxiliar functions for integration */
 
 double intrinsicint_aux (double x, void *p){
     /* pointer to a structure of type par. */
-	struct parint * params=(struct parint *)p;
+	struct par * params=(struct par *)p;
     
 	/*Defino los parametros que son los que estaran en la estructura que le pasamos*/
-	double a=(params->a);
-	double b=(params->b);/*it will be k2*/
-	double c=(params->c);	
-	double z=(params->z);
+	double n=(params->n);
+	double k2=(params->k_i);/*it will be k2*/
+	double k0=(params->k_0);	
+	double Q=(params->Q_i0);
 	
 	/*return the argument for integration*/
-	double l=exp((b-c)*log(x)+0.5*(a-b)*log(a+(b-c+2)*pow(sin(x), 2))-(a-c)*log(a*z+(b-c+2)*pow(sin(x), 2)));
+	//double l=exp((b-c)*log(x)+0.5*(a-b)*log(a+(b-c+2.0)*pow(sin(x), 2.0))-(a-c)*log(a*z+(b-c+2.0)*pow(sin(x), 2.0)));
+	double l=exp((k2-k0)*log(sin(x))+0.5*(n-k2)*log(n+(k2-k0+2.0)*pow(sin(x), 2.0))-0.5*(n-k0)*log(n*Q+(k2-k0+2.0)*pow(sin(x), 2.0)));
 	return l;
 }
 
-
 /* Integrated functions the arguments will be n,k2,k0,Qi0 */
-double intrinsicint(double a, double b, double c,double z){
+double intrinsicint(double n, double k2, double k0, double Q){
 	/*guardamos espacio de memoria para realizar la integracion, este 10000 es el que luego va en la función
 	 de integracion*/
 	gsl_integration_workspace * w=gsl_integration_workspace_alloc(10000);
@@ -393,8 +384,7 @@ double intrinsicint(double a, double b, double c,double z){
 	/*set parameters in the appropiate structure*/
 	
 	/*Ponemos los parametros en la forma que necesitamos para la funcion*/
-	struct parint params={a,b,c,z};
-	
+	struct par params={n,k2,k0,Q};	
 	
 	/*Definimos cual es la funcion que vamos a usar y le pasamos los parametros*/
 	gsl_function F;
@@ -409,26 +399,49 @@ double intrinsicint(double a, double b, double c,double z){
 	gsl_integration_workspace_free (w);
 	
 	/*devolvemos el resultado*/
-	return result*2.0*exp(0.5*(b-c)*log(b-c+2.0))/M_PI;
+	return result*2.0*exp(0.5*(k2-k0)*log(k2-k0+2.0))/M_PI;
+
 }
 
 
 /* Robust Bayes Factor for main.c*/
 
-double IntrinsicBF21fun(int n, int k2, int k0, double Q)
+double intrinsicBF21fun(int n, int k2, int k0, double Q)
 {
 //k2, total number of covariates in the model 
+
+
+	double result=0.0;
+	double errorI=0.0;
+	double T3=0.0;
+	gsl_integration_workspace * w=gsl_integration_workspace_alloc(10000);
+	
+	
+	/*set parameters in the appropiate structure*/
+
+	/*Ponemos los parametros en la forma que necesitamos para la funcion*/
+	struct par params={n,k2,k0,Q};
 	
 	if (k2>=n) return 1.0;		
+
+	/*Definimos cual es la funcion que vamos a usar y le pasamos los parametros*/
+	gsl_function F;
+	F.function = &intrinsicint_aux;
+	F.params = &params;
 	
-	double T3=0.0;
+	/*integramos y guardamos el resultado en result y el error en error*/
+	gsl_integration_qag(&F, 0.0, M_PI/2.0, 0, 1e-9, 10000, 5, w, &result, &errorI);
+		
+	/*Liberamos el espacio de trabajo*/
+	gsl_integration_workspace_free (w);
 	
-	T3 = intrinsicint(n, k2, k0, Q);
+	/*devolvemos el resultado*/
+	
+	T3 = result*2.0*exp(0.5*(k2-k0)*log(k2-k0+2.0))/M_PI;
 
   if (!R_FINITE(T3)){error("A Bayes factor is infinite.");}
 	
 	return(T3);
+	
 }
-
-
 
