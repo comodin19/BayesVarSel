@@ -250,8 +250,9 @@ double liang_aux (double x, void *p){
 	double Q=(params->Q_i0);
 	
 	/*Calculo el valor de la función y lo devuelvo*/
-	double l=pow((1.0+x), (n-k)/2.0)*pow((1.0+Q*x), (kk0-n)/2)*(1.0/(2.0*n))*pow(1.0+x/n, -1.5);
-	
+	//double l=pow((1.0+x), (n-k)/2.0)*pow((1.0+Q*x), (kk0-n)/2)*(1.0/(2.0*n))*pow(1.0+x/n, -1.5);
+	double l=exp(0.5*(n-k)*log(1.0+x) + 0.5*(kk0-n)*log(1.0+Q*x) - log(2.0*n) - 1.5*log(1.0+x/n));
+		
 	return l;
 }
 
@@ -305,7 +306,8 @@ double zell_aux (double x, void *p){
 	double Q=(params->Q_i0);
 	
 	/*Calculo el valor de la función y lo devuelvo*/
-	double l=pow((1.0+x), (n-k)/2.0)*pow((1.0+Q*x), (kk0-n)/2)*pow((n/(2.0*M_PI)),0.5)*pow(x, -1.5)*exp(-n/(2.0*x));
+	//double l=pow((1.0+x), (n-k)/2.0)*pow((1.0+Q*x), (kk0-n)/2)*pow((n/(2.0*M_PI)),0.5)*pow(x, -1.5)*exp(-n/(2.0*x));
+	double l=exp(0.5*(n-k)*log(1.0+x) + 0.5*(kk0-n)*log(1.0+Q*x) + 0.5*log(n/(2.0*M_PI)) - 1.5*log(x) - n/(2.0*x));
 	
 	return l;
 }

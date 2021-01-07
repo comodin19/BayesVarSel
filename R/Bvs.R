@@ -24,11 +24,12 @@
 #' prior in Zellner (1986) with g=n while the "Liangetal" prior is the
 #' hyper-g/n with a=3 (see the original paper Liang et al 2008, for details).
 #' "ZellnerSiow" is the multivariate Cauchy prior proposed by Zellner and Siow
-#' (1980, 1984), further studied by Bayarri and Garcia-Donato (2007). Finally,
+#' (1980, 1984), further studied by Bayarri and Garcia-Donato (2007).
 #' "FLS" is the prior recommended by Fernandez, Ley and Steel (2001) which is
 #' the prior in Zellner (1986) with g=max(n, p*p) p being the number of
 #' covariates to choose from (the most complex model has p+number of fixed
 #' covariates).
+#' "intrinsic" is the intrinsic prior 
 #'
 #' With respect to the prior over the model space Pr(Mi) three possibilities
 #' are implemented: "Constant", under which every model has the same prior
@@ -86,7 +87,7 @@
 #' to be the one with just the intercept.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
-#' "ZellnerSiow" and "FLS" (see details).
+#' "ZellnerSiow", "FLS" and "intrinsic" (see details).
 #' @param prior.models Prior distribution over the model space. Possible
 #' choices are "Constant", "ScottBerger" and "User" (see details).
 #' @param n.keep How many of the most probable models are to be kept? By
@@ -404,6 +405,7 @@ Bvs <-
           ncolumns = p,
           file = paste(wd, "/Design.txt", sep = ""))
 
+  	if (prior.betas=="Robust2"){prior.betas<- "w"}
     #prior for betas:
     pfb <- substr(tolower(prior.betas), 1, 1)
     #check if the selected option exists
@@ -411,7 +413,10 @@ Bvs <-
         pfb != "r" &&
         pfb != "z" &&
         pfb != "l" &&
-        pfb != "f")
+        pfb != "f" &&
+		pfb != "i" &&
+		pfb != "w"
+		)
       stop("I am very sorry: prior for betas no valid\n")
 
     #prior for model space:
@@ -686,6 +691,78 @@ Bvs <-
                         ),
                         "fu" = .C(
                           "flsUser",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "iu" = .C(
+                          "intrinsicUser",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "is" = .C(
+                          "intrinsicSB",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "ic" = .C(
+                          "intrinsicConst",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "wu" = .C(
+                          "Robust2User",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "ws" = .C(
+                          "Robust2SB",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "wc" = .C(
+                          "Robust2Const",
                           as.character(name.start.end[1]),
                           as.integer(n),
                           as.integer(p),

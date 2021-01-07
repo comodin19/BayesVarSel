@@ -22,7 +22,7 @@
 #' to be the one with just the intercept.
 #' @param prior.betas Prior distribution for regression parameters within each
 #' model. Possible choices include "Robust", "Liangetal", "gZellner",
-#' "ZellnerSiow" and "FLS" (see details).
+#' "ZellnerSiow", "FLS" and "intrinsic"(see details).
 #' @param prior.models Prior distribution over the model space. Possible
 #' choices are "Constant", "ScottBerger" and "User" (see details).
 #' @param n.iter The total number of iterations performed after the burn in
@@ -351,7 +351,8 @@ GibbsBvs <-
         pfb != "z" &&
         pfb != "l" &&
         pfb != "f" &&
-				pfb != "w")
+		pfb != "w" &&
+		pfb != "i")
       stop("I am very sorry: prior for betas not supported\n")
     #prior for model space:
     pfms <- substr(tolower(prior.models), 1, 1)
@@ -650,6 +651,45 @@ GibbsBvs <-
           as.integer(knull),
           as.integer(1),
           as.integer(seed)
+        ),
+        "ic" = .C(
+          "GibbsintrinsicConst",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
+        ),
+        "is" = .C(
+          "GibbsintrinsicSB",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
+        ),
+        "iu" = .C(
+          "GibbsintrinsicUser",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
         )
       )
 
@@ -900,6 +940,45 @@ GibbsBvs <-
       ),
       "fu" = .C(
         "GibbsflsUser",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "ic" = .C(
+        "GibbsintrinsicConst",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "is" = .C(
+        "GibbsintrinsicSB",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "iu" = .C(
+        "GibbsintrinsicUser",
         as.character(""),
         as.integer(n),
         as.integer(p),
