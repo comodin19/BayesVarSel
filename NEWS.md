@@ -1,4 +1,9 @@
 
+# BayesVarSel 2.1.0
+* intrinsic prior added to Bvs and GibbsBvs.
+
+* Now calculations of Bayes factors for liang and ZS prior use a definition based on the exp(log()) of the expression: quite more stable
+
 # BayesVarSel 2.0.1
 * Minor updates in order to pass CRAN checks.
 
