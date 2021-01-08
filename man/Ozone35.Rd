@@ -4,7 +4,8 @@
 \name{Ozone35}
 \alias{Ozone35}
 \title{Ozone35 dataset}
-\format{A data frame with 178 observations on the following 36 variables.
+\format{
+A data frame with 178 observations on the following 36 variables.
 \describe{ \item{y}{Response = Daily maximum 1-hour-average ozone
 reading (ppm) at Upland, CA} \item{x4}{500-millibar pressure height
 (m) measured at Vandenberg AFB} \item{x5}{Wind speed (mph) at Los
@@ -26,7 +27,8 @@ Sandburg, CA} \item{x8}{Inversion base height (feet) at LAX}
 \item{x7.x9}{=x7*x9} \item{x7.x10}{=x7*x10}
 \item{x8.x8}{=x8*x8} \item{x8.x9}{=x8*x9}
 \item{x8.x10}{=x8*x10} \item{x9.x9}{=x9*x9}
-\item{x9.x10}{=x9*x10} \item{x10.x10}{=x10*x10} }}
+\item{x9.x10}{=x9*x10} \item{x10.x10}{=x10*x10} }
+}
 \usage{
 Ozone35
 }

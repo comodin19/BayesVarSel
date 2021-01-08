@@ -4,11 +4,13 @@
 \name{Hald}
 \alias{Hald}
 \title{Hald data}
-\format{A data frame with 13 observations on the following 5 variables.
+\format{
+A data frame with 13 observations on the following 5 variables.
 \describe{ \item{y}{Heat evolved per gram of cement (in calories)}
 \item{x1}{Amount of tricalcium aluminate} \item{x2}{Amount
 of tricalcium silicate} \item{x3}{Amount of tetracalcium alumino
-ferrite} \item{x4}{Amount of dicalcium silicate} }}
+ferrite} \item{x4}{Amount of dicalcium silicate} }
+}
 \usage{
 Hald
 }

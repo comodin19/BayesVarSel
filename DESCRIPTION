@@ -24,6 +24,6 @@ Depends:
     R (>= 3.3)
 License: GPL-2
 NeedsCompilation: yes
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Suggests: knitr, faraway, hdi
 VignetteBuilder: knitr
