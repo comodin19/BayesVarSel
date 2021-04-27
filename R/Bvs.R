@@ -29,7 +29,7 @@
 #' the prior in Zellner (1986) with g=max(n, p*p) p being the number of
 #' covariates to choose from (the most complex model has p+number of fixed
 #' covariates).
-#' "intrinsic" is the intrinsic prior 
+#' "intrinsic" is the intrinsic prior, (see Moreno, Giron, Casella, 2015).
 #'
 #' With respect to the prior over the model space Pr(Mi) three possibilities
 #' are implemented: "Constant", under which every model has the same prior
@@ -158,6 +158,9 @@
 #' (2008)<DOI:10.1198/016214507000001337> Mixtures of g-priors for Bayesian
 #' Variable Selection. Journal of the American Statistical Association.
 #' 103:410-423
+#'
+#' Moreno, E., Giron, J. and Casella, G. (2015) Posterior model consistency
+#' in variable selection as the model dimension grows. Statistical Science. 30: 228-241.
 #'
 #' Zellner, A. and Siow, A. (1980)<DOI:10.1007/bf02888369> Posterior Odds Ratio
 #' for Selected Regression Hypotheses. In Bayesian Statistics 1 (J.M. Bernardo,

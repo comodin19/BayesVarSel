@@ -1,3 +1,5 @@
+# BayesVarSel 2.2.0
+* the OBICE study is included.
 
 # BayesVarSel 2.1.0
 * intrinsic prior added to Bvs and GibbsBvs.

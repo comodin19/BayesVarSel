@@ -4,7 +4,8 @@
 \name{SDM}
 \alias{SDM}
 \title{SDM data}
-\format{A data frame with 88 observations on the following 68 variables
+\format{
+A data frame with 88 observations on the following 68 variables
 \describe{ \item{\code{y}}{Growth of GDP per capita at purchasing power parities between 1960 and 1996.}
 \item{\code{ABSLATIT}}{Absolute latitude.}
 \item{\code{AIRDIST}}{Logarithm of minimal distance (in km) from New York, Rotterdam, or Tokyo.}
@@ -72,7 +73,8 @@
 \item{\code{WARTIME}}{Fraction of time spent in war between 1960 and 1990.}
 \item{\code{WARTORN}}{Indicator for countries that participated in external war between 1960 and 1990.}
 \item{\code{YRSOPEN}}{Number of years economy has been open between 1950 and 1994.}
-\item{\code{ZTROPICS}}{Fraction tropical climate zone.}}}
+\item{\code{ZTROPICS}}{Fraction tropical climate zone.}}
+}
 \usage{
 SDM
 }

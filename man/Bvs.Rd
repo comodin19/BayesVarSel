@@ -29,7 +29,7 @@ to be the one with just the intercept.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
 model. Possible choices include "Robust", "Liangetal", "gZellner",
-"ZellnerSiow" and "FLS" (see details).}
+"ZellnerSiow", "FLS" and "intrinsic" (see details).}
 
 \item{prior.models}{Prior distribution over the model space. Possible
 choices are "Constant", "ScottBerger" and "User" (see details).}
@@ -100,11 +100,12 @@ closed-form expressions. The "gZellner" prior implemented corresponds to the
 prior in Zellner (1986) with g=n while the "Liangetal" prior is the
 hyper-g/n with a=3 (see the original paper Liang et al 2008, for details).
 "ZellnerSiow" is the multivariate Cauchy prior proposed by Zellner and Siow
-(1980, 1984), further studied by Bayarri and Garcia-Donato (2007). Finally,
+(1980, 1984), further studied by Bayarri and Garcia-Donato (2007).
 "FLS" is the prior recommended by Fernandez, Ley and Steel (2001) which is
 the prior in Zellner (1986) with g=max(n, p*p) p being the number of
 covariates to choose from (the most complex model has p+number of fixed
 covariates).
+"intrinsic" is the intrinsic prior, (see Moreno, Giron, Casella, 2015).
 
 With respect to the prior over the model space Pr(Mi) three possibilities
 are implemented: "Constant", under which every model has the same prior
@@ -199,6 +200,9 @@ Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger,J.O.
 (2008)<DOI:10.1198/016214507000001337> Mixtures of g-priors for Bayesian
 Variable Selection. Journal of the American Statistical Association.
 103:410-423
+
+Moreno, E., Giron, J. and Casella, G. (2015) Posterior model consistency
+in variable selection as the model dimension grows. Statistical Science. 30: 228-241.
 
 Zellner, A. and Siow, A. (1980)<DOI:10.1007/bf02888369> Posterior Odds Ratio
 for Selected Regression Hypotheses. In Bayesian Statistics 1 (J.M. Bernardo,
