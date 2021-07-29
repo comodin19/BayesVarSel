@@ -409,6 +409,9 @@ Bvs <-
           file = paste(wd, "/Design.txt", sep = ""))
 
   	if (prior.betas=="Robust2"){prior.betas<- "w"}
+  	if (prior.betas=="GeointrinsicI"){prior.betas<- "x"}
+  	if (prior.betas=="GeointrinsicII"){prior.betas<- "y"}		
+	
     #prior for betas:
     pfb <- substr(tolower(prior.betas), 1, 1)
     #check if the selected option exists
@@ -418,7 +421,9 @@ Bvs <-
         pfb != "l" &&
         pfb != "f" &&
 		pfb != "i" &&
-		pfb != "w"
+		pfb != "w" &&
+		pfb != "x" &&
+		pfb != "y"
 		)
       stop("I am very sorry: prior for betas no valid\n")
 
@@ -730,6 +735,78 @@ Bvs <-
                         ),
                         "ic" = .C(
                           "intrinsicConst",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),						
+                        "xu" = .C(
+                          "geointrinsicUser",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "xs" = .C(
+                          "geointrinsicSB",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "xc" = .C(
+                          "geointrinsicConst",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),												
+                        "yu" = .C(
+                          "geointrinsic2User",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "ys" = .C(
+                          "geointrinsic2SB",
+                          as.character(name.start.end[1]),
+                          as.integer(n),
+                          as.integer(p),
+                          as.integer(n.keep),
+                          as.integer(name.start.end[2]),
+                          as.integer(name.start.end[3]),
+                          as.character(wd),
+                          as.double(estim.time),
+                          as.integer(knull)
+                        ),
+                        "yc" = .C(
+                          "geointrinsic2Const",
                           as.character(name.start.end[1]),
                           as.integer(n),
                           as.integer(p),
