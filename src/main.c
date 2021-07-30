@@ -8484,7 +8484,6 @@ void geointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, in
 		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
 		BF21= geointrinsic2BF21fun(n, k2e ,knull,Q);
-		//printf("The Bayes factor is: %.6f\n", BF21);
 				
 		//Now the main calculations:
 		unnormPostProb=SBmainalgebraics(BF21, p, index, 

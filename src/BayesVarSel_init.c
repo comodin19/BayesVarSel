@@ -47,6 +47,12 @@ extern void Robust2User(void *, void *, void *, void *, void *, void *, void *, 
 extern void intrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void intrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void intrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsic2Const(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsic2SB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsic2User(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSBF(void *, void *, void *, void *, void *);
 extern void ZSConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);

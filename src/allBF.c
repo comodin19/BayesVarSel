@@ -435,19 +435,21 @@ double geointrinsicint_aux (double x, void *p){
 	double Q=(params->Q_i0);
 	
 	/*return the argument for integration*/
-	double l=exp(0.5*(n-k)*log(1.0+x) + 0.5*(k0-n)*log(1.0+Q*x) + 0.5*log((n-k0)/(k2-k0+1.0)) - log(x) - log(M_PI) -.5*log(g-(n-k0)/(k2-k0+1.0)));
+	double l=exp(0.5*(n-k2)*log(1.0+x) + 0.5*(k0-n)*log(1.0+Q*x) + 0.5*log((n-k0)/(k2-k0+1.0)) - log(x) - log(M_PI) -.5*log(x-(n-k0)/(k2-k0+1.0)));
 	
 	return l;
 }
 
 /* Integrated functions the arguments will be n,k2,k0,Qi0 */
-double geointrinsicBF21fun(double n, double k2, double k0, double Q){
+double geointrinsicBF21fun(int n, int k2, int k0, double Q){
 	/*guardamos espacio de memoria para realizar la integracion, este 10000 es el que luego va en la función
 	 de integracion*/
+	if (k2>=n) return 1.0;		
+	
 	gsl_integration_workspace * w=gsl_integration_workspace_alloc(10000);
 	
 	double result=0.0;
-	double error=0.0;
+	double errorI=0.0;
 	/*set parameters in the appropiate structure*/
 	
 	/*Ponemos los parametros en la forma que necesitamos para la funcion*/
@@ -459,15 +461,14 @@ double geointrinsicBF21fun(double n, double k2, double k0, double Q){
 	F.params = &params;
 	
 	/*integramos y guardamos el resultado en result y el error en error*/
-	gsl_integration_qagiu(&F, (n-k0)/(k2-k0+1.0), 0.0, 1e-9, 10000, w, &result, &error);
+	gsl_integration_qagiu(&F, (n-k0)/(k2-k0+1.0), 0.0, 1e-9, 10000, w, &result, &errorI);
 	
 	
 	/*Liberamos el espacio de trabajo*/
 	gsl_integration_workspace_free (w);
-	
-	
+		
     if (!R_FINITE(result)){error("A Bayes factor is infinite.");}
-	
+    
 	/*devolvemos el resultado*/
 	return result;
 
@@ -486,27 +487,32 @@ double geointrinsic2int_aux (double x, void *p){
 	/*Defino los parametros que son los que estaran en la estructura que le pasamos*/
 	double n=(params->n);
 	double k2=(params->k_i);/*it will be k2*/
-	double k0=(params->k_0);	
+	double kk0=(params->k_0);	
 	double Q=(params->Q_i0);
 	
 	/*return the argument for integration*/
-	double l=exp(0.5*(n-k)*log(1.0+x) + 0.5*(k0-n)*log(1.0+Q*x) + log((n-k0)/(k2-k0+2.0)) - 2*log(x);
+	double l=exp(0.5*(n-k2)*log(1.0+x) + 0.5*(kk0-n)*log(1.0+Q*x) + log((n-kk0)/(k2-kk0+2.0)) - 2*log(x));
 	
 	return l;
 }
 
+
 /* Integrated functions the arguments will be n,k2,k0,Qi0 */
-double geointrinsic2BF21fun(double n, double k2, double k0, double Q){
+double geointrinsic2BF21fun(int n, int k2, int k0, double Q){
 	/*guardamos espacio de memoria para realizar la integracion, este 10000 es el que luego va en la función
 	 de integracion*/
+	
+	if (k2>=n) return 1.0;		
+	
 	gsl_integration_workspace * w=gsl_integration_workspace_alloc(10000);
 	
 	double result=0.0;
-	double error=0.0;
+	double errorI=0.0;
 	/*set parameters in the appropiate structure*/
 	
 	/*Ponemos los parametros en la forma que necesitamos para la funcion*/
 	struct par params={n,k2,k0,Q};	
+	
 	
 	/*Definimos cual es la funcion que vamos a usar y le pasamos los parametros*/
 	gsl_function F;
@@ -514,22 +520,16 @@ double geointrinsic2BF21fun(double n, double k2, double k0, double Q){
 	F.params = &params;
 	
 	/*integramos y guardamos el resultado en result y el error en error*/
-	gsl_integration_qagiu(&F, (n-k0)/(k2-k0+2.0), 0.0, 1e-9, 10000, w, &result, &error);
+	gsl_integration_qagiu(&F, (n-k0)/(k2-k0+2.0), 0.0, 1e-9, 10000, w, &result, &errorI);
 	
 	
 	/*Liberamos el espacio de trabajo*/
 	gsl_integration_workspace_free (w);
-	
+		
     if (!R_FINITE(result)){error("A Bayes factor is infinite.");}
-	
 	
 	/*devolvemos el resultado*/
 	return result;
 
 }
-
-
-
-
-
 
