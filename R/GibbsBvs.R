@@ -343,8 +343,12 @@ GibbsBvs <-
         floor(iter / n.thin),
         "are kept and used to construct the summaries\n")
 
-		if (prior.betas=="Robust2"){prior.betas<- "w"}
-    #prior for betas:
+	if (prior.betas=="Robust2"){prior.betas<- "w"}
+	if (prior.betas=="GeointrinsicI"){prior.betas<- "x"}
+	if (prior.betas=="GeointrinsicII"){prior.betas<- "y"}		
+    	
+	
+	#prior for betas:
     pfb <- substr(tolower(prior.betas), 1, 1)
     if (pfb != "g" &&
         pfb != "r" &&
@@ -352,7 +356,9 @@ GibbsBvs <-
         pfb != "l" &&
         pfb != "f" &&
 		pfb != "w" &&
-		pfb != "i")
+		pfb != "i" &&
+		pfb != "x" &&
+		pfb != "y")
       stop("I am very sorry: prior for betas not supported\n")
     #prior for model space:
     pfms <- substr(tolower(prior.models), 1, 1)
@@ -690,8 +696,86 @@ GibbsBvs <-
           as.integer(knull),
           as.integer(1),
           as.integer(seed)
+        ),
+        "xc" = .C(
+          "GibbsgeointrinsicConst",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
+        ),
+        "xs" = .C(
+          "GibbsgeointrinsicSB",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
+        ),
+        "xu" = .C(
+          "GibbsgeointrinsicUser",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
+        ),
+        "yc" = .C(
+          "Gibbsgeointrinsic2Const",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
+        ),
+        "ys" = .C(
+          "Gibbsgeointrinsic2SB",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
+        ),
+        "yu" = .C(
+          "Gibbsgeointrinsic2User",
+          as.character(""),
+          as.integer(n),
+          as.integer(p),
+          as.integer(49),
+          as.character(wd),
+          as.integer(1),
+          as.double(estim.time),
+          as.integer(knull),
+          as.integer(1),
+          as.integer(seed)
         )
-      )
+	  )
 
       estim.time <- result[[7]] * (n.burnin + n.iter) / (60 * 50)
       cat("The problem would take ",
@@ -979,6 +1063,84 @@ GibbsBvs <-
       ),
       "iu" = .C(
         "GibbsintrinsicUser",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "xc" = .C(
+        "GibbsgeointrinsicConst",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "xs" = .C(
+        "GibbsgeointrinsicSB",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "xu" = .C(
+        "GibbsgeointrinsicUser",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "yc" = .C(
+        "Gibbsgeointrinsic2Const",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "ys" = .C(
+        "Gibbsgeointrinsic2SB",
+        as.character(""),
+        as.integer(n),
+        as.integer(p),
+        as.integer(floor(n.iter / n.thin)),
+        as.character(wd),
+        as.integer(n.burnin),
+        as.double(estim.time),
+        as.integer(knull),
+        as.integer(n.thin),
+        as.integer(seed)
+      ),
+      "yu" = .C(
+        "Gibbsgeointrinsic2User",
         as.character(""),
         as.integer(n),
         as.integer(p),
