@@ -27,6 +27,12 @@ extern void GibbsRobust2User(void *, void *, void *, void *, void *, void *, voi
 extern void GibbsintrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsintrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsintrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsgeointrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsgeointrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsgeointrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void Gibbsgeointrinsic2Const(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void Gibbsgeointrinsic2SB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void Gibbsgeointrinsic2User(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsZSConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsZSSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsZSUser(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -88,7 +94,13 @@ static const R_CMethodDef CEntries[] = {
     {"GibbsRobust2User", (DL_FUNC) &GibbsRobust2User,  10},
     {"GibbsintrinsicConst",(DL_FUNC) &GibbsintrinsicConst, 10},
     {"GibbsintrinsicSB",   (DL_FUNC) &GibbsintrinsicSB,    10},
-    {"GibbsintrinsicUser", (DL_FUNC) &GibbsintrinsicUser,  10},				
+    {"GibbsintrinsicUser", (DL_FUNC) &GibbsintrinsicUser,  10},	
+    {"GibbsgeointrinsicConst",(DL_FUNC) &GibbsgeointrinsicConst, 10},
+    {"GibbsgeointrinsicSB",   (DL_FUNC) &GibbsgeointrinsicSB,    10},
+    {"GibbsgeointrinsicUser", (DL_FUNC) &GibbsgeointrinsicUser,  10},	
+    {"Gibbsgeointrinsic2Const",(DL_FUNC) &Gibbsgeointrinsic2Const, 10},
+    {"Gibbsgeointrinsic2SB",   (DL_FUNC) &Gibbsgeointrinsic2SB,    10},
+    {"Gibbsgeointrinsic2User", (DL_FUNC) &Gibbsgeointrinsic2User,  10},	
     {"GibbsZSConst",     (DL_FUNC) &GibbsZSConst,     10},
     {"GibbsZSSB",        (DL_FUNC) &GibbsZSSB,        10},
     {"GibbsZSUser",      (DL_FUNC) &GibbsZSUser,      10},
