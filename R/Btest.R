@@ -177,6 +177,10 @@ Btest <-
     BFi0 <- rep(0, N)
     PostProbi <- rep(0, N)
     #prior for betas:
+	
+	if (prior.betas=="GeointrinsicI"){prior.betas<- "x"}
+	if (prior.betas=="GeointrinsicII"){prior.betas<- "y"}		
+	
     pfb <- substr(tolower(prior.betas), 1, 1)
     #check if the selected option exists
     if (pfb != "g" &&
@@ -184,7 +188,9 @@ Btest <-
         pfb != "z" &&
         pfb != "l" &&
         pfb != "f" &&
-				pfb != "i")
+		pfb != "i" &&
+		pfb != "x" &&
+		pfb != "y")
       stop("I am very sorry: prior for betas not valid\n")
 
 
@@ -309,8 +315,27 @@ Btest <-
 	          as.double(Qi0),
 	          as.double(0.0)
 	        )[5][[1]]
-  	
-      }
+  	      if (pfb == "x")
+  	        BFi0[i] <-
+  	        .C(
+  	          "geointrinsicBF",
+  	          as.integer(n),
+  	          as.integer(Dim[i]),
+  	          as.integer(Dim[nullmodel]),
+  	          as.double(Qi0),
+  	          as.double(0.0)
+  	        )[5][[1]]
+    	  if (pfb == "y")
+    	    BFi0[i] <-
+    	    .C(
+    	      "geointrinsic2BF",
+    	      as.integer(n),
+    	      as.integer(Dim[i]),
+    	      as.integer(Dim[nullmodel]),
+    	      as.double(Qi0),
+    	      as.double(0.0)
+    	    )[5][[1]]
+        }
     }
 
     if (pfb == "f") {

@@ -53,9 +53,11 @@ extern void Robust2User(void *, void *, void *, void *, void *, void *, void *, 
 extern void intrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void intrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void intrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsicBF(void *, void *, void *, void *, void *);
 extern void geointrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void geointrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void geointrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsic2BF(void *, void *, void *, void *, void *);
 extern void geointrinsic2Const(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void geointrinsic2SB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void geointrinsic2User(void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -120,10 +122,12 @@ static const R_CMethodDef CEntries[] = {
     {"Robust2User",      (DL_FUNC) &Robust2User,       9},
     {"intrinsicConst",   (DL_FUNC) &intrinsicConst,    9},
     {"intrinsicSB",      (DL_FUNC) &intrinsicSB,       9},
-    {"intrinsicUser",    (DL_FUNC) &intrinsicUser,     9},	
+    {"intrinsicUser",    (DL_FUNC) &intrinsicUser,     9},
+    {"geointrinsicBF",         (DL_FUNC) &geointrinsicBF,          5},		
 	{"geointrinsicConst",   (DL_FUNC) &geointrinsicConst,    9},
     {"geointrinsicSB",      (DL_FUNC) &geointrinsicSB,       9},
     {"geointrinsicUser",    (DL_FUNC) &geointrinsicUser,     9},	
+    {"geointrinsic2BF",         (DL_FUNC) &geointrinsic2BF,          5},			
     {"geointrinsic2Const",   (DL_FUNC) &geointrinsic2Const,    9},
     {"geointrinsic2SB",      (DL_FUNC) &geointrinsic2SB,       9},
     {"geointrinsic2User",    (DL_FUNC) &geointrinsic2User,     9},	
