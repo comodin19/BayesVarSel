@@ -31,10 +31,10 @@ contains the intercept and by default, the null model is defined
 to be the one with just the intercept}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
-model. Possible choices include "Robust", "Liangetal", "gZellner",
-and "ZellnerSiow" (see details in \code{\link[BayesVarSel]{Bvs}}).}
+model (to be literally specified). Possible choices include "Robust", "Robust.G", "Liangetal", "gZellner",
+"ZellnerSiow" (see details in \code{\link[BayesVarSel]{Bvs}}).}
 
-\item{prior.models}{Prior distribution over the model space. Possible
+\item{prior.models}{Prior distribution over the model space (to be literally specified). Possible
 choices (see details) are "Const", "SB", "ConstConst", "SBConst" and "SBSB" (the default).}
 
 \item{n.iter}{The total number of iterations performed after the burn in
@@ -92,6 +92,8 @@ function.}
 \item{positions }{A binary matrix with \code{p} rows and (pnum+sum_j L_j) columns. The 1's identify, for each variable (row) the position (column)
 of dummies (in case of factor) or of the numerical variable grouped on that variable. (Its use is conceived for internal purposes).}
 \item{positionsx }{A \code{p} dimensional binary vector, stating which of the competing variables is a numerical variable. (Its use is conceived for internal purposes).}
+\item{prior.betas}{prior.betas}
+\item{prior.models}{prior.models}
 \item{method }{\code{gibbsWithFactors}}
 }
 \description{
@@ -118,10 +120,11 @@ probabilities on the model space:
 The options \code{prior.models="SBSB"}, \code{prior.models="ConstConst"} and \code{prior.models="SBConst"}
 acknowledge the "grouped" nature of the dummy variables representing
 factors through the use of two stage
-priors described in Garcia-Donato and Paulo (2018). In the first stage probabilities over factors and numerical
+priors described in Garcia-Donato and Paulo (2021). In the first stage probabilities over factors and numerical
 variables are specified and (conditional on these) within the second stage
 the probablities are apportioned over the different submodels defined
-by the dummies. The default option is "SBSB" which uses in both stages an assignment
+by the dummies. The default (and recommended, for the reasons argued in Garcia-Donato and Paulo,2021) 
+option is "SBSB" which uses in both stages an assignment
 of the type Scott-Berger so inversely proportional to the number of models of the same dimension. The
 option "ConstConst" implements a uniform prior for both stages while "SBConst" uses a Scott-Berger prior
 in the first stage and it is uniform in the second stage. Within all these priors, the prior inclusion probabilities
@@ -173,8 +176,8 @@ Garcia-Donato, G. and Martinez-Beneito, M.A.
 variable selection problems with large model spaces. Journal of the American
 Statistical Association, 108: 340-352.
 
-Garcia-Donato, G. and Paulo, R. (2018) Including factors in Bayesian variable selection
-problems. arXiv:1709.07238.
+Garcia-Donato, G. and Paulo, R. (2021) Variable selection in the presence of factors: 
+a model selection perspective. Journal of American Statistical Association, Ahead-of- print(1-11).
 
 George E. and McCulloch R. (1997) Approaches for Bayesian variable
 selection. Statistica Sinica, 7, 339:372.
