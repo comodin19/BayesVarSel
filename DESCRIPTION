@@ -2,7 +2,7 @@ Package: BayesVarSel
 Type: Package
 Title: Bayes Factors, Model Choice and Variable Selection in Linear
         Models
-Version: 12.2.1
+Version: 2.2.2
 Date: 2022-03-22
 Authors@R: c(
     person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
