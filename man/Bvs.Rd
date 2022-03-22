@@ -75,7 +75,7 @@ probabilities of the dimension of the true model} \item{call }{The
 parallel computation}
 \item{prior.betas}{prior.betas}
 \item{prior.models}{prior.models}
-\item{priorprobs}{prior.betas}
+\item{priorprobs}{priorprobs}
 }
 \description{
 Exact computation of summaries of the posterior distribution using
@@ -190,7 +190,7 @@ Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G.
 (2012)<DOI:10.1214/12-aos1013> Criteria for Bayesian Model choice with
 Application to Variable Selection. The Annals of Statistics. 40: 1550-1557.
 
-Berger, J., Garc ́ıa-Donato, G., Moreno, E., and Pericchi, L. (2022). 
+Berger, J., Garcıa-Donato, G., Moreno, E., and Pericchi, L. (2022). 
 The intrinsic hyper-g prior for normal linear models. in preparation.
 
 Bayarri, M.J. and Garcia-Donato, G. (2007)<DOI:10.1093/biomet/asm014>

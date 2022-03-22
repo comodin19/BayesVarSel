@@ -1435,6 +1435,11 @@ check.prior.modelspace <- function(prior.models, priorprobs, p, wd){
 	
 	if (success != 1) stop("Option for argument prior.models not recognized (use literally the label as defined in the help)")	
 
+	#Note: priorprobs.txt is a file that is needed only by the "User" routine. Nevertheless, in order
+	#to mantain a common unified version the source files of other routines also reads this file
+	#although they do not use it. Because of this we create this file anyway.
+	if (prior.models == "Constant" | prior.models == "ScottBerger") priorprobs <- rep(0, p + 1)
+	
     #The zero here added always is for C compatibility
       write(
         priorprobs,

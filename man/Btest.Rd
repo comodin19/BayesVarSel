@@ -21,10 +21,10 @@ the routine. One model must be nested in all the others.}
 \item{data}{data frame containing the data.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
-model. Possible choices include "Robust", "Liangetal", "gZellner",
-"ZellnerSiow" and "FLS" (see details).}
+model (to be literally specified). Possible choices include "Robust", "Robust.G", "Liangetal", "gZellner",
+"ZellnerSiow", "FLS", "intrinsic.MGC" and "IHG" (see details).}
 
-\item{prior.models}{Type of prior probabilities of the models. Possible choices are
+\item{prior.models}{Type of prior probabilities of the models (to be literally specified). Possible choices are
 "Constant" and "User" (see details).}
 
 \item{priorprobs}{A named vector ir list (same length and names as in argument
@@ -51,7 +51,7 @@ list with the entertained models. } \item{nullmodel}{The position of the
 simplest model. }
 \item{prior.betas}{prior.betas}
 \item{prior.models}{prior.models}
-\item{priorprobs}{prior.betas}
+\item{priorprobs}{priorprobs}
 }
 \description{
 It Computes the Bayes factors and posterior probabilities of a list of linear
@@ -145,9 +145,16 @@ models. Biometrika, 94:135-152.
 Barbieri, M and Berger, J (2004)<DOI:10.1214/009053604000000238> Optimal
 Predictive Model Selection. The Annals of Statistics, 32, 870-897.
 
+Berger, J., Garcıa-Donato, G., Moreno, E., and Pericchi, L. (2022). 
+The intrinsic hyper-g prior for normal linear models. in preparation.
+
 Fernandez, C., Ley, E. and Steel, M.F.J.
 (2001)<DOI:10.1016/s0304-4076(00)00076-2> Benchmark priors for Bayesian
 model averaging. Journal of Econometrics, 100, 381-427.
+
+Greenaway, M. (2019) Numerically stable approximate Bayesian methods for
+generalized linear mixed models and linear model selection. Thesis (Department of Statistics,
+University of Sydney).
 
 Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger,J.O.
 (2008)<DOI:10.1198/016214507000001337> Mixtures of g-priors for Bayesian
