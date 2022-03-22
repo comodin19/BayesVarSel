@@ -151,13 +151,11 @@ with n<k a value of 1. This should be interpreted as a generalization of the
 null predictive matching in Bayarri et al (2012). Use \code{\link[BayesVarSel]{GibbsBvs}} for cases where
 p>>.
 
-Limitations: the error "A Bayes factor is infinite.". Bayes factors can be
-extremely big numbers if i) the sample size is even moderately large or if
-ii) a model is much better (in terms of fit) than the model taken as the
-null model. We are currently working on more robust implementations of the
-functions to handle these problems. In the meanwhile you could try using the
-g-Zellner prior (which is the most simple one and results, in these cases,
-should not vary much with the prior) and/or using more accurate definitions
+Limitations: about the error "A Bayes factor is infinite.". Bayes factors can be
+extremely big numbers if i) the sample size is large or if
+ii) a competing model is much better (in terms of fit) than the model taken as the
+null model. If you see this error, try to use the more stable version of the
+robust prior "Robust.g" and/or reconisder using more accurate and realistic definitions
 of the simplest model (via the \code{null.model} argument).
 }
 \examples{
