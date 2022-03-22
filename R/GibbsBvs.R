@@ -21,9 +21,9 @@
 #' It should be nested in the full model. By default, the null model is defined
 #' to be the one with just the intercept.
 #' @param prior.betas Prior distribution for regression parameters within each
-#' model. Possible choices include "Robust", "Liangetal", "gZellner",
-#' "ZellnerSiow", "FLS" and "intrinsic"(see details).
-#' @param prior.models Prior distribution over the model space. Possible
+#' model (to be literally specified). Possible choices include "Robust", "Robust.G", "Liangetal", "gZellner",
+#' "ZellnerSiow", "FLS", "intrinsic.MGC" and "IHG" (see details).
+#' @param prior.models Prior distribution over the model space (to be literally specified). Possible
 #' choices are "Constant", "ScottBerger" and "User" (see details).
 #' @param n.iter The total number of iterations performed after the burn in
 #' process.
@@ -67,6 +67,9 @@
 #' function.}
 #' \item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
 #' \item{method }{\code{gibbs}}
+#' \item{prior.betas}{prior.betas}
+#' \item{prior.models}{prior.models}
+#' \item{priorprobs}{priorprobs}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #' @seealso \code{\link[BayesVarSel]{plot.Bvs}} for several plots of the result,
 #' \code{\link[BayesVarSel]{BMAcoeff}} for obtaining model averaged simulations
@@ -343,71 +346,11 @@ GibbsBvs <-
         floor(iter / n.thin),
         "are kept and used to construct the summaries\n")
 
-	if (prior.betas=="Robust2"){prior.betas<- "w"}
-	if (prior.betas=="GeointrinsicI"){prior.betas<- "x"}
-	if (prior.betas=="GeointrinsicII"){prior.betas<- "y"}		
-    	
-	
-	#prior for betas:
-    pfb <- substr(tolower(prior.betas), 1, 1)
-    if (pfb != "g" &&
-        pfb != "r" &&
-        pfb != "z" &&
-        pfb != "l" &&
-        pfb != "f" &&
-		pfb != "w" &&
-		pfb != "i" &&
-		pfb != "x" &&
-		pfb != "y")
-      stop("I am very sorry: prior for betas not supported\n")
-    #prior for model space:
-    pfms <- substr(tolower(prior.models), 1, 1)
-    if (pfms != "c" &&
-        pfms != "s" &&
-        pfms != "u")
-      stop("I am very sorry: prior for model space not valid\n")
-    if (pfms == "u" &&
-        is.null(priorprobs)) {
-      stop("A valid vector of prior probabilities must be provided\n")
-    }
-    if (pfms == "u" &&
-        length(priorprobs) != (p + 1)) {
-      stop("Vector of prior probabilities with incorrect length\n")
-    }
-    if (pfms == "u" &&
-        sum(priorprobs < 0) > 0) {
-      stop("Prior probabilities must be positive\n")
-    }
-    if (pfms == "u" &&
-        priorprobs[1] == 0) {
-      stop(
-        "Vector of prior probabilities not valid: All the theory here implemented works with the implicit assumption that the null model could be the true model\n"
-      )
-    }
-    if (pfms == "u" &&
-        priorprobs[sum(init.model) + 1] == 0) {
-      stop("The initial model has zero prior probability\n")
-    }
-    if (pfms == "u") {
-      #The zero here added is for C compatibility
-      write(
-        priorprobs,
-        ncolumns = 1,
-        file = paste(wd, "/priorprobs.txt", sep = "")
-      )
-    }
-
-    #Note: priorprobs.txt is a file that is needed only by the "User" routine. Nevertheless, in order
-    #to mantain a common unified version the source files of other routines also reads this file
-    #although they do not use. Because of this we create this file anyway.
-    if (pfms == "c" | pfms == "s") {
-      priorprobs <- rep(0, p + 1)
-      write(
-        priorprobs,
-        ncolumns = 1,
-        file = paste(wd, "/priorprobs.txt", sep = "")
-      )
-    }
+	#prior for betas: (#pfb will contain the internal representation of the prior.betas argument)
+	pfb <- check.prior.betas(prior.betas) 
+	#prior for model space: (#pfms will contain the internal representation of the prior.models argument)
+	#this function also writes the vector of prior probabilities for usage of C functions
+	pfms <- check.prior.modelspace(prior.models, priorprobs, p, wd)
 
     method <- paste(pfb, pfms, sep = "")
 
@@ -1211,7 +1154,11 @@ GibbsBvs <-
     if (pfms == "s" ) priorprobs <- "ScottBerger"
     result$priorprobs <- priorprobs
 
-		result$C<- calculaC(modelslBF, priorprobs, p)
+	result$C<- calculaC(modelslBF, priorprobs, p)
+
+	result$prior.betas<- prior.betas	
+	result$prior.models<- prior.models
+	result$priorprobs<- priorprobs
 
     result$method <- "gibbs"
     class(result)<- "Bvs"

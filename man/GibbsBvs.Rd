@@ -31,10 +31,10 @@ It should be nested in the full model. By default, the null model is defined
 to be the one with just the intercept.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
-model. Possible choices include "Robust", "Liangetal", "gZellner",
-"ZellnerSiow", "FLS" and "intrinsic"(see details).}
+model (to be literally specified). Possible choices include "Robust", "Robust.G", "Liangetal", "gZellner",
+"ZellnerSiow", "FLS", "intrinsic.MGC" and "IHG" (see details).}
 
-\item{prior.models}{Prior distribution over the model space. Possible
+\item{prior.models}{Prior distribution over the model space (to be literally specified). Possible
 choices are "Constant", "ScottBerger" and "User" (see details).}
 
 \item{n.iter}{The total number of iterations performed after the burn in
@@ -87,6 +87,9 @@ that model to the null model.}\item{priorprobs}{If \code{prior.models}="User" th
 function.}
 \item{C}{An estimation of the normalizing constant (C=sum Bi Pr(Mi), for Mi in the model space) using the method in George and McCulloch (1997).}
 \item{method }{\code{gibbs}}
+\item{prior.betas}{prior.betas}
+\item{prior.models}{prior.models}
+\item{priorprobs}{priorprobs}
 }
 \description{
 Approximate computation of summaries of the posterior distribution using a

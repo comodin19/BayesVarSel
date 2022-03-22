@@ -13,21 +13,25 @@
 #' where Pr(Mi) is the prior probability of model Mi and C is the normalizing
 #' constant.
 #'
-#' The Bayes factor BF_i0 depends on the prior assigned for the regression
-#' parameters in Mi.
+#' The Bayes factor B_i depends on the prior assigned for the parameters in the regression
+#' models Mi and \code{Bvs} implements a number of popular choices. The "Robust"
+#' prior by Bayarri, Berger, Forte and Garcia-Donato (2012) is the recommended (and default) choice.
+#' This prior prior can be implemented in a more stable way using the derivations in Greenaway (2019) 
+#' and that are available in BayesVarSel since version 2.2.x setting the argument to "Robust.G". 
 #'
-#' \code{Btest} implements a number of popular choices plus the "Robust" prior
-#' recently proposed by Bayarri et al (2012). The "Robust" prior is the default
-#' choice for both theoretical (see the reference for details) and
-#' computational reasons since it produces Bayes factors with closed-form
-#' expressions. The "gZellner" prior implemented corresponds to the prior in
-#' Zellner (1986) with g=n while the "Liangetal" prior is the hyper-g/n with
-#' a=3 (see the original paper Liang et al 2008, for details). "ZellnerSiow" is
-#' the multivariate Cauchy prior proposed by Zellner and Siow (1980, 1984),
-#' further studied by Bayarri and Garcia-Donato (2007). Finally, "FLS" is the
-#' prior recommended by Fernandez, Ley and Steel (2001) which is the prior in
-#' Zellner (1986) with g=max(n, p*p) p being the difference between the
-#' dimension of the most complex model and the simplest one.
+#' Additional options are "gZellner" a prior which 
+#' corresponds to the
+#' prior in Zellner (1986) with g=n. Also "Liangetal" prior is the
+#' hyper-g/n with a=3 (see the original paper Liang et al 2008, for details).
+#' "ZellnerSiow" is the multivariate Cauchy prior proposed by Zellner and Siow
+#' (1980, 1984), further studied by Bayarri and Garcia-Donato (2007).
+#' "FLS" is the (benchmark) prior recommended by Fernandez, Ley and Steel (2001) which is
+#' the prior in Zellner (1986) with g=max(n, p*p) p being the number of
+#' covariates to choose from (the most complex model has p+number of fixed
+#' covariates).
+#' "intrinsic.MGC" is the intrinsic prior derived by Moreno, Giron, Casella (2015)
+#' and "IHG" corresponds to the intrinsic hyper-g prior derived in Berger, Garcia-Donato, 
+#' Moreno and Pericchi (2022).
 #'
 #' With respect to the prior over the model space Pr(Mi) three possibilities
 #' are implemented: "Constant", under which every model has the same prior
@@ -51,9 +55,9 @@
 #' the routine. One model must be nested in all the others.
 #' @param data data frame containing the data.
 #' @param prior.betas Prior distribution for regression parameters within each
-#' model. Possible choices include "Robust", "Liangetal", "gZellner",
-#' "ZellnerSiow" and "FLS" (see details).
-#' @param prior.models Type of prior probabilities of the models. Possible choices are
+#' model (to be literally specified). Possible choices include "Robust", "Robust.G", "Liangetal", "gZellner",
+#' "ZellnerSiow", "FLS", "intrinsic.MGC" and "IHG" (see details).
+#' @param prior.models Type of prior probabilities of the models (to be literally specified). Possible choices are
 #' "Constant" and "User" (see details).
 #' @param priorprobs A named vector ir list (same length and names as in argument
 #' \code{models}) with the prior probabilities of the models (used in combination
@@ -74,6 +78,10 @@
 #' vector with the posterior probabilities of each model.} \item{models }{A
 #' list with the entertained models. } \item{nullmodel}{The position of the
 #' simplest model. }
+#' \item{prior.betas}{prior.betas}
+#' \item{prior.models}{prior.models}
+#' \item{priorprobs}{priorprobs}
+
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
@@ -90,9 +98,16 @@
 #' Barbieri, M and Berger, J (2004)<DOI:10.1214/009053604000000238> Optimal
 #' Predictive Model Selection. The Annals of Statistics, 32, 870-897.
 #'
+#' Berger, J., Garcıa-Donato, G., Moreno, E., and Pericchi, L. (2022). 
+#' The intrinsic hyper-g prior for normal linear models. in preparation.
+#'
 #' Fernandez, C., Ley, E. and Steel, M.F.J.
 #' (2001)<DOI:10.1016/s0304-4076(00)00076-2> Benchmark priors for Bayesian
 #' model averaging. Journal of Econometrics, 100, 381-427.
+#'
+#' Greenaway, M. (2019) Numerically stable approximate Bayesian methods for
+#' generalized linear mixed models and linear model selection. Thesis (Department of Statistics,
+#' University of Sydney).
 #'
 #' Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger,J.O.
 #' (2008)<DOI:10.1198/016214507000001337> Mixtures of g-priors for Bayesian
@@ -176,24 +191,10 @@ Btest <-
     Dim <- rep(0, N)
     BFi0 <- rep(0, N)
     PostProbi <- rep(0, N)
-    #prior for betas:
-	
-	if (prior.betas=="GeointrinsicI"){prior.betas<- "x"}
-	if (prior.betas=="GeointrinsicII"){prior.betas<- "y"}		
-	
-    pfb <- substr(tolower(prior.betas), 1, 1)
-    #check if the selected option exists
-    if (pfb != "g" &&
-        pfb != "r" &&
-        pfb != "z" &&
-        pfb != "l" &&
-        pfb != "f" &&
-		pfb != "i" &&
-		pfb != "x" &&
-		pfb != "y")
-      stop("I am very sorry: prior for betas not valid\n")
 
-
+    #prior for betas: (#pfb will contain the internal representation of the prior.betas argument)
+	pfb <- check.prior.betas(prior.betas) 
+	
     #prior for model space:
     pfms <- substr(tolower(prior.models), 1, 1)
     if (pfms != "c" &&
@@ -371,6 +372,11 @@ Btest <-
     result$PostProbi <- PostProbi
     result$models <- models
     result$nullmodel <- nullmodel
+	
+	result$prior.betas<- prior.betas	
+	result$prior.models<- prior.models
+	result$priorprobs<- priorprobs
+	
     class(result) <- "Btest"
     result
   }

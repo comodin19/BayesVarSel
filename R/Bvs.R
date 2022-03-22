@@ -15,21 +15,25 @@
 #' where Bi is the Bayes factor of Mi to M0, Pr(Mi) is the prior probability of
 #' Mi and C is the normalizing constant.
 #'
-#' The Bayes factor B_i depends on the prior assigned for the regression
-#' parameters in Mi and \code{Bvs} implements a number of popular choices plus
-#' the "Robust" prior recently proposed by Bayarri et al (2012). The "Robust"
-#' prior is the default choice for both theoretical (see the reference for
-#' details) and computational reasons since it produces Bayes factors with
-#' closed-form expressions. The "gZellner" prior implemented corresponds to the
-#' prior in Zellner (1986) with g=n while the "Liangetal" prior is the
+#' The Bayes factor B_i depends on the prior assigned for the parameters in the regression
+#' models Mi and \code{Bvs} implements a number of popular choices. The "Robust"
+#' prior by Bayarri, Berger, Forte and Garcia-Donato (2012) is the recommended (and default) choice.
+#' This prior prior can be implemented in a more stable way using the derivations in Greenaway (2019) 
+#' and that are available in BayesVarSel since version 2.2.x setting the argument to "Robust.G". 
+#'
+#' Additional options are "gZellner" a prior which 
+#' corresponds to the
+#' prior in Zellner (1986) with g=n. Also "Liangetal" prior is the
 #' hyper-g/n with a=3 (see the original paper Liang et al 2008, for details).
 #' "ZellnerSiow" is the multivariate Cauchy prior proposed by Zellner and Siow
 #' (1980, 1984), further studied by Bayarri and Garcia-Donato (2007).
-#' "FLS" is the prior recommended by Fernandez, Ley and Steel (2001) which is
+#' "FLS" is the (benchmark) prior recommended by Fernandez, Ley and Steel (2001) which is
 #' the prior in Zellner (1986) with g=max(n, p*p) p being the number of
 #' covariates to choose from (the most complex model has p+number of fixed
 #' covariates).
-#' "intrinsic" is the intrinsic prior, (see Moreno, Giron, Casella, 2015).
+#' "intrinsic.MGC" is the intrinsic prior derived by Moreno, Giron, Casella (2015)
+#' and "IHG" corresponds to the intrinsic hyper-g prior derived in Berger, Garcia-Donato, 
+#' Moreno and Pericchi (2022).
 #'
 #' With respect to the prior over the model space Pr(Mi) three possibilities
 #' are implemented: "Constant", under which every model has the same prior
@@ -68,13 +72,11 @@
 #' null predictive matching in Bayarri et al (2012). Use \code{\link[BayesVarSel]{GibbsBvs}} for cases where
 #' p>>.
 #' 
-#' Limitations: the error "A Bayes factor is infinite.". Bayes factors can be
-#' extremely big numbers if i) the sample size is even moderately large or if
-#' ii) a model is much better (in terms of fit) than the model taken as the
-#' null model. We are currently working on more robust implementations of the
-#' functions to handle these problems. In the meanwhile you could try using the
-#' g-Zellner prior (which is the most simple one and results, in these cases,
-#' should not vary much with the prior) and/or using more accurate definitions
+#' Limitations: about the error "A Bayes factor is infinite.". Bayes factors can be
+#' extremely big numbers if i) the sample size is large or if
+#' ii) a competing model is much better (in terms of fit) than the model taken as the
+#' null model. If you see this error, try to use the more stable version of the
+#' robust prior "Robust.g" and/or reconisder using more accurate and realistic definitions
 #' of the simplest model (via the \code{null.model} argument).
 #'
 #'
@@ -86,9 +88,9 @@
 #' It should be nested in the full model. By default, the null model is defined
 #' to be the one with just the intercept.
 #' @param prior.betas Prior distribution for regression parameters within each
-#' model. Possible choices include "Robust", "Liangetal", "gZellner",
-#' "ZellnerSiow", "FLS" and "intrinsic" (see details).
-#' @param prior.models Prior distribution over the model space. Possible
+#' model (to be literally specified). Possible choices include "Robust", "Robust.G", "Liangetal", "gZellner",
+#' "ZellnerSiow", "FLS", "intrinsic.MGC" and "IHG" (see details).
+#' @param prior.models Prior distribution over the model space (to be literally specified). Possible
 #' choices are "Constant", "ScottBerger" and "User" (see details).
 #' @param n.keep How many of the most probable models are to be kept? By
 #' default is set to 10, which is automatically adjusted if 10 is greater than
@@ -123,6 +125,9 @@
 #' \item{C}{The value of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
 #' \item{method }{\code{full} or \code{parallel} in case of
 #' parallel computation}
+#' \item{prior.betas}{prior.betas}
+#' \item{prior.models}{prior.models}
+#' \item{priorprobs}{priorprobs}
 #' @author Gonzalo Garcia-Donato and Anabel Forte
 #'
 #' Maintainer: <anabel.forte@@uv.es>
@@ -143,6 +148,9 @@
 #' (2012)<DOI:10.1214/12-aos1013> Criteria for Bayesian Model choice with
 #' Application to Variable Selection. The Annals of Statistics. 40: 1550-1557.
 #'
+#' Berger, J., Garcıa-Donato, G., Moreno, E., and Pericchi, L. (2022). 
+#' The intrinsic hyper-g prior for normal linear models. in preparation.
+#' 
 #' Bayarri, M.J. and Garcia-Donato, G. (2007)<DOI:10.1093/biomet/asm014>
 #' Extending conventional priors for testing general hypotheses in linear
 #' models. Biometrika, 94:135-152.
@@ -153,6 +161,10 @@
 #' Fernandez, C., Ley, E. and Steel, M.F.J.
 #' (2001)<DOI:10.1016/s0304-4076(00)00076-2> Benchmark priors for Bayesian
 #' model averaging. Journal of Econometrics, 100, 381-427.
+#'
+#' Greenaway, M. (2019) Numerically stable approximate Bayesian methods for
+#' generalized linear mixed models and linear model selection. Thesis (Department of Statistics,
+#' University of Sydney).
 #'
 #' Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger,J.O.
 #' (2008)<DOI:10.1198/016214507000001337> Mixtures of g-priors for Bayesian
@@ -408,70 +420,12 @@ Bvs <-
           ncolumns = p,
           file = paste(wd, "/Design.txt", sep = ""))
 
-  	if (prior.betas=="Robust2"){prior.betas<- "w"}
-  	if (prior.betas=="GeointrinsicI"){prior.betas<- "x"}
-  	if (prior.betas=="GeointrinsicII"){prior.betas<- "y"}		
-	
-    #prior for betas:
-    pfb <- substr(tolower(prior.betas), 1, 1)
-    #check if the selected option exists
-    if (pfb != "g" &&
-        pfb != "r" &&
-        pfb != "z" &&
-        pfb != "l" &&
-        pfb != "f" &&
-		pfb != "i" &&
-		pfb != "w" &&
-		pfb != "x" &&
-		pfb != "y"
-		)
-      stop("I am very sorry: prior for betas no valid\n")
-
-    #prior for model space:
-    pfms <- substr(tolower(prior.models), 1, 1)
-    if (pfms != "c" &&
-        pfms != "s" &&
-        pfms != "u")
-      stop("I am very sorry: prior for model space not valid\n")
-    if (pfms == "u" &&
-        is.null(priorprobs)) {
-      stop("A valid vector of prior probabilities must be provided\n")
-    }
-    if (pfms == "u" &&
-        length(priorprobs) != (p + 1)) {
-      stop("Vector of prior probabilities with incorrect length\n")
-    }
-    if (pfms == "u" &&
-        sum(priorprobs < 0) > 0) {
-      stop("Prior probabilities must be positive\n")
-    }
-    if (pfms == "u" &&
-        priorprobs[1] == 0) {
-      stop(
-        "Vector of prior probabilities not valid: All the theory here implemented works with the implicit assumption that the null model could be the true model\n"
-      )
-    }
-    else{
-      #The zero here added is for C compatibility
-      write(
-        priorprobs,
-        ncolumns = 1,
-        file = paste(wd, "/priorprobs.txt", sep = "")
-      )
-    }
-
-    #Note: priorprobs.txt is a file that is needed only by the "User" routine. Nevertheless, in order
-    #to mantain a common unified version the source files of other routines also reads this file
-    #although they do not use. Because of this we create this file anyway.
-    if (pfms == "c" | pfms == "s") {
-      priorprobs <- rep(0, p + 1)
-      write(
-        priorprobs,
-        ncolumns = 1,
-        file = paste(wd, "/priorprobs.txt", sep = "")
-      )
-    }
-
+    #prior for betas: (#pfb will contain the internal representation of the prior.betas argument)
+	pfb <- check.prior.betas(prior.betas) 
+    #prior for model space: (#pfms will contain the internal representation of the prior.models argument)
+	#this function also writes the vector of prior probabilities for usage of C functions
+	pfms <- check.prior.modelspace(prior.models, priorprobs, p, wd)
+ 
     method <- paste(pfb, pfms, sep = "")
 
     #Info:
@@ -1274,6 +1228,11 @@ Bvs <-
       result$method <- "full"
     }
     else result$method <- "parallel"
+		
+	result$prior.betas<- prior.betas	
+	result$prior.models<- prior.models
+	result$priorprobs<- priorprobs
+		
 
     class(result) <- "Bvs"
     result
@@ -1439,3 +1398,56 @@ summary.Bvs <-
     class(ans) <- "summary.Bvs"
     return(invisible(ans))
   }
+
+#
+check.prior.betas <- function(prior.betas){
+	#checking that the prior for betas is implemented (and is given the right label)
+	#and returning the label for its internal representation
+	success <- 0
+	if (prior.betas == "Robust") {success <- 1; prior.betas.internal <- "r"}
+	if (prior.betas == "gZellner") {success <- 1; prior.betas.internal <- "g"}
+	if (prior.betas == "Liangetat") {success <- 1; prior.betas.internal <- "l"}
+	if (prior.betas == "ZellnerSiow") {success <- 1; prior.betas.internal <- "z"}
+	if (prior.betas == "FLS") {success <- 1; prior.betas.internal <- "f"}
+	if (prior.betas == "intrinsic.MGC") {success <- 1; prior.betas.internal <- "i"}
+	if (prior.betas == "Robust.G") {success <- 1; prior.betas.internal <- "w"}
+	if (prior.betas == "IHG") {success <- 1; prior.betas.internal <- "x"}
+		
+	if (success != 1) stop("Option for argument prior.betas not recognized (use literally the label as defined in the help)")	
+
+		return (prior.betas.internal)
+
+}
+
+check.prior.modelspace <- function(prior.models, priorprobs, p, wd){
+	#checking that the prior for model space is implemented (and is given the right label)
+	#and returning a label for its internal representation
+	success <- 0
+	if (prior.models == "Constant") {success <- 1; prior.models.internal <- "c"}
+	if (prior.models == "ScottBerger") {success <- 1; prior.models.internal <- "s"}
+	if (prior.models == "User") {
+		success <- 1; prior.models.internal <- "u"
+		if (is.null(priorprobs)) stop("A valid vector of prior probabilities must be provided\n")
+		if (length(priorprobs) != (p + 1)) stop("Vector of prior probabilities with incorrect length\n")
+		if (sum(priorprobs < 0) > 0) stop("Prior probabilities must be positive\n")
+		if (priorprobs[1] == 0) stop("Vector of prior probabilities not valid: All the theory here implemented works with the implicit assumption that the null model could be the true model\n")
+	}
+	
+	if (success != 1) stop("Option for argument prior.models not recognized (use literally the label as defined in the help)")	
+
+	#Note: priorprobs.txt is a file that is needed only by the "User" routine. Nevertheless, in order
+	#to mantain a common unified version the source files of other routines also reads this file
+	#although they do not use it. Because of this we create this file anyway.
+	if (prior.models == "Constant" | prior.models == "ScottBerger") priorprobs <- rep(0, p + 1)
+	
+    #The zero here added always is for C compatibility
+      write(
+        priorprobs,
+        ncolumns = 1,
+        file = paste(wd, "/priorprobs.txt", sep = "")
+      )
+
+	return (prior.models.internal)
+	
+	
+}

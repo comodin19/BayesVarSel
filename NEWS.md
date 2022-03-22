@@ -1,3 +1,6 @@
+# BayesVarSel 2.2.2
+* Included the implementation by Greenaway (2018) of the robust prior, and a better organization of the labels to refer to the priors plus the need to specify those literally. 
+
 # BayesVarSel 2.2.1
 * Two versions of the intrinsic hyper-g prior are implemented.
 
@@ -5,7 +8,7 @@
 * the OBICE study is included.
 
 # BayesVarSel 2.1.0
-* intrinsic prior added to Bvs and GibbsBvs.
+* intrinsic prior (by Moreno, Giron and Casella) added to Bvs and GibbsBvs.
 
 * Now calculations of Bayes factors for liang and ZS prior use a definition based on the exp(log()) of the expression: quite more stable
 
