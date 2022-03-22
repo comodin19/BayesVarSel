@@ -176,24 +176,10 @@ Btest <-
     Dim <- rep(0, N)
     BFi0 <- rep(0, N)
     PostProbi <- rep(0, N)
-    #prior for betas:
-	
-	if (prior.betas=="GeointrinsicI"){prior.betas<- "x"}
-	if (prior.betas=="GeointrinsicII"){prior.betas<- "y"}		
-	
-    pfb <- substr(tolower(prior.betas), 1, 1)
-    #check if the selected option exists
-    if (pfb != "g" &&
-        pfb != "r" &&
-        pfb != "z" &&
-        pfb != "l" &&
-        pfb != "f" &&
-		pfb != "i" &&
-		pfb != "x" &&
-		pfb != "y")
-      stop("I am very sorry: prior for betas not valid\n")
 
-
+    #prior for betas: (#pfb will contain the internal representation of the prior.betas argument)
+	pfb <- check.prior.betas(prior.betas) 
+	
     #prior for model space:
     pfms <- substr(tolower(prior.models), 1, 1)
     if (pfms != "c" &&
@@ -371,6 +357,11 @@ Btest <-
     result$PostProbi <- PostProbi
     result$models <- models
     result$nullmodel <- nullmodel
+	
+	result$prior.betas<- prior.betas	
+	result$prior.models<- prior.models
+	result$priorprobs<- priorprobs
+	
     class(result) <- "Btest"
     result
   }

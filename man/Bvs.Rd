@@ -28,10 +28,10 @@ It should be nested in the full model. By default, the null model is defined
 to be the one with just the intercept.}
 
 \item{prior.betas}{Prior distribution for regression parameters within each
-model. Possible choices include "Robust", "Liangetal", "gZellner",
-"ZellnerSiow", "FLS" and "intrinsic" (see details).}
+model (to be literally specified). Possible choices include "Robust", "Robust.G", "Liangetal", "gZellner",
+"ZellnerSiow", "FLS", "intrinsic.MGC" and "IHG" (see details).}
 
-\item{prior.models}{Prior distribution over the model space. Possible
+\item{prior.models}{Prior distribution over the model space (to be literally specified). Possible
 choices are "Constant", "ScottBerger" and "User" (see details).}
 
 \item{n.keep}{How many of the most probable models are to be kept? By
@@ -73,6 +73,9 @@ probabilities of the dimension of the true model} \item{call }{The
 \item{C}{The value of the normalizing constant (C=sum BiPr(Mi), for Mi in the model space)}
 \item{method }{\code{full} or \code{parallel} in case of
 parallel computation}
+\item{prior.betas}{prior.betas}
+\item{prior.models}{prior.models}
+\item{priorprobs}{prior.betas}
 }
 \description{
 Exact computation of summaries of the posterior distribution using
@@ -91,21 +94,25 @@ Pr(Mi | \code{data})=Pr(Mi)*Bi/C,
 where Bi is the Bayes factor of Mi to M0, Pr(Mi) is the prior probability of
 Mi and C is the normalizing constant.
 
-The Bayes factor B_i depends on the prior assigned for the regression
-parameters in Mi and \code{Bvs} implements a number of popular choices plus
-the "Robust" prior recently proposed by Bayarri et al (2012). The "Robust"
-prior is the default choice for both theoretical (see the reference for
-details) and computational reasons since it produces Bayes factors with
-closed-form expressions. The "gZellner" prior implemented corresponds to the
-prior in Zellner (1986) with g=n while the "Liangetal" prior is the
+The Bayes factor B_i depends on the prior assigned for the parameters in the regression
+models Mi and \code{Bvs} implements a number of popular choices. The "Robust"
+prior by Bayarri, Berger, Forte and Garcia-Donato (2012) is the recommended (and default) choice.
+This prior prior can be implemented in a more stable way using the derivations in Greenaway (2019) 
+and that are available in BayesVarSel since version 2.2.x setting the argument to "Robust.G". 
+
+Additional options are "gZellner" a prior which 
+corresponds to the
+prior in Zellner (1986) with g=n. Also "Liangetal" prior is the
 hyper-g/n with a=3 (see the original paper Liang et al 2008, for details).
 "ZellnerSiow" is the multivariate Cauchy prior proposed by Zellner and Siow
 (1980, 1984), further studied by Bayarri and Garcia-Donato (2007).
-"FLS" is the prior recommended by Fernandez, Ley and Steel (2001) which is
+"FLS" is the (benchmark) prior recommended by Fernandez, Ley and Steel (2001) which is
 the prior in Zellner (1986) with g=max(n, p*p) p being the number of
 covariates to choose from (the most complex model has p+number of fixed
 covariates).
-"intrinsic" is the intrinsic prior, (see Moreno, Giron, Casella, 2015).
+"intrinsic.MGC" is the intrinsic prior derived by Moreno, Giron, Casella (2015)
+and "IHG" corresponds to the intrinsic hyper-g prior derived in Berger, Garcia-Donato, 
+Moreno and Pericchi (2022).
 
 With respect to the prior over the model space Pr(Mi) three possibilities
 are implemented: "Constant", under which every model has the same prior
@@ -185,6 +192,9 @@ Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G.
 (2012)<DOI:10.1214/12-aos1013> Criteria for Bayesian Model choice with
 Application to Variable Selection. The Annals of Statistics. 40: 1550-1557.
 
+Berger, J., Garc ́ıa-Donato, G., Moreno, E., and Pericchi, L. (2022). 
+The intrinsic hyper-g prior for normal linear models. in preparation.
+
 Bayarri, M.J. and Garcia-Donato, G. (2007)<DOI:10.1093/biomet/asm014>
 Extending conventional priors for testing general hypotheses in linear
 models. Biometrika, 94:135-152.
@@ -195,6 +205,10 @@ Predictive Model Selection. The Annals of Statistics, 32, 870-897.
 Fernandez, C., Ley, E. and Steel, M.F.J.
 (2001)<DOI:10.1016/s0304-4076(00)00076-2> Benchmark priors for Bayesian
 model averaging. Journal of Econometrics, 100, 381-427.
+
+Greenaway, M. (2019) Numerically stable approximate Bayesian methods for
+generalized linear mixed models and linear model selection. Thesis (Department of Statistics,
+University of Sydney).
 
 Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger,J.O.
 (2008)<DOI:10.1198/016214507000001337> Mixtures of g-priors for Bayesian
