@@ -27,6 +27,12 @@ extern void GibbsRobust2User(void *, void *, void *, void *, void *, void *, voi
 extern void GibbsintrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsintrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsintrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsgeointrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsgeointrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void GibbsgeointrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void Gibbsgeointrinsic2Const(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void Gibbsgeointrinsic2SB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void Gibbsgeointrinsic2User(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsZSConst(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsZSSB(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void GibbsZSUser(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -47,6 +53,14 @@ extern void Robust2User(void *, void *, void *, void *, void *, void *, void *, 
 extern void intrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void intrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void intrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsicBF(void *, void *, void *, void *, void *);
+extern void geointrinsicConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsicSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsicUser(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsic2BF(void *, void *, void *, void *, void *);
+extern void geointrinsic2Const(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsic2SB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void geointrinsic2User(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSBF(void *, void *, void *, void *, void *);
 extern void ZSConst(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ZSSB(void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -82,7 +96,13 @@ static const R_CMethodDef CEntries[] = {
     {"GibbsRobust2User", (DL_FUNC) &GibbsRobust2User,  10},
     {"GibbsintrinsicConst",(DL_FUNC) &GibbsintrinsicConst, 10},
     {"GibbsintrinsicSB",   (DL_FUNC) &GibbsintrinsicSB,    10},
-    {"GibbsintrinsicUser", (DL_FUNC) &GibbsintrinsicUser,  10},				
+    {"GibbsintrinsicUser", (DL_FUNC) &GibbsintrinsicUser,  10},	
+    {"GibbsgeointrinsicConst",(DL_FUNC) &GibbsgeointrinsicConst, 10},
+    {"GibbsgeointrinsicSB",   (DL_FUNC) &GibbsgeointrinsicSB,    10},
+    {"GibbsgeointrinsicUser", (DL_FUNC) &GibbsgeointrinsicUser,  10},	
+    {"Gibbsgeointrinsic2Const",(DL_FUNC) &Gibbsgeointrinsic2Const, 10},
+    {"Gibbsgeointrinsic2SB",   (DL_FUNC) &Gibbsgeointrinsic2SB,    10},
+    {"Gibbsgeointrinsic2User", (DL_FUNC) &Gibbsgeointrinsic2User,  10},	
     {"GibbsZSConst",     (DL_FUNC) &GibbsZSConst,     10},
     {"GibbsZSSB",        (DL_FUNC) &GibbsZSSB,        10},
     {"GibbsZSUser",      (DL_FUNC) &GibbsZSUser,      10},
@@ -102,8 +122,16 @@ static const R_CMethodDef CEntries[] = {
     {"Robust2User",      (DL_FUNC) &Robust2User,       9},
     {"intrinsicConst",   (DL_FUNC) &intrinsicConst,    9},
     {"intrinsicSB",      (DL_FUNC) &intrinsicSB,       9},
-    {"intrinsicUser",    (DL_FUNC) &intrinsicUser,     9},	
-    {"ZSBF",             (DL_FUNC) &ZSBF,              5},
+    {"intrinsicUser",    (DL_FUNC) &intrinsicUser,     9},
+    {"geointrinsicBF",         (DL_FUNC) &geointrinsicBF,          5},		
+	{"geointrinsicConst",   (DL_FUNC) &geointrinsicConst,    9},
+    {"geointrinsicSB",      (DL_FUNC) &geointrinsicSB,       9},
+    {"geointrinsicUser",    (DL_FUNC) &geointrinsicUser,     9},	
+    {"geointrinsic2BF",         (DL_FUNC) &geointrinsic2BF,          5},			
+    {"geointrinsic2Const",   (DL_FUNC) &geointrinsic2Const,    9},
+    {"geointrinsic2SB",      (DL_FUNC) &geointrinsic2SB,       9},
+    {"geointrinsic2User",    (DL_FUNC) &geointrinsic2User,     9},	
+	{"ZSBF",             (DL_FUNC) &ZSBF,              5},
     {"ZSConst",          (DL_FUNC) &ZSConst,           9},
     {"ZSSB",             (DL_FUNC) &ZSSB,              9},
     {"ZSUser",           (DL_FUNC) &ZSUser,            9},
