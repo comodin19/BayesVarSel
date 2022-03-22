@@ -1,3 +1,6 @@
+# BayesVarSel 2.2.1
+* Two versions of the intrinsic hyper-g prior are implemented.
+
 # BayesVarSel 2.2.0
 * the OBICE study is included.
 
