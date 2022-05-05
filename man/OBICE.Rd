@@ -5,29 +5,129 @@
 \alias{OBICE}
 \title{OBICE data}
 \format{
-A data frame with 1188 entries and 251 variables. Among the more relevant are
+A data frame with 1188 entries and 121 variables. The more relevant are described. Contact us if you need specific information of any other.
 \describe{
-\item{ActFisica}{:(physic activity) factor coded as 1 None; 2 less than monthly; 3 less than weekly; 4 less than 2/week; 5 at least 2/week; 9 is NA}
-\item{ActivDepor}{: weekly hours devoted to sports activity (9 is NA)}
-\item{Acostarse}{: does he/she eat before going to bed? (yes/no)}
-\item{Bebida}{: (main dring accompanying the main meal) 1 water tap; 2 bottle water; 3 soda; 4 natural juices; 5 bottle juices; 6 Milk (and derivatives); 7 Other; (9 is NA)}
-\item{PadreObeso}{: is the father obese? (0 is No; 1 is Yes)}
-\item{MadreObesa}{: is the mother obese? (0 is No; 1 is Yes)}
-\item{PesoNac}{: weight born (in grams) (9999 is NA)}
-\item{PesoActual}{: current weight (in kilograms)}
-\item{TallaNac}{: height born (in centimeters) (999 is NA)}
-\item{TallaAct}{: current height (in meters)}
-\item{CincoComidas}{: does he/she have regularly 5 meals per day? (0 is No; 1 is Yes)}
-\item{Verduras}{: usual consumption of vegetables? (0 is No; 1 is Yes)}
-\item{Fruta}{: usual consumption of fruit? (0 is No; 1 is Yes)}
-\item{Edad}{: years old}
-\item{Sexo}{: female (1); male (0)}
-\item{LactMatern}{: breast-feeding (1 is Yes; 0 is No)}
-\item{Merienda}{: Afternoon snack  (1 is Yes; 0 is No)}
-\item{Chuches}{: Sweets and soft drinks weekly consumption (how many times) (9 is NA)}
-\item{HorasPCDiaPond}{: daily hours playing videogames and/or in internet (weekends included) (NA is NA)}
-\item{HorasTVDiaPond}{: daily hours watching TV (weekends included) (NA is NA)}
-\item{HoraSuenyo}{: daily hours sleeping (99 is NA)}
+\item{Acostarse}{:does he/she eat before going to bed? (yes/no) }
+\item{ActFisica}{:(physic activity) factor coded as 1 None; 2 less than monthly; 3 less than weekly; 4 less than 2/week; 5 at least 2/week }
+\item{ActivDepor}{:weekly hours devoted to sports activity }
+\item{Almuerzo}{: }
+\item{Bebida}{:(main dring accompanying the main meal) 1 water tap; 2 bottle water; 3 soda; 4 natural juices; 5 bottle juices; 6 Milk (and derivatives); 7 Other }
+\item{Caso01}{: }
+\item{Cena}{: }
+\item{Chuches}{:Sweets and soft drinks weekly consumption (how many times) }
+\item{CincoComidas}{:does he/she have regularly 5 meals per day? (0 is No; 1 is Yes) }
+\item{clSocEl}{: }
+\item{clSocElla}{: }
+\item{clSocXiquet}{: }
+\item{ComedorEsc}{: }
+\item{Comida}{: }
+\item{Daceite}{: }
+\item{Dcereal}{: }
+\item{Desayuno}{: }
+\item{Descubrimiento}{: }
+\item{Dgalleta}{: }
+\item{Dislipemias}{: }
+\item{DislipeRelacion}{: }
+\item{Dleche}{: }
+\item{Dotros}{: }
+\item{Dpan}{: }
+\item{Dzumoenv}{: }
+\item{Dzumonat}{: }
+\item{Edad}{:years old }
+\item{EntreHoras}{: }
+\item{EstudiosMadre}{: }
+\item{EstudiosMadreSinCon}{: }
+\item{EstudiosPadre}{: }
+\item{EstudiosPadreSinCon}{: }
+\item{Faperitivos}{: }
+\item{Faperitivosmp}{: }
+\item{Farroz}{: }
+\item{Farrozmp}{: }
+\item{Fcarnes}{: }
+\item{Fcarnesmp}{: }
+\item{Fchucherias}{: }
+\item{Fchucheriasmp}{: }
+\item{Fdulces}{: }
+\item{Fdulcesmp}{: }
+\item{Ffiambres}{: }
+\item{Ffiambresmp}{: }
+\item{Ffritos}{: }
+\item{Ffritosmp}{: }
+\item{Ffruta}{: }
+\item{Ffrutamp}{: }
+\item{Fhuevos}{: }
+\item{Fhuevosmp}{: }
+\item{Flacteos}{: }
+\item{Flacteosmp}{: }
+\item{Flegumbres}{: }
+\item{Flegumbresmp}{: }
+\item{Fpan}{: }
+\item{Fpanmp}{: }
+\item{Fpescado}{: }
+\item{Fpescadomp}{: }
+\item{Fprecocina}{: }
+\item{Fprecocinamp}{: }
+\item{Frefrescos}{: }
+\item{Frefrescosmp}{: }
+\item{Fruta}{:usual consumption of fruit? (0 is No; 1 is Yes) }
+\item{FrutaVerdura}{: }
+\item{Fverduras}{: }
+\item{Fverdurasmp}{: }
+\item{HorasPantDia}{: }
+\item{HorasPCDiaPond}{:daily hours playing videogames and/or in internet (weekends included) }
+\item{HorasPCsem1}{: }
+\item{HorasPCsem2}{: }
+\item{HorasTV}{: }
+\item{HorasTVDiaPond}{:daily hours watching TV (weekends included) }
+\item{HorasTVsem1}{: }
+\item{HorasTVsem2}{: }
+\item{HoraSuenyo}{:daily hours sleeping }
+\item{HTA}{: }
+\item{HTARelacion}{: }
+\item{IMC}{: }
+\item{IndEdadComedorEscolar}{: }
+\item{IntolGlucosa}{: }
+\item{IntolRelacion}{: }
+\item{LactMater}{: }
+\item{LactMaterna}{: breast-feeding (1 is Yes; 0 is No) }
+\item{LactMatMeses}{: }
+\item{LactMatSemanas}{: }
+\item{MadreObesa}{: }
+\item{MadreObesa01}{:is the mother obese? (0 is No; 1 is Yes) }
+\item{Merienda}{:Afternoon snack  (1 is Yes; 0 is No) }
+\item{NumComidas}{: }
+\item{NumContOK}{: }
+\item{NumControles}{: }
+\item{NumHnos}{: }
+\item{NumHnosOb}{: }
+\item{NumPadresEsp02}{: }
+\item{NumPadresObesos}{: }
+\item{OrdenadorDiario}{: }
+\item{OrdenadorFinDe}{: }
+\item{OsteoRelacion}{: }
+\item{OtrosPatol}{: }
+\item{PadreObeso}{:is the father obese? (0 is No; 1 is Yes) }
+\item{PesoActual}{:current weight (in kilograms) }
+\item{PesoNac}{:weight born (in grams) }
+\item{PorcHnosObesos}{: }
+\item{porcHnosObesosOK}{: }
+\item{Postre}{: }
+\item{ProbOsteo}{: }
+\item{ProbPsico}{: }
+\item{ProbResp}{: }
+\item{PsicoRelacion}{: }
+\item{ResoponF01}{: }
+\item{RespRelacion}{: }
+\item{Semlact}{: }
+\item{Sexo}{:female (1); male (0) }
+\item{TallaAct}{:current height (in meters) }
+\item{TallaNac}{:height born (in centimeters) }
+\item{Tipocaso}{: }
+\item{Tipocaso.y}{: }
+\item{TipoObeso}{: }
+\item{TVDiario}{: }
+\item{TVFinSemana}{: }
+\item{Verduras}{:usual consumption of vegetables? (0 is No; 1 is Yes) }
 }
 }
 \usage{

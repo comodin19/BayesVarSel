@@ -2,8 +2,8 @@ Package: BayesVarSel
 Type: Package
 Title: Bayes Factors, Model Choice and Variable Selection in Linear
         Models
-Version: 2.2.2
-Date: 2022-03-22
+Version: 2.2.3
+Date: 2022-05-04
 Authors@R: c(
     person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
     person("Anabel", "Forte",             email = "anabel.forte@uv.es",   role = c("aut", "cre")),
@@ -21,9 +21,9 @@ Depends:
     MASS (>= 7.3-45),
     mvtnorm (>= 1.0-5),
     parallel (>= 3.3),
-    R (>= 3.3)
+    R (>= 3.5.0)
 License: GPL-2
 NeedsCompilation: yes
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: knitr, faraway, hdi
 VignetteBuilder: knitr
