@@ -9,9 +9,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![](https://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)[![](https://cranlogs.r-pkg.org/badges/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel) [![](https://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel)
+[![](https://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel/)[![](https://cranlogs.r-pkg.org/badges/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel/) [![](https://cranlogs.r-pkg.org/badges/grand-total/BayesVarSel)/](https://cran.r-project.org/package=BayesVarSel/)
 
-# [BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/comodin19/BayesVarSel)
+# [BayesVarSel: Bayes Factors, Model Choice and Variable Selection in Linear Models](https://github.com/comodin19/BayesVarSel/)
 
 Hypothesis testing, model selection and model averaging are important statistical problems that have in common the explicit consideration of the uncertainty about which is the true model. The formal Bayesian tool to solve such problems is the Bayes factor (Kass and Raftery, 1995) that reports the evidence in the data favoring each of the entertained hypotheses/models and can be easily translated to posterior probabilities.
 
@@ -21,17 +21,17 @@ This package has been specifically conceived to calculate Bayes factors in linea
 # Installation
 
 ### Stable release
-The stable version [![](http://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel) can be installed using:
+The stable version [![](https://www.r-pkg.org/badges/version/BayesVarSel)](https://cran.r-project.org/package=BayesVarSel/) can be installed using:
 
 ```{r ins_cran, eval=FALSE}
 install.packages("BayesVarSel")
 ```
 
 ### Development release
-You can track, download the latest version or contribute to the development of `BayesVarSel` at [https://github.com/comodin19/BayesVarSel](https://github.com/comodin19/BayesVarSel). To install the most recent version of the package (`r sub("Version: ", "", readLines('DESCRIPTION')[grepl('Version', readLines('DESCRIPTION'))])`) you should:
+You can track, download the latest version or contribute to the development of `BayesVarSel` at [https://github.com/comodin19/BayesVarSel](https://github.com/comodin19/BayesVarSel/). To install the most recent version of the package (`r sub("Version: ", "", readLines('DESCRIPTION')[grepl('Version', readLines('DESCRIPTION'))])`) you should:
 
 1. Install devtools from CRAN with `install.packages("devtools")`.
-2. Install the development version of `BayesVarSel` from [GitHub](https://github.com/comodin19/BayesVarSel):
+2. Install the development version of `BayesVarSel` from [GitHub](https://github.com/comodin19/BayesVarSel/):
 
 ```{r ins_github, eval=FALSE}
 devtools::install_github("comodin19/BayesVarSel")
@@ -73,11 +73,11 @@ Btest(models = c(H0 = nullmodel, H1 = fullmodel, H2 = reducedmodel), data = Hald
 
 ## References
 
-- Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G. (2012). Criteria for Bayesian Model choice with Application to Variable Selection. *Annals of Statistics, 40*: 1550-1577. DOI: [10.1214/12-aos1013](http://www.dx.doi.org/10.1214/12-aos1013)
-- Fernandez, C., Ley, E. and Steel, M.F.J. (2001). Benchmark priors for Bayesian model averaging. *Journal of Econometrics, 100*: 381-427. DOI: [10.1016/s0304-4076(00)00076-2](http://www.dx.doi.org/10.1016/s0304-4076(00)00076-2)
-- Garcia-Donato, G. and Forte, A. (2018). Bayesian Testing, Variable Selection and Model Averaging in Linear Models using R with BayesVarSel. *The R Journal, 10*(1): 155–174. Retrieved from [https://journal.r-project.org/archive/2018/RJ-2018-021/index.html](https://journal.r-project.org/archive/2018/RJ-2018-021/index.html)
-- Garcia-Donato, G. and Martinez-Beneito, M.A. (2013). On sampling strategies in Bayesian variable selection problems with large model spaces. *Journal of the American Statistical Association, 108*: 340-352. DOI: [10.1080/01621459.2012.742443](http://www.dx.doi.org/10.1080/01621459.2012.742443)
-- Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger, J.O. (2008). Mixtures of g-priors for Bayesian Variable Selection. *Journal of the American Statistical Association, 103*: 410-423.DOI: [10.1198/016214507000001337](http://www.dx.doi.org/10.1198/016214507000001337)
-- Zellner, A. and Siow, A. (1980). Posterior Odds Ratio for Selected Regression Hypotheses. *Trabajos de Estadística y de Investigación Operativa, 31*: 585. DOI: [10.1007/bf02888369](http://www.dx.doi.org/10.1007/bf02888369)
+- Bayarri, M.J., Berger, J.O., Forte, A. and Garcia-Donato, G. (2012). Criteria for Bayesian Model choice with Application to Variable Selection. *Annals of Statistics, 40*: 1550-1577. DOI: [10.1214/12-aos1013](https://www.dx.doi.org/10.1214/12-aos1013/)
+- Fernandez, C., Ley, E. and Steel, M.F.J. (2001). Benchmark priors for Bayesian model averaging. *Journal of Econometrics, 100*: 381-427. DOI: [10.1016/s0304-4076(00)00076-2](https://www.dx.doi.org/10.1016/s0304-4076(00)00076-2/)
+- Garcia-Donato, G. and Forte, A. (2018). Bayesian Testing, Variable Selection and Model Averaging in Linear Models using R with BayesVarSel. *The R Journal, 10*(1): 155–174. Retrieved from [https://journal.r-project.org/archive/2018/RJ-2018-021/index.html](https://journal.r-project.org/archive/2018/RJ-2018-021/index.html/)
+- Garcia-Donato, G. and Martinez-Beneito, M.A. (2013). On sampling strategies in Bayesian variable selection problems with large model spaces. *Journal of the American Statistical Association, 108*: 340-352. DOI: [10.1080/01621459.2012.742443](https://www.dx.doi.org/10.1080/01621459.2012.742443/)
+- Liang, F., Paulo, R., Molina, G., Clyde, M. and Berger, J.O. (2008). Mixtures of g-priors for Bayesian Variable Selection. *Journal of the American Statistical Association, 103*: 410-423.DOI: [10.1198/016214507000001337](https://www.dx.doi.org/10.1198/016214507000001337/)
+- Zellner, A. and Siow, A. (1980). Posterior Odds Ratio for Selected Regression Hypotheses. *Trabajos de Estadística y de Investigación Operativa, 31*: 585. DOI: [10.1007/bf02888369](https://www.dx.doi.org/10.1007/bf02888369/)
 - Zellner, A. and Siow, A. (1984). *Basic Issues in Econometrics*. Chicago: University of Chicago.
-- Zellner, A. (1986). On Assessing Prior Distributions and Bayesian Regression Analysis with g-prior Distributions. In A. Zellner (ed.), *Bayesian Inference and Decision techniques: Essays in Honor of Bruno de Finetti*, 389-399. Edward Elgar Publishing Limited. DOI: [10.2307/2233941](http://www.dx.doi.org/10.2307/2233941)
+- Zellner, A. (1986). On Assessing Prior Distributions and Bayesian Regression Analysis with g-prior Distributions. In A. Zellner (ed.), *Bayesian Inference and Decision techniques: Essays in Honor of Bruno de Finetti*, 389-399. Edward Elgar Publishing Limited. DOI: [10.2307/2233941](https://www.dx.doi.org/10.2307/2233941/)
