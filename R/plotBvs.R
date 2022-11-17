@@ -166,7 +166,7 @@ plot.Bvs <-
         ),
         xlab = "",
         ylab = "",
-        col = ColorRamp,
+        col = ColorRamp, breaks=(0:length(ColorRamp))/length(ColorRamp),
         yaxt = "n",
         xaxt = "n"
         )
@@ -182,7 +182,7 @@ plot.Bvs <-
         1:length(xLabels),
         1:length(yLabels),
         t(x),
-        col = ColorRamp,
+        col = ColorRamp, breaks=(0:length(ColorRamp))/length(ColorRamp),
         xlab = "",
         ylab = "",
         axes = FALSE,
@@ -228,7 +228,7 @@ plot.Bvs <-
           ncol = length(ColorLevels),
           nrow = 1
         ),
-        col = ColorRamp,
+        col = ColorRamp,breaks=(0:length(ColorRamp))/length(ColorRamp),
         xlab = "",
         ylab = "",
         xaxt = "n"
