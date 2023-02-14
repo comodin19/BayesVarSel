@@ -284,36 +284,21 @@ void recompute(gsl_vector * v, gsl_vector * w, int N)
 
 int my_gsl_matrix_fprintf(FILE *stream,gsl_matrix *m,char *fmt)
 {
-	size_t rows=m->size1;
-	size_t cols=m->size2;
-	size_t row,col,ml;
-	int fill;
-	char buf[100];
-	gsl_vector *maxlen;
-	
-	maxlen=gsl_vector_alloc(cols);
-	for (col=0;col<cols;++col) {
-		ml=0;
-		for (row=0;row<rows;++row) {
-			sprintf(buf,fmt,gsl_matrix_get(m,row,col));
-			if (strlen(buf)>ml)
-				ml=strlen(buf);
-		}
-		gsl_vector_set(maxlen,col,ml);
-	}
-	
-	for (row=0;row<rows;++row) {
-		for (col=0;col<cols;++col) {
-			sprintf(buf,fmt,gsl_matrix_get(m,row,col));
-			fprintf(stream,"%s",buf);
-			fill=gsl_vector_get(maxlen,col)+1-strlen(buf);
-			while (--fill>=0)
-				fprintf(stream," ");
-		}
-		fprintf(stream,"\n");
-	}
-	gsl_vector_free(maxlen);
-	return 0;
+	int status, n = 0;
+
+	        for (size_t i = 0; i < m->size1; i++) {
+	                for (size_t j = 0; j < m->size2; j++) {
+	                        if ((status = fprintf(stream, "%g ", gsl_matrix_get(m, i, j))) < 0)
+	                                return -1;
+	                        n += status;
+	                }
+
+	                if ((status = fprintf(stream, "\n")) < 0)
+	                        return -1;
+	                n += status;
+	        }
+
+	        return n;
 }
 
 //A function to print a vector in a file by rows
