@@ -5,7 +5,7 @@ Title: Bayes Factors, Model Choice and Variable Selection in Linear
 Version: 2.2.4
 Date: 2023-02-15
 Authors@R: c(
-    person("Gonzalo", "Garcia-Donato",    email = "garcia_gon@gva.es",    role = c("aut")),
+    person("Gonzalo", "Garcia-Donato",    email = "gonzalo.garciadonato@uclm.es",    role = c("aut")),
     person("Anabel", "Forte",             email = "anabel.forte@uv.es",   role = c("aut", "cre")),
     person("Carlos", "Vergara-Hernández", email = "carlos.vergara@uv.es", role = c("ctb"))
     )
