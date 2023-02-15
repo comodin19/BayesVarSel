@@ -282,7 +282,7 @@ void recompute(gsl_vector * v, gsl_vector * w, int N)
 }
 
 
-int my_gsl_matrix_fprintf(FILE *stream,gsl_matrix *m,char *fmt)
+int my_gsl_matrix_fprintf(FILE *stream,gsl_matrix *m)
 {
 	int status, n = 0;
 

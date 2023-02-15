@@ -19,7 +19,7 @@
 #include "allBF.h"
 //#include "allBF.c"
 #include "priorprob.h"
-//#include "priorprob.c"
+//#include "priorprob.c"my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);
 void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, char *homePath[], double *time, int *pknull)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
@@ -313,7 +313,7 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -644,7 +644,7 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -975,7 +975,7 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -1306,7 +1306,7 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -1637,7 +1637,7 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -1968,7 +1968,7 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -2299,7 +2299,7 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -2630,7 +2630,7 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -2961,7 +2961,7 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -3292,7 +3292,7 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -3623,7 +3623,7 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -3954,7 +3954,7 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -4285,7 +4285,7 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -4616,7 +4616,7 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -4947,7 +4947,7 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -5278,7 +5278,7 @@ void intrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -5609,7 +5609,7 @@ void intrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -5940,7 +5940,7 @@ void intrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int 
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -6271,7 +6271,7 @@ void Robust2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -6602,7 +6602,7 @@ void Robust2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -6933,7 +6933,7 @@ void Robust2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -7264,7 +7264,7 @@ void geointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -7595,7 +7595,7 @@ void geointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -7926,7 +7926,7 @@ void geointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, i
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -8257,7 +8257,7 @@ void geointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio,
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -8587,7 +8587,7 @@ void geointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, in
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
@@ -8918,7 +8918,7 @@ void geointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 		gsl_vector_fprintf(fProb, postprob, "%.20f");
 		gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+		my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 		gsl_vector_fprintf(fModels, Who_Max_SAVE, "%f");
 	
 
