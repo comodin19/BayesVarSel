@@ -94,6 +94,7 @@ plot.Bvs <-
 
 
     myImagePlot <- function(x, scale, ...) {
+	  def.par <- par(no.readonly = TRUE)
       x <- as.matrix(x)
 
 
@@ -233,6 +234,8 @@ plot.Bvs <-
         ylab = "",
         xaxt = "n"
       )
+      par(def.par)  #- reset to default
+	  
     }
 
     #Joint posterior probabilities
