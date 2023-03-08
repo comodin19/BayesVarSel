@@ -1,5 +1,4 @@
-
-bitentry(
+bibentry(
     bibtype     = "Article",
     title       = "Bayesian Testing, Variable Selection and Model Averaging in Linear Models using {R} with {BayesVarSel}",
     author      = c(person("Gonzalo Garcia-Donato"), person("Anabel Forte")),
