@@ -9,10 +9,13 @@ Authors@R: c(
     person("Anabel", "Forte",             email = "anabel.forte@uv.es",   role = c("aut")),
     person("Carlos", "Vergara-Hernández", email = "carlos.vergara@uv.es", role = c("ctb"))
     )
-Maintainer: Gonzalo Garcia-Donato <gonzalo.garciadonato@uclm.es>
 Description: Bayes factors and posterior probabilities in Linear models, 
     aimed at provide a formal Bayesian answer to testing and variable 
     selection problems. 
+Maintainer: Gonzalo Garcia-Donato <gonzalo.garciadonato@uclm.es>
+Author: Gonzalo Garcia-Donato [aut, cre],
+    Anabel Forte [aut],
+    Carlos Vergara-Hernández [ctb]
 Acknowledgements: since version 1.9.0 BayesVarSel uses the non-exported function get_rdX from package lmerTest (distributed under GPL-2, GPL-3) and authored by Alexandra Kuznetsova, Per Bruun Brockhoff and Rune Haubo Bojesen Christensen.
 Encoding: UTF-8
 LazyData: TRUE

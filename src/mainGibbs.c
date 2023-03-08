@@ -331,7 +331,7 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -668,7 +668,7 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -1005,7 +1005,7 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -1346,7 +1346,7 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -1691,7 +1691,7 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -2028,7 +2028,7 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -2365,7 +2365,7 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -2702,7 +2702,7 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -3039,7 +3039,7 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -3376,7 +3376,7 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -3713,7 +3713,7 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -4050,7 +4050,7 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -4387,7 +4387,7 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -4724,7 +4724,7 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -5061,7 +5061,7 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -5401,7 +5401,7 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -5738,7 +5738,7 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -6075,7 +6075,7 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -6416,7 +6416,7 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -6753,7 +6753,7 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -7090,7 +7090,7 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -7431,7 +7431,7 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -7768,7 +7768,7 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -8105,7 +8105,7 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -8446,7 +8446,7 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -8783,7 +8783,7 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
@@ -9120,7 +9120,7 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
 	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
-	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob, "%.20f");	
+	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
 	gsl_vector_fprintf(fLastModel, index, "%f");
 	
