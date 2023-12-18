@@ -130,6 +130,10 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -248,6 +252,9 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -288,6 +295,9 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -308,6 +318,13 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -329,7 +346,10 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -338,7 +358,9 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -350,7 +372,10 @@ void GibbsgConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -825,6 +850,10 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -942,6 +971,9 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -981,6 +1013,9 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -1001,6 +1036,13 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -1022,7 +1064,10 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -1031,7 +1076,9 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -1043,7 +1090,10 @@ void GibbsgUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -1162,6 +1212,10 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -1282,6 +1336,9 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -1322,6 +1379,9 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -1342,6 +1402,13 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -1363,7 +1430,10 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -1372,7 +1442,9 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -1384,7 +1456,10 @@ void GibbsRobustConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -1503,6 +1578,10 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -1626,6 +1705,9 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -1667,6 +1749,9 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -1687,6 +1772,13 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -1708,7 +1800,10 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -1717,7 +1812,9 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -1729,7 +1826,10 @@ void GibbsRobustSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -1848,6 +1948,10 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -1965,6 +2069,9 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -2004,6 +2111,9 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -2024,6 +2134,13 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -2045,7 +2162,10 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -2054,7 +2174,9 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -2066,7 +2188,10 @@ void GibbsRobustUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -2185,6 +2310,10 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -2302,6 +2431,9 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -2341,6 +2473,9 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -2361,6 +2496,13 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -2382,7 +2524,10 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -2391,7 +2536,9 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -2403,7 +2550,10 @@ void GibbsLiangConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[]
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -2522,6 +2672,10 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -2639,6 +2793,9 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -2678,6 +2835,9 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -2698,6 +2858,13 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -2719,7 +2886,10 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -2728,7 +2898,9 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -2740,7 +2912,10 @@ void GibbsLiangSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -2859,6 +3034,10 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -2976,6 +3155,9 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -3015,6 +3197,9 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -3035,6 +3220,13 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -3056,7 +3248,10 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -3065,7 +3260,9 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -3077,7 +3274,10 @@ void GibbsLiangUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -3196,6 +3396,10 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -3313,6 +3517,9 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -3352,6 +3559,9 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -3372,6 +3582,13 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -3393,7 +3610,10 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -3402,7 +3622,9 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -3414,7 +3636,10 @@ void GibbsZSConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -3533,6 +3758,10 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -3650,6 +3879,9 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -3689,6 +3921,9 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -3709,6 +3944,13 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -3730,7 +3972,10 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -3739,7 +3984,9 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -3751,7 +3998,10 @@ void GibbsZSSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int 
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -3870,6 +4120,10 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -3987,6 +4241,9 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -4026,6 +4283,9 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -4046,6 +4306,13 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -4067,7 +4334,10 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -4076,7 +4346,9 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -4088,7 +4360,10 @@ void GibbsZSUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -4207,6 +4482,10 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -4324,6 +4603,9 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -4363,6 +4645,9 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -4383,6 +4668,13 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -4404,7 +4696,10 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -4413,7 +4708,9 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -4425,7 +4722,10 @@ void GibbsflsConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -4544,6 +4844,10 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -4661,6 +4965,9 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -4700,6 +5007,9 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -4720,6 +5030,13 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -4741,7 +5058,10 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -4750,7 +5070,9 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -4762,7 +5084,10 @@ void GibbsflsSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -4881,6 +5206,10 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -4998,6 +5327,9 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -5037,6 +5369,9 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -5057,6 +5392,13 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -5078,7 +5420,10 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -5087,7 +5432,9 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -5099,7 +5446,10 @@ void GibbsflsUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], i
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -5219,6 +5569,10 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -5337,6 +5691,9 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -5377,6 +5734,9 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -5397,6 +5757,13 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -5418,7 +5785,10 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -5427,7 +5797,9 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -5439,7 +5811,10 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -5558,6 +5933,10 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -5675,6 +6054,9 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -5714,6 +6096,9 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -5734,6 +6119,13 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -5755,7 +6147,10 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -5764,7 +6159,9 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -5776,7 +6173,10 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -5895,6 +6295,10 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -6012,6 +6416,9 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -6051,6 +6458,9 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -6071,6 +6481,13 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -6092,7 +6509,10 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -6101,7 +6521,9 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -6113,7 +6535,10 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -6234,6 +6659,10 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -6352,6 +6781,9 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -6392,6 +6824,9 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -6412,6 +6847,13 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -6433,7 +6875,10 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -6442,7 +6887,9 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -6454,7 +6901,10 @@ void GibbsintrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -6573,6 +7023,10 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -6690,6 +7144,9 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -6729,6 +7186,9 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -6749,6 +7209,13 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -6770,7 +7237,10 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -6779,7 +7249,9 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -6791,7 +7263,10 @@ void GibbsintrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -6910,6 +7385,10 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -7027,6 +7506,9 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -7066,6 +7548,9 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -7086,6 +7571,13 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -7107,7 +7599,10 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -7116,7 +7611,9 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -7128,7 +7625,10 @@ void GibbsintrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *homePat
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -7249,6 +7749,10 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -7367,6 +7871,9 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -7407,6 +7914,9 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -7427,6 +7937,13 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -7448,7 +7965,10 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -7457,7 +7977,9 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -7469,7 +7991,10 @@ void GibbsgeointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -7588,6 +8113,10 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -7705,6 +8234,9 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -7744,6 +8276,9 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -7764,6 +8299,13 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -7785,7 +8327,10 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -7794,7 +8339,9 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -7806,7 +8353,10 @@ void GibbsgeointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePa
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -7925,6 +8475,10 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -8042,6 +8596,9 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -8081,6 +8638,9 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -8101,6 +8661,13 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -8122,7 +8689,10 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -8131,7 +8701,9 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -8143,7 +8715,10 @@ void GibbsgeointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, char *home
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -8264,6 +8839,10 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -8382,6 +8961,9 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -8422,6 +9004,9 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -8442,6 +9027,13 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -8463,7 +9055,10 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -8472,7 +9067,9 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -8484,7 +9081,10 @@ void Gibbsgeointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *ho
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -8603,6 +9203,10 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -8720,6 +9324,9 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -8759,6 +9366,9 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -8779,6 +9389,13 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -8800,7 +9417,10 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -8809,7 +9429,9 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -8821,7 +9443,10 @@ void Gibbsgeointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homeP
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
@@ -8940,6 +9565,10 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	
 	//the vector with the inclusion probs:
 	gsl_vector * incl_prob=gsl_vector_calloc(p);
+//the vector with the Rao-Blackwellized inclusion probs:
+gsl_vector * incl_probRB=gsl_vector_calloc(p);
+
+
 	
 	//the matrix with the joint inclusion probs:
 	gsl_matrix * joint_incl_prob=gsl_matrix_calloc(p,p);
@@ -9057,6 +9686,9 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
+//Update RB estimators
+gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
+
 			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
@@ -9096,6 +9728,9 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	gsl_vector_scale(meanhatbetap, 1.0/SAVE);
 	gsl_vector_scale(dimension_prob, 1.0/SAVE);
 	gsl_matrix_scale(joint_incl_prob, 1.0/SAVE);
+//Normalize also RB estimators
+gsl_vector_scale(incl_probRB, 1.0/SAVE);
+
 	
 		
 	//Write the results:
@@ -9116,6 +9751,13 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
+
+char nfile4[100]="/InclusionProbRB";
+strcpy(strtmp,home);
+strcat(strtmp,nfile4);
+strcpy(nfile4,strtmp);
+FILE * fInclusionRB = fopen(strcat(nfile4,subindex), "w");
+
 	
 	char nfile5[100]="/ProbDimension";
 	strcpy(strtmp,home);
@@ -9137,7 +9779,10 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	//---------
 	
 	gsl_vector_fprintf(fbetahat, meanhatbetap, "%.20f");
-	gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+		gsl_vector_fprintf(fInclusion, incl_prob, "%.20f");
+	gsl_vector_fprintf(fInclusionRB, incl_probRB, "%.20f");	
+	
+
 	gsl_vector_fprintf(fDim, dimension_prob, "%.20f");
 	my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);	
 	gsl_vector_fprintf(fModels, HPM, "%f");
@@ -9146,7 +9791,9 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	
 	fclose(fLastModel);
 	fclose(fModels);	
-	fclose(fInclusion);
+			fclose(fInclusion);
+		fclose(fInclusionRB);	
+
 	fclose(fDim);
 	fclose(fJointInclusion);
 	fclose(fbetahat);
@@ -9158,7 +9805,10 @@ void Gibbsgeointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, char *hom
 	gsl_matrix_free (X);	
 	gsl_vector_free (index);
 	
-	gsl_vector_free(incl_prob);
+		gsl_vector_free(incl_prob);
+	gsl_vector_free(incl_probRB);
+			
+
 	gsl_matrix_free(joint_incl_prob);
 	gsl_vector_free(dimension_prob);
 	gsl_vector_free(hatbetap);
