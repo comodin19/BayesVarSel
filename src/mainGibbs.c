@@ -589,7 +589,9 @@ void GibbsgSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
             }
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
             //Update RB estimators
-            gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio*(1.0-2.0*oldcomponent)+oldcomponent);
+            //gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio*(1.0-2.0*oldcomponent)+oldcomponent);
+			//gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+(1.0-oldcomponent)*ratio+oldcomponent*(1.0-ratio));
+			gsl_vector_set(incl_probRB, component, gsl_vector_get(incl_probRB, component)+ratio);
  			newcomponent=gsl_ran_bernoulli(ran, ratio);
 			if (newcomponent==oldcomponent){
 				gsl_vector_set(index, component, newcomponent);
