@@ -1190,15 +1190,15 @@ calculaC<- function(modelslBF, priorprobs, p){
 	dimAset<- dimAset[notdup]
   
 	#Prior probabilities of the models in A (suming one is because the first position is occupied by dimension=0)
-	if (priorprobs=="ScottBerger") lpriorAset<- -log(p+1)-lchoose(p, dimAset)
-	if (priorprobs=="Constant") lpriorAset<- -p*log(2)
 	if (!is.character(priorprobs)) {
 		dimnotzero<- which(priorprobs>0)
 		priorAset<- priorprobs[dimAset+1]/sum(exp(log(priorprobs[dimnotzero])+lchoose(p, dimnotzero-1)))
 		lpriorAset<- log(priorAset)
 	}	
 
-	#The sum of Bi0*Pr(Mi) (g(A) in G&McC notation)
+	if (priorprobs[1]=="ScottBerger") lpriorAset<- -log(p+1)-lchoose(p, dimAset)
+	if (priorprobs[1]=="Constant") lpriorAset<- -p*log(2)
+		#The sum of Bi0*Pr(Mi) (g(A) in G&McC notation)
 	gAset<- sum(exp(lBFAset+lpriorAset))
 	#How many of the models in Bset are in A?
 	sumIA<- sum(modelslBF[Bset,"logBFi0"]%in%modelslBF[Aset,"logBFi0"])
