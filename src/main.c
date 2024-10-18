@@ -6109,13 +6109,18 @@ void Robust2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *
 	
 	//Complete the results for the null model:
 	int dimensionNull=0;
-	NormConstant=1.0*Constpriorprob(p,dimensionNull);
+	
+	//Since Oct, 18 2024 I am re-scaling all Bayes factors to avoid issues of infinite Bayes factors
+	//see issue50 in github
+	double ESTABCONST=log(1.0+n)*(-p)/2.0+705.0;
+	
+	NormConstant=exp(-ESTABCONST)*Constpriorprob(p,dimensionNull);
 	NormConstantPrior+=Constpriorprob(p,dimensionNull);
 
-	gsl_vector_set(dimension_prob, 0, 1.0*Constpriorprob(p,dimensionNull));
+	gsl_vector_set(dimension_prob, 0, exp(-ESTABCONST)*Constpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
-	gsl_vector_set(Max_SAVE_BF, 0, 1.0*Constpriorprob(p,dimensionNull));
+	gsl_vector_set(Max_SAVE_BF, 0, exp(-ESTABCONST)*Constpriorprob(p,dimensionNull));
     
     
 	// //////////////////////////////////////////////
@@ -6128,7 +6133,7 @@ void Robust2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *
 
 		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
-		BF21= Robust2BF21fun(n, k2e, knull,Q);
+		BF21= Robust2BF21fun(n, k2e, knull,Q, p);
 				
 		//Now the main calculations:
 		unnormPostProb=Constmainalgebraics(BF21, p, index, 
@@ -6166,7 +6171,7 @@ void Robust2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *
 				
 		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
-		BF21= Robust2BF21fun(n, k2e ,knull,Q);
+		BF21= Robust2BF21fun(n, k2e ,knull,Q, p);
 		//printf("The Bayes factor is: %.6f\n", BF21);
 				
 		//Now the main calculations:
@@ -6440,13 +6445,15 @@ void Robust2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	
 	//Complete the results for the null model:
 	int dimensionNull=0;
-	NormConstant=1.0*SBpriorprob(p,dimensionNull);
+	double ESTABCONST=log(1.0+n)*(-p)/2.0+705.0;
+	
+	NormConstant=exp(-ESTABCONST)*SBpriorprob(p,dimensionNull);
 	NormConstantPrior+=SBpriorprob(p,dimensionNull);
 
-	gsl_vector_set(dimension_prob, 0, 1.0*SBpriorprob(p,dimensionNull));
+	gsl_vector_set(dimension_prob, 0, exp(-ESTABCONST)*SBpriorprob(p,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
-	gsl_vector_set(Max_SAVE_BF, 0, 1.0*SBpriorprob(p,dimensionNull));
+	gsl_vector_set(Max_SAVE_BF, 0, exp(-ESTABCONST)*SBpriorprob(p,dimensionNull));
     
     
 	// //////////////////////////////////////////////
@@ -6459,7 +6466,7 @@ void Robust2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 
 		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
-		BF21= Robust2BF21fun(n, k2e, knull,Q);
+		BF21= Robust2BF21fun(n, k2e, knull,Q, p);
 				
 		//Now the main calculations:
 		unnormPostProb=SBmainalgebraics(BF21, p, index, 
@@ -6497,7 +6504,7 @@ void Robust2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 				
 		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
-		BF21= Robust2BF21fun(n, k2e ,knull,Q);
+		BF21= Robust2BF21fun(n, k2e ,knull,Q, p);
 		//printf("The Bayes factor is: %.6f\n", BF21);
 				
 		//Now the main calculations:
@@ -6771,13 +6778,15 @@ void Robust2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	
 	//Complete the results for the null model:
 	int dimensionNull=0;
-	NormConstant=1.0*gsl_vector_get(priorvector,dimensionNull);
+	double ESTABCONST=log(1.0+n)*(-p)/2.0+705.0;
+	
+	NormConstant=exp(-ESTABCONST)*gsl_vector_get(priorvector,dimensionNull);
 	NormConstantPrior+=gsl_vector_get(priorvector,dimensionNull);
 
-	gsl_vector_set(dimension_prob, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
+	gsl_vector_set(dimension_prob, 0, exp(-ESTABCONST)*gsl_vector_get(priorvector,dimensionNull));
 	
 	gsl_vector_set(Who_Max_SAVE, 0, 0);
-	gsl_vector_set(Max_SAVE_BF, 0, 1.0*gsl_vector_get(priorvector,dimensionNull));
+	gsl_vector_set(Max_SAVE_BF, 0, exp(-ESTABCONST)*gsl_vector_get(priorvector,dimensionNull));
     
     
 	// //////////////////////////////////////////////
@@ -6790,7 +6799,7 @@ void Robust2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 
 		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
-		BF21= Robust2BF21fun(n, k2e, knull,Q);
+		BF21= Robust2BF21fun(n, k2e, knull, Q, p);
 				
 		//Now the main calculations:
 		unnormPostProb=Usermainalgebraics(priorvector, BF21, p, index, 
@@ -6828,7 +6837,7 @@ void Robust2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 				
 		//the bayes factor in favor of modeli and against M0 
 		k2e=k2+knull;
-		BF21= Robust2BF21fun(n, k2e ,knull,Q);
+		BF21= Robust2BF21fun(n, k2e ,knull,Q, p);
 		//printf("The Bayes factor is: %.6f\n", BF21);
 				
 		//Now the main calculations:

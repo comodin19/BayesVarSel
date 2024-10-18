@@ -5239,6 +5239,10 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
 	
+	//Since Oct, 18 2024 I am re-scaling all Bayes factors to avoid issues of infinite Bayes factors
+	//see issue50 in github
+	double ESTABCONST=log(1.0+n)*(-p)/2.0+705.0;
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
 	
@@ -5252,14 +5256,14 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
         Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
         //the bayes factor in favor of Mi and against M0
         k2e=k2+knull;
-        oldPBF= Robust2BF21fun(n,k2e,knull,Q)*Constpriorprob(p,k2);
+        oldPBF= Robust2BF21fun(n,k2e,knull,Q,p)*Constpriorprob(p,k2);
         
     }
     else{
         Q=1.0;
         k2e=k2+knull;
         gsl_vector_set_zero(hatbetap);
-        oldPBF= 1.0*Constpriorprob(p,k2);
+        oldPBF= exp(-ESTABCONST)*Constpriorprob(p,k2);
     }
     
 	double HPMBF=oldPBF;
@@ -5276,12 +5280,12 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
             if (k2>0){
                 Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
                 k2e=k2+knull;
-                newPBF= Robust2BF21fun(n,k2e,knull,Q)*Constpriorprob(p,k2);
+                newPBF= Robust2BF21fun(n,k2e,knull,Q,p)*Constpriorprob(p,k2);
             }
             else{
                 Q=1.0;
                 gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*Constpriorprob(p,k2);
+                newPBF= exp(-ESTABCONST)*Constpriorprob(p,k2);
             }
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
             newcomponent=gsl_ran_bernoulli(ran, ratio);
@@ -5309,12 +5313,12 @@ void GibbsRobust2Const (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath
             if (k2>0){
                 Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
                 k2e=k2+knull;
-                newPBF= Robust2BF21fun(n,k2e,knull,Q)*Constpriorprob(p,k2);
+                newPBF= Robust2BF21fun(n,k2e,knull,Q,p)*Constpriorprob(p,k2);
             }
             else{
                 Q=1.0;
                 gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*Constpriorprob(p,k2);
+                newPBF= exp(-ESTABCONST)*Constpriorprob(p,k2);
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
@@ -5578,6 +5582,10 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
 	
+	//Since Oct, 18 2024 I am re-scaling all Bayes factors to avoid issues of infinite Bayes factors
+	//see issue50 in github
+	double ESTABCONST=log(1.0+n)*(-p)/2.0+705.0;
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
 	
@@ -5591,13 +5599,13 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
         Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
         //the bayes factor in favor of Mi and against M0
         k2e=k2+knull;
-        oldPBF= Robust2BF21fun(n,k2e,knull,Q)*SBpriorprob(p,k2);
+        oldPBF= Robust2BF21fun(n,k2e,knull,Q,p)*SBpriorprob(p,k2);
     }
     else{
         Q=1.0;
         k2e=k2+knull;
         gsl_vector_set_zero(hatbetap);
-        oldPBF= 1.0*SBpriorprob(p,k2);
+        oldPBF= exp(-ESTABCONST)*SBpriorprob(p,k2);
     }
     
 	double HPMBF=oldPBF;
@@ -5614,12 +5622,12 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
             if (k2>0){
                 Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
                 k2e=k2+knull;
-                newPBF= Robust2BF21fun(n,k2e,knull,Q)*SBpriorprob(p,k2);
+                newPBF= Robust2BF21fun(n,k2e,knull,Q,p)*SBpriorprob(p,k2);
             }
             else{
                 Q=1.0;
                 gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*SBpriorprob(p,k2);
+                newPBF= exp(-ESTABCONST)*SBpriorprob(p,k2);
             }
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
             newcomponent=gsl_ran_bernoulli(ran, ratio);
@@ -5647,12 +5655,12 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
             if (k2>0){
                 Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
                 k2e=k2+knull;
-                newPBF= Robust2BF21fun(n,k2e,knull,Q)*SBpriorprob(p,k2);
+                newPBF= Robust2BF21fun(n,k2e,knull,Q,p)*SBpriorprob(p,k2);
             }
             else{
                 Q=1.0;
                 gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*SBpriorprob(p,k2);
+                newPBF= exp(-ESTABCONST)*SBpriorprob(p,k2);
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
@@ -5686,7 +5694,7 @@ void GibbsRobust2SB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[],
 		//Write to the file the visited model
 		my_gsl_vector_fprintf(fAllModels, index, "%f");
 		//and the BF's
-		fprintf(fAllBF, "%.20f\n", oldPBF/SBpriorprob(p,k2)); 
+		fprintf(fAllBF, "%.20f\n", exp(log(oldPBF)+ESTABCONST)/SBpriorprob(p,k2)); 
 		
 	}
 	
@@ -5915,6 +5923,8 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
 	//meanhatbetap will contain the posterior mean of the betahats's (model averaged)
 	gsl_vector * meanhatbetap=gsl_vector_calloc(p);
 	
+	double ESTABCONST=log(1.0+n)*(-p)/2.0+705.0;
+	
 	// //////////////////////////////////////////////
 	int iter=1, component=1, oldcomponent=1, newcomponent=1;
 	
@@ -5928,13 +5938,13 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
         Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
         //the bayes factor in favor of Mi and against M0
         k2e=k2+knull;
-        oldPBF= Robust2BF21fun(n,k2e,knull,Q)*gsl_vector_get(priorvector,k2);
+        oldPBF= Robust2BF21fun(n,k2e,knull,Q,p)*gsl_vector_get(priorvector,k2);
     }
     else{
         Q=1.0;
         k2e=k2+knull;
         gsl_vector_set_zero(hatbetap);
-        oldPBF= 1.0*gsl_vector_get(priorvector,k2);
+        oldPBF= exp(-ESTABCONST)*gsl_vector_get(priorvector,k2);
     }
     
 	double HPMBF=oldPBF;
@@ -5951,12 +5961,12 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
             if (k2>0){
                 Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
                 k2e=k2+knull;
-                newPBF= Robust2BF21fun(n,k2e,knull,Q)*gsl_vector_get(priorvector,k2);
+                newPBF= Robust2BF21fun(n,k2e,knull,Q,p)*gsl_vector_get(priorvector,k2);
             }
             else{
                 Q=1.0;
                 gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*gsl_vector_get(priorvector,k2);
+                newPBF= exp(-ESTABCONST)*gsl_vector_get(priorvector,k2);
             }
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
             newcomponent=gsl_ran_bernoulli(ran, ratio);
@@ -5984,12 +5994,12 @@ void GibbsRobust2User (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[
             if (k2>0){
                 Q=Gibbsstatistics(p, n, SSEnull, X, y, index, &k2, hatbetap);
                 k2e=k2+knull;
-                newPBF= Robust2BF21fun(n,k2e,knull,Q)*gsl_vector_get(priorvector,k2);
+                newPBF= Robust2BF21fun(n,k2e,knull,Q,p)*gsl_vector_get(priorvector,k2);
             }
             else{
                 Q=1.0;
                 gsl_vector_set_zero(hatbetap);
-                newPBF= 1.0*gsl_vector_get(priorvector,k2);
+                newPBF= exp(-ESTABCONST)*gsl_vector_get(priorvector,k2);
             }
 
             ratio=(oldcomponent*(oldPBF-newPBF)+newPBF)/(newPBF+oldPBF);
