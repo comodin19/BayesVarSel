@@ -48,7 +48,7 @@ double SBSBpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_matrix *
 			 j++;
 			}
 		 if (suma>0){
-			 m1plusm2++;
+			 m1plusm2=m1plusm2+1;
 		 	}
 
 		 gsl_vector_set(v, i, suma);
@@ -97,7 +97,7 @@ double ConstConstpriorprob(gsl_vector * indexfr, gsl_vector * positionsx, gsl_ma
 			 j++;
 			}
 		 if (suma>0){
-			 m1plusm2++;
+			 m1plusm2=m1plusm2+1.0;
 		 	}
 
 		 gsl_vector_set(v, i, suma);
