@@ -58,6 +58,8 @@
 #' of fixed variables} \item{HPMbin }{The binary expression of the most
 #' probable model found.} \item{inclprob }{A named vector with the
 #' estimates of the inclusion probabilities of all the variables.}
+#' \item{inclprobRB }{A named vector with the
+#' Rao-Blackwell estimations of the inclusion probabilities of all the variables.}
 #' \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
 #' inclusion probabilities of all the variables.} \item{postprobdim }{Estimates
 #' of posterior probabilities of the dimension of the true model.}
@@ -1103,6 +1105,7 @@ GibbsBvs <-
     #read the files given by C
     models <- as.vector(t(read.table(paste(wd,"/MostProbModels",sep=""),colClasses="numeric")))
     incl <- as.vector(t(read.table(paste(wd,"/InclusionProb",sep=""),colClasses="numeric")))
+    inclRB <- as.vector(t(read.table(paste(wd,"/InclusionProbRB",sep=""),colClasses="numeric")))	
     joint <- as.matrix(read.table(paste(wd,"/JointInclusionProb",sep=""),colClasses="numeric"))
     dimen <- as.vector(t(read.table(paste(wd,"/ProbDimension",sep=""),colClasses="numeric")))
     betahat<- as.vector(t(read.table(paste(wd,"/betahat",sep=""),colClasses="numeric")))
@@ -1121,6 +1124,10 @@ GibbsBvs <-
 
     inclusion <- incl
     names(inclusion) <- namesx
+	
+    inclusionRB <- inclRB
+    names(inclusionRB) <- namesx
+	
     result <- list()
     #
     result$time <- time #The time it took the programm to finish
@@ -1137,8 +1144,11 @@ GibbsBvs <-
     names(result$HPMbin) <- namesx
     #result$modelsprob <- mod.mat
     result$modelslogBF <-modelslBF#The binary code for all the visited models (after n.thin is applied) and the correspondent log(BF)
-    result$inclprob <- inclusion #inclusion probability for each variable
+    result$inclprob <- inclusion #inclusion probability for each variable	
     names(result$inclprob) <- namesx
+	
+    result$inclprobRB <- inclusionRB #inclusion probability for each variable	
+    names(result$inclprobRB) <- namesx	
 
     result$jointinclprob <- data.frame(joint[1:p,1:p],row.names=namesx)#data.frame for the joint inclusion probabilities
     names(result$jointinclprob) <- namesx
