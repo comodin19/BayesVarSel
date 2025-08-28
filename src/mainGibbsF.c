@@ -23,6 +23,8 @@
 //#include "allBF.c"
 #include "priorprob.h"
 
+#define BUFFER_SIZE 2000
+
 void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *pBurnin, double *time, int *pknull, int *pnthin, int *pseed)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
@@ -46,10 +48,10 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	int knull=*pknull;
 	int nthin=*pnthin;
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
@@ -61,15 +63,15 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//Rprintf("The whole problem would have %f different competing models\n", info);
 	
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -80,7 +82,7 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//Factors:
 	//positions is a file that contains, in binary, the positions of each of the vars
 	//(either factor and its levels or numerical vars) in the design matrix
-	char nfileR12[100] = "/positions.txt";
+	char nfileR12[BUFFER_SIZE] = "/positions.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR12);
 	strcpy(nfileR12,strtmp);
@@ -102,7 +104,7 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 		
 	//Factors:
 	//positionsx is a file that contains, in binary, the positions of numerical vars) in the design matrix
-	char nfileR13[100] = "/positionsx.txt";
+	char nfileR13[BUFFER_SIZE] = "/positionsx.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR13);
 	strcpy(nfileR13,strtmp);
@@ -110,7 +112,7 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 			
 	
 	//The initial model:
-	char nfileR3[100] = "/initialmodel.txt";
+	char nfileR3[BUFFER_SIZE] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
@@ -119,7 +121,7 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//The prior probabilities:
 	//Factor:
 	/*
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -127,14 +129,14 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	*/
 		
 	//File that contain all visited models after burnin
-	char nfile10[100]="/AllModels";
+	char nfile10[BUFFER_SIZE]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
 	
 	//File that contain all BF's of previuos models
-	char nfile11[100]="/AllBF";
+	char nfile11[BUFFER_SIZE]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
@@ -264,7 +266,7 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	//this file contains the type of Bayes factor used:
 	//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
 	//fls is not yet implemented because it depends on an extra parameter
-	char nfileP1[100] = "/typeofBF.txt";
+	char nfileP1[BUFFER_SIZE] = "/typeofBF.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileP1);
 	strcpy(nfileP1,strtmp);
@@ -432,37 +434,37 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	
 		
 	//Write the results:
-	char nfile1[100]="/LastModel";
+	char nfile1[BUFFER_SIZE]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -535,10 +537,10 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	int knull=*pknull;
 	int nthin=*pnthin;
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
@@ -550,15 +552,15 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//Rprintf("The whole problem would have %f different competing models\n", info);
 	
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -569,7 +571,7 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//Factors:
 	//positions is a file that contains, in binary, the positions of each of the vars
 	//(either factor and its levels or numerical vars) in the design matrix
-	char nfileR12[100] = "/positions.txt";
+	char nfileR12[BUFFER_SIZE] = "/positions.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR12);
 	strcpy(nfileR12,strtmp);
@@ -591,7 +593,7 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 		
 	//Factors:
 	//positionsx is a file that contains, in binary, the positions of numerical vars) in the design matrix
-	char nfileR13[100] = "/positionsx.txt";
+	char nfileR13[BUFFER_SIZE] = "/positionsx.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR13);
 	strcpy(nfileR13,strtmp);
@@ -599,7 +601,7 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 			
 	
 	//The initial model:
-	char nfileR3[100] = "/initialmodel.txt";
+	char nfileR3[BUFFER_SIZE] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
@@ -608,7 +610,7 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//The prior probabilities:
 	//Factor:
 	/*
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -616,14 +618,14 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	*/
 		
 	//File that contain all visited models after burnin
-	char nfile10[100]="/AllModels";
+	char nfile10[BUFFER_SIZE]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
 	
 	//File that contain all BF's of previuos models
-	char nfile11[100]="/AllBF";
+	char nfile11[BUFFER_SIZE]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
@@ -752,7 +754,7 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	//this file contains the type of Bayes factor used:
 	//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
 	//fls is not yet implemented because it depends on an extra parameter
-	char nfileP1[100] = "/typeofBF.txt";
+	char nfileP1[BUFFER_SIZE] = "/typeofBF.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileP1);
 	strcpy(nfileP1,strtmp);
@@ -920,37 +922,37 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	
 		
 	//Write the results:
-	char nfile1[100]="/LastModel";
+	char nfile1[BUFFER_SIZE]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -1026,10 +1028,10 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	int knull=*pknull;
 	int nthin=*pnthin;
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
@@ -1041,15 +1043,15 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//Rprintf("The whole problem would have %f different competing models\n", info);
 	
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -1060,7 +1062,7 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//Factors:
 	//positions is a file that contains, in binary, the positions of each of the vars
 	//(either factor and its levels or numerical vars) in the design matrix
-	char nfileR12[100] = "/positions.txt";
+	char nfileR12[BUFFER_SIZE] = "/positions.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR12);
 	strcpy(nfileR12,strtmp);
@@ -1082,7 +1084,7 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 		
 	//Factors:
 	//positionsx is a file that contains, in binary, the positions of numerical vars) in the design matrix
-	char nfileR13[100] = "/positionsx.txt";
+	char nfileR13[BUFFER_SIZE] = "/positionsx.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR13);
 	strcpy(nfileR13,strtmp);
@@ -1090,7 +1092,7 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 			
 	
 	//The initial model:
-	char nfileR3[100] = "/initialmodel.txt";
+	char nfileR3[BUFFER_SIZE] = "/initialmodel.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR3);
 	strcpy(nfileR3,strtmp);
@@ -1099,7 +1101,7 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//The prior probabilities:
 	//Factor:
 	/*
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -1107,14 +1109,14 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	*/
 		
 	//File that contain all visited models after burnin
-	char nfile10[100]="/AllModels";
+	char nfile10[BUFFER_SIZE]="/AllModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile10);
 	strcpy(nfile10,strtmp);
 	FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
 	
 	//File that contain all BF's of previuos models
-	char nfile11[100]="/AllBF";
+	char nfile11[BUFFER_SIZE]="/AllBF";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile11);
 	strcpy(nfile11,strtmp);
@@ -1244,7 +1246,7 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	//this file contains the type of Bayes factor used:
 	//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
 	//fls is not yet implemented because it depends on an extra parameter
-	char nfileP1[100] = "/typeofBF.txt";
+	char nfileP1[BUFFER_SIZE] = "/typeofBF.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileP1);
 	strcpy(nfileP1,strtmp);
@@ -1404,37 +1406,37 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	
 		
 	//Write the results:
-	char nfile1[100]="/LastModel";
+	char nfile1[BUFFER_SIZE]="/LastModel";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -1508,10 +1510,10 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			int knull=*pknull;
 			int nthin=*pnthin;
 			//The files have an index attached:
-			char subindex[100];
+			char subindex[BUFFER_SIZE];
 			strcpy(subindex,*pI);
 			//where the files are read and writen the results:
-			char home[100];
+			char home[BUFFER_SIZE];
 			strcpy(home,*homePath);
 			//-----------
 	
@@ -1523,15 +1525,15 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//Rprintf("The whole problem would have %f different competing models\n", info);
 	
 			//Data files: (R version)
-			char strtmp[100] = ""; 
+			char strtmp[BUFFER_SIZE] = ""; 
 	
-			char nfileR1[100] = "/Dependent.txt";
+			char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR1);
 			strcpy(nfileR1,strtmp);
 			FILE * fResponse = fopen(nfileR1, "r");
 	
-			char nfileR2[100] = "/Design.txt";
+			char nfileR2[BUFFER_SIZE] = "/Design.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR2);
 			strcpy(nfileR2,strtmp);
@@ -1542,7 +1544,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//Factors:
 			//positions is a file that contains, in binary, the positions of each of the vars
 			//(either factor and its levels or numerical vars) in the design matrix
-			char nfileR12[100] = "/positions.txt";
+			char nfileR12[BUFFER_SIZE] = "/positions.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR12);
 			strcpy(nfileR12,strtmp);
@@ -1564,7 +1566,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 		
 			//Factors:
 			//positionsx is a file that contains, in binary, the positions of numerical vars) in the design matrix
-			char nfileR13[100] = "/positionsx.txt";
+			char nfileR13[BUFFER_SIZE] = "/positionsx.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR13);
 			strcpy(nfileR13,strtmp);
@@ -1572,7 +1574,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			
 	
 			//The initial model:
-			char nfileR3[100] = "/initialmodel.txt";
+			char nfileR3[BUFFER_SIZE] = "/initialmodel.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR3);
 			strcpy(nfileR3,strtmp);
@@ -1581,7 +1583,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//The prior probabilities:
 			//Factor:
 			/*
-			char nfileR4[100] = "/priorprobs.txt";
+			char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR4);
 			strcpy(nfileR4,strtmp);
@@ -1589,14 +1591,14 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			*/
 		
 			//File that contain all visited models after burnin
-			char nfile10[100]="/AllModels";
+			char nfile10[BUFFER_SIZE]="/AllModels";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile10);
 			strcpy(nfile10,strtmp);
 			FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
 	
 			//File that contain all BF's of previuos models
-			char nfile11[100]="/AllBF";
+			char nfile11[BUFFER_SIZE]="/AllBF";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile11);
 			strcpy(nfile11,strtmp);
@@ -1725,7 +1727,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//this file contains the type of Bayes factor used:
 			//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
 			//fls is not yet implemented because it depends on an extra parameter
-			char nfileP1[100] = "/typeofBF.txt";
+			char nfileP1[BUFFER_SIZE] = "/typeofBF.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileP1);
 			strcpy(nfileP1,strtmp);
@@ -1887,37 +1889,37 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	
 		
 			//Write the results:
-			char nfile1[100]="/LastModel";
+			char nfile1[BUFFER_SIZE]="/LastModel";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile1);
 			strcpy(nfile1,strtmp);
 			FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
 	
-			char nfile2[100]="/MostProbModels";
+			char nfile2[BUFFER_SIZE]="/MostProbModels";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile2);
 			strcpy(nfile2,strtmp);
 			FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-			char nfile3[100]="/InclusionProb";
+			char nfile3[BUFFER_SIZE]="/InclusionProb";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile3);
 			strcpy(nfile3,strtmp);
 			FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-			char nfile5[100]="/ProbDimension";
+			char nfile5[BUFFER_SIZE]="/ProbDimension";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile5);
 			strcpy(nfile5,strtmp);
 			FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
-			char nfile8[100]="/JointInclusionProb";
+			char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile8);
 			strcpy(nfile8,strtmp);
 			FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-			char nfile9[100]="/betahat";
+			char nfile9[BUFFER_SIZE]="/betahat";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile9);
 			strcpy(nfile9,strtmp);
@@ -1991,10 +1993,10 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			int knull=*pknull;
 			int nthin=*pnthin;
 			//The files have an index attached:
-			char subindex[100];
+			char subindex[BUFFER_SIZE];
 			strcpy(subindex,*pI);
 			//where the files are read and writen the results:
-			char home[100];
+			char home[BUFFER_SIZE];
 			strcpy(home,*homePath);
 			//-----------
 	
@@ -2006,15 +2008,15 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//Rprintf("The whole problem would have %f different competing models\n", info);
 	
 			//Data files: (R version)
-			char strtmp[100] = ""; 
+			char strtmp[BUFFER_SIZE] = ""; 
 	
-			char nfileR1[100] = "/Dependent.txt";
+			char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR1);
 			strcpy(nfileR1,strtmp);
 			FILE * fResponse = fopen(nfileR1, "r");
 	
-			char nfileR2[100] = "/Design.txt";
+			char nfileR2[BUFFER_SIZE] = "/Design.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR2);
 			strcpy(nfileR2,strtmp);
@@ -2025,7 +2027,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//Factors:
 			//positions is a file that contains, in binary, the positions of each of the vars
 			//(either factor and its levels or numerical vars) in the design matrix
-			char nfileR12[100] = "/positions.txt";
+			char nfileR12[BUFFER_SIZE] = "/positions.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR12);
 			strcpy(nfileR12,strtmp);
@@ -2047,7 +2049,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 		
 			//Factors:
 			//positionsx is a file that contains, in binary, the positions of numerical vars) in the design matrix
-			char nfileR13[100] = "/positionsx.txt";
+			char nfileR13[BUFFER_SIZE] = "/positionsx.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR13);
 			strcpy(nfileR13,strtmp);
@@ -2055,7 +2057,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			
 	
 			//The initial model:
-			char nfileR3[100] = "/initialmodel.txt";
+			char nfileR3[BUFFER_SIZE] = "/initialmodel.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR3);
 			strcpy(nfileR3,strtmp);
@@ -2064,7 +2066,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//The prior probabilities:
 			//Factor:
 			/*
-			char nfileR4[100] = "/priorprobs.txt";
+			char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileR4);
 			strcpy(nfileR4,strtmp);
@@ -2072,14 +2074,14 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			*/
 		
 			//File that contain all visited models after burnin
-			char nfile10[100]="/AllModels";
+			char nfile10[BUFFER_SIZE]="/AllModels";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile10);
 			strcpy(nfile10,strtmp);
 			FILE * fAllModels = fopen(strcat(nfile10,subindex), "w");
 	
 			//File that contain all BF's of previuos models
-			char nfile11[100]="/AllBF";
+			char nfile11[BUFFER_SIZE]="/AllBF";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile11);
 			strcpy(nfile11,strtmp);
@@ -2208,7 +2210,7 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			//this file contains the type of Bayes factor used:
 			//0 is unitary; 1 is Robust; 2 is gprior; 4 is Liang and 5 is Zellner-Siow
 			//fls is not yet implemented because it depends on an extra parameter
-			char nfileP1[100] = "/typeofBF.txt";
+			char nfileP1[BUFFER_SIZE] = "/typeofBF.txt";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfileP1);
 			strcpy(nfileP1,strtmp);
@@ -2376,37 +2378,37 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 	
 		
 			//Write the results:
-			char nfile1[100]="/LastModel";
+			char nfile1[BUFFER_SIZE]="/LastModel";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile1);
 			strcpy(nfile1,strtmp);
 			FILE * fLastModel = fopen(strcat(nfile1,subindex), "w");
 	
-			char nfile2[100]="/MostProbModels";
+			char nfile2[BUFFER_SIZE]="/MostProbModels";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile2);
 			strcpy(nfile2,strtmp);
 			FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-			char nfile3[100]="/InclusionProb";
+			char nfile3[BUFFER_SIZE]="/InclusionProb";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile3);
 			strcpy(nfile3,strtmp);
 			FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-			char nfile5[100]="/ProbDimension";
+			char nfile5[BUFFER_SIZE]="/ProbDimension";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile5);
 			strcpy(nfile5,strtmp);
 			FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
-			char nfile8[100]="/JointInclusionProb";
+			char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile8);
 			strcpy(nfile8,strtmp);
 			FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-			char nfile9[100]="/betahat";
+			char nfile9[BUFFER_SIZE]="/betahat";
 			strcpy(strtmp,home);
 			strcat(strtmp,nfile9);
 			strcpy(nfile9,strtmp);

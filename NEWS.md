@@ -1,3 +1,9 @@
+# BayesVarSel 2.3.5
+* Fixed an error that appears when using the option prior.models="User". 
+
+# BayesVarSel 2.2.5
+* Minor changes about the role of the authors of the package. 
+
 # BayesVarSel 2.2.2
 * Included the implementation by Greenaway (2018) of the robust prior, and a better organization of the labels to refer to the priors plus the need to specify those literally. 
 

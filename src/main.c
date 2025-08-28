@@ -20,6 +20,9 @@
 //#include "allBF.c"
 #include "priorprob.h"
 //#include "priorprob.c"my_gsl_matrix_fprintf(fJointInclusion, joint_incl_prob);
+
+#define BUFFER_SIZE 2000
+
 void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, char *homePath[], double *time, int *pknull)
 {
 	//Version where the null model is only the error term and vs is performed over the whole design
@@ -43,25 +46,25 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -69,7 +72,7 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -253,56 +256,56 @@ void gConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -374,25 +377,25 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -400,7 +403,7 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -584,56 +587,56 @@ void gSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, c
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -705,25 +708,25 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -731,7 +734,7 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -915,56 +918,56 @@ void gUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -1036,25 +1039,25 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -1062,7 +1065,7 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -1246,56 +1249,56 @@ void RobustConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -1367,25 +1370,25 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -1393,7 +1396,7 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -1577,56 +1580,56 @@ void RobustSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -1698,25 +1701,25 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -1724,7 +1727,7 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -1908,56 +1911,56 @@ void RobustUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -2029,25 +2032,25 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -2055,7 +2058,7 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -2239,56 +2242,56 @@ void LiangConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pf
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -2360,25 +2363,25 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -2386,7 +2389,7 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -2570,56 +2573,56 @@ void LiangSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -2691,25 +2694,25 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -2717,7 +2720,7 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -2901,56 +2904,56 @@ void LiangUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -3022,25 +3025,25 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -3048,7 +3051,7 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -3232,56 +3235,56 @@ void ZSConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -3353,25 +3356,25 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -3379,7 +3382,7 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -3563,56 +3566,56 @@ void ZSSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal, 
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -3684,25 +3687,25 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -3710,7 +3713,7 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -3894,56 +3897,56 @@ void ZSUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -4015,25 +4018,25 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -4041,7 +4044,7 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -4225,56 +4228,56 @@ void flsConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfin
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -4346,25 +4349,25 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -4372,7 +4375,7 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -4556,56 +4559,56 @@ void flsSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfinal,
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -4677,25 +4680,25 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -4703,7 +4706,7 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -4887,56 +4890,56 @@ void flsUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfina
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -5008,25 +5011,25 @@ void intrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -5034,7 +5037,7 @@ void intrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -5218,56 +5221,56 @@ void intrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -5339,25 +5342,25 @@ void intrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -5365,7 +5368,7 @@ void intrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -5549,56 +5552,56 @@ void intrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -5670,25 +5673,25 @@ void intrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int 
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -5696,7 +5699,7 @@ void intrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int 
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -5880,56 +5883,56 @@ void intrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int 
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -6001,25 +6004,25 @@ void Robust2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -6027,7 +6030,7 @@ void Robust2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -6211,56 +6214,56 @@ void Robust2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -6332,25 +6335,25 @@ void Robust2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -6358,7 +6361,7 @@ void Robust2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -6542,56 +6545,56 @@ void Robust2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *pfi
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -6663,25 +6666,25 @@ void Robust2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -6689,7 +6692,7 @@ void Robust2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -6873,56 +6876,56 @@ void Robust2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int *p
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -6994,25 +6997,25 @@ void geointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -7020,7 +7023,7 @@ void geointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -7204,56 +7207,56 @@ void geointrinsicConst (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -7325,25 +7328,25 @@ void geointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -7351,7 +7354,7 @@ void geointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -7535,56 +7538,56 @@ void geointrinsicSB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, int
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -7656,25 +7659,25 @@ void geointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, i
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -7682,7 +7685,7 @@ void geointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, i
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -7866,56 +7869,56 @@ void geointrinsicUser (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, i
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -7987,25 +7990,25 @@ void geointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio,
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -8013,7 +8016,7 @@ void geointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio,
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -8197,56 +8200,56 @@ void geointrinsic2Const (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio,
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -8318,25 +8321,25 @@ void geointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, in
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -8344,7 +8347,7 @@ void geointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, in
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -8527,56 +8530,56 @@ void geointrinsic2SB (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, in
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
@@ -8648,25 +8651,25 @@ void geointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 	int FinishAt= *pfinal; //where to finish
 	
 	//The files have an index attached:
-	char subindex[100];
+	char subindex[BUFFER_SIZE];
 	strcpy(subindex,*pI);
 	//where the files are read and writen the results:
-	char home[100];
+	char home[BUFFER_SIZE];
 	strcpy(home,*homePath);
 	//-----------
 	
 	//double info=pow(2,p);
 
 	//Data files: (R version)
-	char strtmp[100] = ""; 
+	char strtmp[BUFFER_SIZE] = ""; 
 	
-	char nfileR1[100] = "/Dependent.txt";
+	char nfileR1[BUFFER_SIZE] = "/Dependent.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR1);
 	strcpy(nfileR1,strtmp);
 	FILE * fResponse = fopen(nfileR1, "r");
 	
-	char nfileR2[100] = "/Design.txt";
+	char nfileR2[BUFFER_SIZE] = "/Design.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR2);
 	strcpy(nfileR2,strtmp);
@@ -8674,7 +8677,7 @@ void geointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 	//-----------
 	
 	//The prior probabilities:
-	char nfileR4[100] = "/priorprobs.txt";
+	char nfileR4[BUFFER_SIZE] = "/priorprobs.txt";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfileR4);
 	strcpy(nfileR4,strtmp);
@@ -8858,56 +8861,56 @@ void geointrinsic2User (char *pI[], int *pn, int *pp, int *pSAVE, int *pinicio, 
 
 	
 	//write the results to files (R version)
-	char nfile1[100]="/PostProb";
+	char nfile1[BUFFER_SIZE]="/PostProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile1);
 	strcpy(nfile1,strtmp);
 	FILE * fProb = fopen(strcat(nfile1,subindex), "w");
 	
-	char nfile2[100]="/MostProbModels";
+	char nfile2[BUFFER_SIZE]="/MostProbModels";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile2);
 	strcpy(nfile2,strtmp);
 	FILE * fModels = fopen(strcat(nfile2,subindex), "w");
 	
-	char nfile3[100]="/InclusionProb";
+	char nfile3[BUFFER_SIZE]="/InclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile3);
 	strcpy(nfile3,strtmp);
 	FILE * fInclusion = fopen(strcat(nfile3,subindex), "w");
 	
-	char nfile4[100]="/NormConstant";
+	char nfile4[BUFFER_SIZE]="/NormConstant";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile4);
 	strcpy(nfile4,strtmp);	
 	FILE * fTotalBF = fopen(strcat(nfile4,subindex), "w");
 	
-	char nfile5[100]="/ProbDimension";
+	char nfile5[BUFFER_SIZE]="/ProbDimension";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile5);
 	strcpy(nfile5,strtmp);
 	FILE * fDim = fopen(strcat(nfile5,subindex), "w");
 	
 	
-	char nfile6[100]="/StartEnd";
+	char nfile6[BUFFER_SIZE]="/StartEnd";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile6);
 	strcpy(nfile6,strtmp);
 	FILE * fStEnd = fopen(strcat(nfile6,subindex), "w");
 	
-	char nfile7[100]="/NormConstantPrior";
+	char nfile7[BUFFER_SIZE]="/NormConstantPrior";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile7);
 	strcpy(nfile7,strtmp);
 	FILE * fNormCPrior = fopen(strcat(nfile7,subindex), "w");
 	
-	char nfile8[100]="/JointInclusionProb";
+	char nfile8[BUFFER_SIZE]="/JointInclusionProb";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile8);
 	strcpy(nfile8,strtmp);
 	FILE * fJointInclusion = fopen(strcat(nfile8,subindex), "w");
 	
-	char nfile9[100]="/betahat";
+	char nfile9[BUFFER_SIZE]="/betahat";
 	strcpy(strtmp,home);
 	strcat(strtmp,nfile9);
 	strcpy(nfile9,strtmp);
