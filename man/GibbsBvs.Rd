@@ -78,6 +78,8 @@ the potential explanatory variables} \item{n }{Number of observations}
 of fixed variables} \item{HPMbin }{The binary expression of the most
 probable model found.} \item{inclprob }{A named vector with the
 estimates of the inclusion probabilities of all the variables.}
+\item{inclprobRB }{A named vector with the
+Rao-Blackwell estimations of the inclusion probabilities of all the variables.}
 \item{jointinclprob }{A \code{data.frame} with the estimates of the joint
 inclusion probabilities of all the variables.} \item{postprobdim }{Estimates
 of posterior probabilities of the dimension of the true model.}
