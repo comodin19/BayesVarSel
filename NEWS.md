@@ -1,3 +1,10 @@
+# BayesVarSel 2.5.0
+* Added the computation of Rao-Blackwell estimations of inclusion probabilities.
+Implemented in GibbsBvs.
+
+# BayesVarSel 2.4.5
+* Fixed a compilation error reported by CRAN mantainers (Issue 51)
+
 # BayesVarSel 2.3.5
 * Fixed an error that appears when using the option prior.models="User". 
 
