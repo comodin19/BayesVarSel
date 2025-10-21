@@ -284,7 +284,10 @@ void GibbsFSBSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int
 	if (typeofBF==2) BF21fun=gBF21fun;
 	if (typeofBF==4) BF21fun=LiangBF21fun;
 	if (typeofBF==5) BF21fun=ZSBF21fun;
-	if (typeofBF==6) BF21fun=Robust2BF21fun;
+	if (typeofBF==6) {Rprintf("Robust2 not implemented. I use Robust\n");
+	                  BF21fun=RobustBF21fun;
+				      }
+
 	
 	
 	
@@ -772,7 +775,9 @@ void GibbsFSBConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], 
 	if (typeofBF==2) BF21fun=gBF21fun;
 	if (typeofBF==4) BF21fun=LiangBF21fun;
 	if (typeofBF==5) BF21fun=ZSBF21fun;
-	if (typeofBF==6) BF21fun=Robust2BF21fun;
+	if (typeofBF==6) {Rprintf("Robust2 not implemented. I use Robust\n");
+	                  BF21fun=RobustBF21fun;
+				      }
 
 	
 	
@@ -1264,7 +1269,9 @@ void GibbsFConst (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], in
 	if (typeofBF==2) BF21fun=gBF21fun;
 	if (typeofBF==4) BF21fun=LiangBF21fun;
 	if (typeofBF==5) BF21fun=ZSBF21fun;
-	if (typeofBF==6) BF21fun=Robust2BF21fun;
+	if (typeofBF==6) {Rprintf("Robust2 not implemented. I use Robust\n");
+	                  BF21fun=RobustBF21fun;
+				      }
 
 	
 	
@@ -1745,8 +1752,9 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			if (typeofBF==2) BF21fun=gBF21fun;
 			if (typeofBF==4) BF21fun=LiangBF21fun;
 			if (typeofBF==5) BF21fun=ZSBF21fun;
-			if (typeofBF==6) BF21fun=Robust2BF21fun;
-
+			if (typeofBF==6) {Rprintf("Robust2 not implemented. I use Robust\n");
+			                  BF21fun=RobustBF21fun;
+						      }
 	
 			// //////////////////////////////////////////////
 			int iter=1, component=1, oldcomponent=1, newcomponent=1;
@@ -2228,7 +2236,9 @@ void GibbsFSB (char *pI[], int *pn, int *pp, int *pSAVE, char *homePath[], int *
 			if (typeofBF==2) BF21fun=gBF21fun;
 			if (typeofBF==4) BF21fun=LiangBF21fun;
 			if (typeofBF==5) BF21fun=ZSBF21fun;
-			if (typeofBF==6) BF21fun=Robust2BF21fun;
+			if (typeofBF==6) {Rprintf("Robust2 not implemented. I use Robust\n");
+			                  BF21fun=RobustBF21fun;
+						      }
 
 			
 	
