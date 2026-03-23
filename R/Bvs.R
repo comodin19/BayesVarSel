@@ -1406,7 +1406,7 @@ check.prior.betas <- function(prior.betas){
 	success <- 0
 	if (prior.betas == "Robust") {success <- 1; prior.betas.internal <- "r"}
 	if (prior.betas == "gZellner") {success <- 1; prior.betas.internal <- "g"}
-	if (prior.betas == "Liangetat") {success <- 1; prior.betas.internal <- "l"}
+	if (prior.betas == "Liangetal") {success <- 1; prior.betas.internal <- "l"}
 	if (prior.betas == "ZellnerSiow") {success <- 1; prior.betas.internal <- "z"}
 	if (prior.betas == "FLS") {success <- 1; prior.betas.internal <- "f"}
 	if (prior.betas == "intrinsic.MGC") {success <- 1; prior.betas.internal <- "i"}
