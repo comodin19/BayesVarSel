@@ -1279,9 +1279,20 @@ print.Bvs <-
        p <- x$p
        n.iter <- dim(x$modelslogBF)[1]
        dimmodels<- rowSums(x$modelslogBF[,1:p])+1
-       logpostprob<- x$modelslogBF[, (p+1)] + log(x$priorprobs[dimmodels])-log(x$C)-log(sum(x$priorprobs*choose(p,0:p)))
- 
-       ordenado <- x$modelslogBF[order(logpostprob,decreasing = T),]
+       
+       #specify model log-prior:
+       if (!is.character(x$priorprobs)) lpriorprobs <- log(x$priorprobs)
+       if (x$priorprobs=="ScottBerger") lpriorprobs <- rep(-log(p+1), p+1)
+       if (x$priorprobs=="Constant") lpriorprobs <- -p*log(2) + lchoose(p, 0:p)
+       
+       logpostprob <- x$modelslogBF[, (p+1)] + lpriorprobs[dimmodels]-
+         log(x$C) - log(sum(exp(lpriorprobs + lchoose(p,0:p))))
+       
+       #wrong:
+       # logpostprob<- x$modelslogBF[, (p+1)] + log(x$priorprobs[dimmodels]) -
+       #              log(x$C) - log(sum(x$priorprobs*choose(p,0:p)))
+
+       # ordenado <- x$modelslogBF[order(logpostprob,decreasing = T),] #does not do anything
        ordenado<- cbind(x$modelslogBF, logpostprob)
        ordenado <- ordenado[order(logpostprob,decreasing = T),]
        models<- ordenado[!duplicated(ordenado),]
@@ -1406,7 +1417,7 @@ check.prior.betas <- function(prior.betas){
 	success <- 0
 	if (prior.betas == "Robust") {success <- 1; prior.betas.internal <- "r"}
 	if (prior.betas == "gZellner") {success <- 1; prior.betas.internal <- "g"}
-	if (prior.betas == "Liangetat") {success <- 1; prior.betas.internal <- "l"}
+	if (prior.betas == "Liangetal") {success <- 1; prior.betas.internal <- "l"}
 	if (prior.betas == "ZellnerSiow") {success <- 1; prior.betas.internal <- "z"}
 	if (prior.betas == "FLS") {success <- 1; prior.betas.internal <- "f"}
 	if (prior.betas == "intrinsic.MGC") {success <- 1; prior.betas.internal <- "i"}
