@@ -262,7 +262,7 @@ GibbsBvsF <-
 
       p <- dim(X)[2]#Number of covariates to select from
 
-
+      
 		#Factors:
 		#positions is a matrix with number of rows equal to the number of regressors
 		#(either factor or numeric) and number of columns the number of columns of X
@@ -276,8 +276,17 @@ GibbsBvsF <-
 			stop("No Factors found among the competing variables. Use GibbsBvs() instead\n")
 		}
 
-		positions<- matrix(0, ncol=p, nrow=length(depvars))
-		for (i in 1:length(depvars)){positions[i,]<- grepl(depvars[i], colnames(X), fixed=T)}
+		# positions<- matrix(0, ncol=p, nrow=length(depvars))
+		# for (i in 1:length(depvars)){positions[i,]<- grepl(depvars[i], colnames(X), fixed=T)}
+		positions <- t(sapply(depvars, function(var) {
+		  if(is.factor(data[[var]])) {
+		    levs <- levels(data[[var]])
+		    ind <- which(namesx %in% paste0(var,levs)) #1 in the namelevel matches
+		  } else ind <- which(namesx == var) #1 in the name matches
+		  
+		  posi <- rep(0,p); posi[ind] <- 1
+		  posi
+		}))
 		#positionsX is a vector of the same length as columns has X
 
 		#with 1 in the position with a numeric variable:
