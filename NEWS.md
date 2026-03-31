@@ -1,3 +1,7 @@
+# BayesVarSel 2.6.0
+* Fixed an error with the function GibbsBvsF that failed, in certain cases, to identify correctly the factors.
+* There was an error in the label of Liangetal that appeared as Liangetat
+
 # BayesVarSel 2.5.0
 * Added the computation of Rao-Blackwell estimations of inclusion probabilities.
 Implemented in GibbsBvs.
